@@ -706,63 +706,6 @@
   <script src="classes.js"></script>
   <script src="feats.js"></script>
   <script>
-    // ─────────────────────────────────────────────────────────────────────────
-    // D&D 3.5 Gestalt Character Creator — Data File
-    // Edit this file to add, remove, or modify races, classes, feats, skills etc.
-    // Serve with: python -m http.server 8080  then open http://localhost:8080
-    // ─────────────────────────────────────────────────────────────────────────
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  </script>
-  <script>
-    // ─── DATA ───────────────────────────────────────────────────────────────────
-
-
-
-
-
-
-
-    // ── PRESTIGE CLASSES ──────────────────────────────────────────────────────────
-    // All marked prestige:true. Entry requirements are noted in the special field.
-    // Max levels noted in the name parenthetically where < 10.
-
-
-
-
-    // ─── PRESTIGE CLASS PREREQUISITES ────────────────────────────────────────────
-    // Each entry: {bab, feats:[], skills:{name:ranks}, casterLevel, casterType ('arcane'|'divine'|'any'),
-    //              minCasterSpellLevel (highest spell level they must be able to cast),
-    //              requiresPsionic, minPsionicPowerLevel, alignment, special (text only)}
-
-
     // Check prestige class entry requirements at a given character level
     // Returns array of {text, enforced} — same format as getPrereqFailuresAtLevel
     function getPrCFailures(className, charLevel) {
