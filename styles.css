@@ -1,0 +1,1354 @@
+@import url("https://fonts.googleapis.com/css2?family=MedievalSharp&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap");
+
+/* ── Palette ─────────────────────────────────────────────────────────────── */
+:root {
+  --parchment: #f4ead5;
+  --parchment-dark: #e8d8b8;
+  --parchment-light: #faf5e8;
+  --ink: #2a1a0e;
+  --ink-mid: #4a3520;
+  --ink-light: #6b4c2a;
+  --red: #8b1a1a;
+  --red-dark: #5c0f0f;
+  --red-light: #c0392b;
+  --gold: #b8860b;
+  --gold-light: #d4a017;
+  --border: #a07040;
+  --border-light: #c8a878;
+  --border-faint: #d8c090;
+  --shadow: rgba(60, 30, 10, 0.18);
+  --green-ink: #1a4a1a;
+  --blue-ink: #0f2a5c;
+}
+
+/* ── Reset & Base ─────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Crimson Text", Georgia, "Times New Roman", serif;
+  color: var(--ink);
+  font-size: 15px;
+  background: var(--parchment-dark);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
+  min-height: 100vh;
+}
+
+/* ── App wrapper ──────────────────────────────────────────────────────────── */
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  background: linear-gradient(180deg, var(--red-dark) 0%, var(--red) 100%);
+  border: 3px solid var(--gold);
+  border-radius: 4px;
+  padding: 1.25rem 1.75rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: relative;
+  box-shadow:
+    0 4px 16px var(--shadow),
+    inset 0 1px 0 rgba(255, 215, 0, 0.15);
+}
+
+.header::before,
+.header::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    var(--gold-light),
+    var(--gold),
+    var(--gold-light)
+  );
+  border-radius: 2px;
+}
+
+.header::before {
+  left: 6px;
+}
+
+.header::after {
+  right: 6px;
+}
+
+.header h1 {
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: #f5e6c8;
+  letter-spacing: 0.04em;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.header p {
+  font-size: 12px;
+  color: #d4b896;
+  margin-top: 3px;
+  font-style: italic;
+}
+
+.dm-btn {
+  padding: 5px 14px;
+  font-size: 12px;
+  font-family: "Crimson Text", serif;
+  border: 1px solid var(--gold);
+  border-radius: 3px;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.25);
+  color: #f5e6c8;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+
+.dm-btn:hover,
+.dm-btn.active {
+  background: var(--gold);
+  color: var(--red-dark);
+  font-weight: 600;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 1rem;
+  background: var(--ink-mid);
+  border: 2px solid var(--border);
+  border-radius: 3px;
+  padding: 3px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-family: "Crimson Text", serif;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: #c8a878;
+  border-radius: 2px;
+  transition: all 0.15s;
+}
+
+.tab.active {
+  background: var(--parchment);
+  color: var(--red-dark);
+  font-weight: 600;
+}
+
+.tab:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.12);
+  color: #f5e6c8;
+}
+
+.tab.dm-tab.active {
+  background: var(--gold);
+  color: var(--red-dark);
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────────── */
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+/* ── Grids ────────────────────────────────────────────────────────────────── */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--parchment-light);
+  border: 1px solid var(--border-light);
+  border-radius: 3px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px var(--shadow);
+  position: relative;
+}
+
+/* Left red accent bar on cards */
+.card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 3px;
+  background: linear-gradient(180deg, transparent, var(--red), transparent);
+  border-radius: 0 2px 2px 0;
+  opacity: 0.6;
+}
+
+.card-title {
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: 13px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--red-dark);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.75rem;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-faint);
+}
+
+/* ── Form elements ─────────────────────────────────────────────────────────── */
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-light);
+  margin-bottom: 3px;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  font-size: 14px;
+  font-family: "Crimson Text", serif;
+  padding: 5px 9px;
+  border: 1px solid var(--border-light);
+  border-radius: 2px;
+  background: var(--parchment);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.15);
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+button {
+  padding: 5px 12px;
+  font-size: 13px;
+  font-family: "Crimson Text", serif;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  background: var(--parchment-dark);
+  color: var(--ink-mid);
+  transition: all 0.15s;
+}
+
+button:hover {
+  background: var(--parchment);
+  border-color: var(--gold);
+  color: var(--red-dark);
+}
+
+.btn-primary {
+  background: var(--red);
+  color: #f5e6c8;
+  border-color: var(--red-dark);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.btn-primary:hover {
+  background: var(--red-dark);
+  border-color: var(--gold);
+  color: #ffd;
+}
+
+.btn-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.btn-danger:hover {
+  background: #fca5a5;
+}
+
+.btn-sm {
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+/* ── Ability score boxes ───────────────────────────────────────────────────── */
+.ab-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.ab-box {
+  text-align: center;
+  background: var(--parchment-dark);
+  border: 1px solid var(--border-light);
+  border-radius: 3px;
+  padding: 8px 4px;
+}
+
+.ab-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--red-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.ab-score {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 3px 0;
+  color: var(--ink);
+}
+
+.ab-mod {
+  font-size: 11px;
+  color: var(--ink-light);
+}
+
+.ab-input {
+  width: 52px;
+  text-align: center;
+  font-size: 15px;
+  padding: 3px;
+  margin-top: 3px;
+}
+
+/* ── Level rows ───────────────────────────────────────────────────────────── */
+.level-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 1fr 170px 1fr 110px;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 2px;
+  border: 1px solid var(--border-faint);
+  margin-bottom: 4px;
+  background: var(--parchment);
+  font-size: 12px;
+}
+
+.level-row.racial-hd {
+  background: #edfaed;
+  border-color: #7ec87e;
+}
+
+.level-row.la-row {
+  background: #fef9ec;
+  border-color: #d4a017;
+}
+
+.level-num {
+  font-weight: 600;
+  font-size: 13px;
+  text-align: center;
+  color: var(--red-dark);
+  font-family: "IM Fell English", serif;
+}
+
+.level-class-a {
+  background: #eef4ff;
+  border: 1px solid #93b8e8;
+  border-radius: 2px;
+}
+
+.level-class-b {
+  background: #f8f0ff;
+  border: 1px solid #c8a0e8;
+  border-radius: 2px;
+}
+
+.class-select {
+  font-size: 12px;
+  padding: 4px 6px;
+  font-family: "Crimson Text", serif;
+}
+
+.lock-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  background: #dcf5dc;
+  color: #145214;
+  border: 1px solid #7ec87e;
+}
+
+.la-badge-pill {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  background: #fef9ec;
+  color: #6b3a00;
+  border: 1px solid #d4a017;
+}
+
+.level-prog {
+  font-size: 11px;
+  color: var(--ink-mid);
+  line-height: 1.5;
+}
+
+.level-prog .prog-total {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.gestalt-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 1fr 170px 1fr 110px;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 8px;
+}
+
+/* ── Race grid ────────────────────────────────────────────────────────────── */
+.race-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.race-opt {
+  padding: 6px 8px;
+  border: 1px solid var(--border-faint);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.1s;
+  background: var(--parchment);
+}
+
+.race-opt:hover {
+  border-color: var(--gold);
+  background: var(--parchment-light);
+}
+
+.race-opt.selected {
+  border-color: var(--red);
+  background: #fff0e8;
+}
+
+.race-cat {
+  font-family: "IM Fell English", serif;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--red-dark);
+  margin: 8px 0 4px;
+  grid-column: 1/-1;
+  border-bottom: 1px solid var(--border-faint);
+  padding-bottom: 2px;
+}
+
+.race-la {
+  font-size: 10px;
+  color: var(--red-light);
+}
+
+.race-hd {
+  font-size: 10px;
+  color: var(--green-ink);
+}
+
+.tpl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+}
+
+.tpl-opt {
+  padding: 7px 9px;
+  border: 1px solid var(--border-faint);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.1s;
+  background: var(--parchment);
+}
+
+.tpl-opt:hover {
+  border-color: var(--gold);
+}
+
+.tpl-opt.selected {
+  border-color: var(--red);
+  background: #fff0e8;
+}
+
+/* ── Stat boxes ───────────────────────────────────────────────────────────── */
+.save-box {
+  background: var(--parchment-dark);
+  border: 1px solid var(--border-faint);
+  border-radius: 3px;
+  padding: 8px;
+  text-align: center;
+}
+
+.save-lbl {
+  font-size: 10px;
+  color: var(--red-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+  font-family: "IM Fell English", serif;
+  font-style: italic;
+}
+
+.save-val {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-faint);
+  font-size: 13px;
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.ecl-box {
+  background: var(--parchment-dark);
+  border: 1px solid var(--border-light);
+  border-radius: 3px;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.ecl-val {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--red-dark);
+  font-family: "IM Fell English", serif;
+}
+
+/* ── Skills ───────────────────────────────────────────────────────────────── */
+.skill-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 40px 36px;
+  gap: 5px;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 2px;
+  background: var(--parchment);
+  border: 1px solid var(--border-faint);
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.skill-name-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.skill-name {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.skill-meta {
+  font-size: 10px;
+  color: var(--ink-light);
+  font-style: italic;
+}
+
+.skill-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.skill-bar-bg {
+  flex: 1;
+  height: 5px;
+  background: var(--parchment-dark);
+  border-radius: 3px;
+}
+
+.skill-bar {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--red);
+  transition: width 0.2s;
+}
+
+.rank-input {
+  width: 36px;
+  text-align: center;
+  padding: 3px;
+  font-size: 12px;
+}
+
+.skill-total-col {
+  font-weight: 600;
+  text-align: right;
+  font-size: 13px;
+}
+
+.sp-bar-wrap {
+  margin-bottom: 1rem;
+}
+
+.sp-bar-bg {
+  height: 8px;
+  background: var(--parchment-dark);
+  border-radius: 3px;
+  margin-top: 4px;
+}
+
+.sp-bar {
+  height: 8px;
+  border-radius: 3px;
+  transition: width 0.2s;
+}
+
+/* ── Feats ────────────────────────────────────────────────────────────────── */
+.feat-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--parchment-dark);
+  border: 1px solid var(--border-faint);
+  border-radius: 2px;
+  padding: 2px 9px;
+  font-size: 12px;
+  margin: 2px;
+  font-family: "Crimson Text", serif;
+}
+
+.feat-tag.feat-invalid {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
+.feat-x {
+  cursor: pointer;
+  color: var(--ink-light);
+  font-size: 13px;
+}
+
+.feat-x:hover {
+  color: var(--red);
+}
+
+.feat-locked {
+  background: #fff5f5 !important;
+}
+
+/* ── Divider ──────────────────────────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-light),
+    transparent
+  );
+  margin: 0.75rem 0;
+}
+
+/* ── Badges ───────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-left: 4px;
+}
+
+.badge-custom {
+  background: #fef3c7;
+  color: #6b3a00;
+  border: 1px solid #d4a017;
+}
+
+.badge-hd {
+  background: #dcf5dc;
+  color: #145214;
+}
+
+.badge-bab {
+  background: #fef9ec;
+  color: #6b3a00;
+}
+
+.badge-la {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ── Class/feat dropdowns ─────────────────────────────────────────────────── */
+.class-item {
+  padding: 6px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-family: "Crimson Text", serif;
+}
+
+.class-item:hover {
+  background: var(--parchment-dark);
+}
+
+.class-item.selected {
+  background: #fff0e8;
+  border-left: 2px solid var(--red);
+}
+
+/* ── Class Picker Modal ──────────────────────────────────────────────────── */
+.cpicker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 60px;
+}
+
+.cpicker-modal {
+  background: var(--parchment-light);
+  border: 2px solid var(--border);
+  border-radius: 3px;
+  width: min(700px, 96vw);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+}
+
+.cpicker-header {
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--border-faint);
+  flex-shrink: 0;
+}
+
+.cpicker-title {
+  font-family: "IM Fell English", serif;
+  font-size: 17px;
+  color: var(--red-dark);
+  margin-bottom: 6px;
+}
+
+.cpicker-controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cpicker-search {
+  flex: 1;
+  min-width: 140px;
+  font-size: 13px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--parchment);
+}
+
+.cpicker-sort {
+  font-size: 12px;
+  padding: 5px 6px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--parchment);
+}
+
+.cpicker-filter-row {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.cpicker-chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid var(--border-faint);
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--parchment);
+  color: var(--ink-mid);
+  transition: all 0.1s;
+}
+
+.cpicker-chip.active {
+  background: var(--red-dark);
+  color: #fff;
+  border-color: var(--red-dark);
+}
+
+.cpicker-body {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px 10px;
+}
+
+.cpicker-group-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-light);
+  border-bottom: 1px solid var(--border-faint);
+  padding: 4px 0 2px;
+  margin: 8px 0 4px;
+}
+
+.cpicker-group-title:first-child {
+  margin-top: 0;
+}
+
+.cpicker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 5px;
+  margin-bottom: 4px;
+}
+
+.cpicker-card {
+  border: 1px solid var(--border-faint);
+  border-radius: 2px;
+  padding: 6px 8px;
+  cursor: pointer;
+  background: var(--parchment);
+  transition: all 0.12s;
+  position: relative;
+}
+
+.cpicker-card:hover {
+  border-color: var(--gold);
+  background: var(--parchment-dark);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cpicker-card.locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cpicker-card.selected {
+  border-color: var(--red-dark);
+  background: #fff8f0;
+}
+
+.cpicker-card-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+
+.cpicker-card-source {
+  font-size: 10px;
+  color: var(--ink-light);
+  font-style: italic;
+}
+
+.cpicker-card-stats {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 3px;
+}
+
+.cpicker-stat-tag {
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 2px;
+  border: 1px solid;
+  font-weight: 600;
+}
+
+.cpicker-stat-bab-full {
+  background: #edf7ed;
+  border-color: #7ec87e;
+  color: #145214;
+}
+
+.cpicker-stat-bab-medium {
+  background: #fef9ec;
+  border-color: #d4a017;
+  color: #5a3a00;
+}
+
+.cpicker-stat-bab-poor {
+  background: #fdf2f8;
+  border-color: #e0a0d0;
+  color: #5a1a4a;
+}
+
+.cpicker-stat-hd {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1e3a8a;
+}
+
+.cpicker-prereq-fail {
+  font-size: 9px;
+  color: #c0392b;
+  margin-top: 2px;
+}
+
+.cpicker-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-faint);
+  border-radius: 2px;
+  background: var(--parchment);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  min-height: 28px;
+  font-family: "Crimson Text", serif;
+  transition: background 0.1s;
+}
+
+.cpicker-btn:hover {
+  background: var(--parchment-dark);
+}
+
+.cpicker-btn .cpicker-btn-name {
+  flex: 1;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cpicker-btn .cpicker-btn-clear {
+  color: var(--ink-light);
+  font-size: 11px;
+  padding: 0 2px;
+}
+
+.cpicker-btn .cpicker-btn-clear:hover {
+  color: var(--red-dark);
+}
+
+.cpicker-footer {
+  padding: 8px 14px;
+  border-top: 1px solid var(--border-faint);
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ── Tags ─────────────────────────────────────────────────────────────────── */
+.tag-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.tag-row input {
+  flex: 1;
+}
+
+.tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 5px;
+}
+
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--parchment-dark);
+  border: 1px solid var(--border-faint);
+  border-radius: 2px;
+  padding: 2px 7px;
+  font-size: 11px;
+}
+
+.tag-x {
+  cursor: pointer;
+  color: var(--ink-light);
+  font-size: 12px;
+}
+
+/* ── Custom content list ──────────────────────────────────────────────────── */
+.custom-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background: var(--parchment);
+  border: 1px solid var(--border-faint);
+  border-radius: 2px;
+  margin-bottom: 5px;
+}
+
+.custom-item-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.custom-item-meta {
+  font-size: 11px;
+  color: var(--ink-light);
+  margin-top: 1px;
+  font-style: italic;
+}
+
+.custom-actions {
+  display: flex;
+  gap: 5px;
+}
+
+/* ── Warn / info boxes ────────────────────────────────────────────────────── */
+.warn-box {
+  background: #fef9ec;
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #6b3a00;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.info-box {
+  background: var(--parchment-dark);
+  border: 1px solid var(--border-faint);
+  border-radius: 2px;
+  padding: 9px 11px;
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 7px;
+}
+
+/* ── DM stabs ─────────────────────────────────────────────────────────────── */
+.ab-mod-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.ab-mod-lbl {
+  font-size: 9px;
+  color: var(--ink-light);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+  font-style: italic;
+}
+
+.dm-stab {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: "Crimson Text", serif;
+  cursor: pointer;
+  border: 1px solid var(--border-faint);
+  border-radius: 2px;
+  background: var(--parchment-dark);
+  color: var(--ink-mid);
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+.dm-stab.active {
+  background: var(--red);
+  color: #f5e6c8;
+  font-weight: 600;
+  border-color: var(--red-dark);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--ink-light);
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* ── Character Sheet ──────────────────────────────────────────────────────── */
+.sheet {
+  background: var(--parchment-light);
+  border: 2px solid var(--border);
+  border-radius: 3px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px var(--shadow);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+}
+
+.sheet-name {
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--red-dark);
+  letter-spacing: 0.02em;
+}
+
+.sheet-sub {
+  font-size: 13px;
+  color: var(--ink-mid);
+  margin-top: 3px;
+  font-style: italic;
+}
+
+.sheet-abs {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin: 1rem 0;
+}
+
+/* Sheet section headers */
+.sheet-section-title {
+  font-family: "IM Fell English", serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--red-dark);
+  border-bottom: 1px solid var(--border-faint);
+  padding-bottom: 2px;
+  margin-bottom: 6px;
+  margin-top: 10px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+/* ── Tables ───────────────────────────────────────────────────────────────── */
+.level-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.level-table th {
+  background: var(--parchment-dark);
+  padding: 5px 8px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--red-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-light);
+  font-family: "IM Fell English", serif;
+  font-style: italic;
+}
+
+.level-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border-faint);
+}
+
+.level-table tr:last-child td {
+  border-bottom: none;
+}
+
+.level-table tr:hover td {
+  background: var(--parchment-dark);
+}
+
+/* ── Alignment grid ───────────────────────────────────────────────────────── */
+.align-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.align-opt {
+  padding: 5px;
+  border: 1px solid var(--border-faint);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 11px;
+  text-align: center;
+  background: var(--parchment);
+  transition: all 0.1s;
+}
+
+.align-opt:hover {
+  border-color: var(--gold);
+}
+
+.align-opt.selected {
+  border-color: var(--red);
+  background: #fff0e8;
+  color: var(--red-dark);
+  font-weight: 600;
+}
+
+/* ── Section tabs (DM tools) ──────────────────────────────────────────────── */
+.section-tabs {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ── Password modal ───────────────────────────────────────────────────────── */
+.pw-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.pw-modal {
+  background: var(--parchment-light);
+  border: 2px solid var(--border);
+  border-radius: 3px;
+  padding: 1.75rem;
+  width: 340px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.pw-modal h2 {
+  font-family: "IM Fell English", serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--red-dark);
+  margin-bottom: 6px;
+}
+
+.pw-modal p {
+  font-size: 13px;
+  color: var(--ink-mid);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.pw-error {
+  color: var(--red-light);
+  font-size: 12px;
+  margin-top: 6px;
+  min-height: 16px;
+}
+
+.pw-modal input[type="password"] {
+  font-size: 15px;
+  padding: 8px 10px;
+  letter-spacing: 0.12em;
+}
+
+.pw-modal-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pw-modal-btns button {
+  flex: 1;
+  padding: 8px;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .grid2,
+  .grid3,
+  .grid4,
+  .gestalt-header,
+  .level-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sheet-abs {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media print {
+  .tabs,
+  .header,
+  button,
+  .dm-btn {
+    display: none !important;
+  }
+
+  .section {
+    display: block !important;
+  }
+
+  .app {
+    padding: 0;
+  }
+
+  body,
+  html {
+    background: white;
+  }
+
+  .sheet {
+    border: none;
+    box-shadow: none;
+  }
+}
