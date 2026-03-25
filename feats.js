@@ -319,3 +319,279 @@ const RACE_PROFICIENCIES = {
   "Githyanki":         ["Prof: Greatsword (racial)","Prof: Silver Sword (racial)"],
   "Raptoran":          ["Prof: Longbow (racial)","Prof: Shortbow (racial)","Prof: Composite Longbow (racial)","Prof: Composite Shortbow (racial)"],
 };
+
+// ─── CLASS STYLE TRACKS (Tier 1) ──────────────────────────────────────────────
+// Classes that grant specific feats automatically at specific class levels
+// based on a once-made style/path/discipline choice.
+// Format: {label, choices: {choiceName: [{clsLvl, feat}]}}
+const CLASS_STYLE_TRACKS = {
+
+  // ── Ranger & Variants ──────────────────────────────────────────────────────
+  "Ranger": {
+    label:"Combat Style",
+    choices:{
+      "Archery":           [{clsLvl:2,feat:"Rapid Shot"},{clsLvl:6,feat:"Manyshot"},{clsLvl:11,feat:"Improved Precise Shot"}],
+      "Two-Weapon Combat": [{clsLvl:2,feat:"Two-Weapon Fighting"},{clsLvl:6,feat:"Improved Two-Weapon Fighting"},{clsLvl:11,feat:"Greater Two-Weapon Fighting"}],
+    }
+  },
+  "Ranger (Wildshape)": {
+    label:"Combat Style",
+    choices:{
+      "Archery":           [{clsLvl:2,feat:"Rapid Shot"},{clsLvl:6,feat:"Manyshot"},{clsLvl:11,feat:"Improved Precise Shot"}],
+      "Two-Weapon Combat": [{clsLvl:2,feat:"Two-Weapon Fighting"},{clsLvl:6,feat:"Improved Two-Weapon Fighting"},{clsLvl:11,feat:"Greater Two-Weapon Fighting"}],
+    }
+  },
+  "Ranger (Skirmisher)": {
+    label:"Combat Style",
+    choices:{
+      "Archery":           [{clsLvl:2,feat:"Rapid Shot"},{clsLvl:6,feat:"Manyshot"},{clsLvl:11,feat:"Improved Precise Shot"}],
+      "Two-Weapon Combat": [{clsLvl:2,feat:"Two-Weapon Fighting"},{clsLvl:6,feat:"Improved Two-Weapon Fighting"},{clsLvl:11,feat:"Greater Two-Weapon Fighting"}],
+    }
+  },
+  "Ranger (Arcane Hunter)": {
+    label:"Combat Style",
+    choices:{
+      "Archery":           [{clsLvl:2,feat:"Rapid Shot"},{clsLvl:6,feat:"Manyshot"},{clsLvl:11,feat:"Improved Precise Shot"}],
+      "Two-Weapon Combat": [{clsLvl:2,feat:"Two-Weapon Fighting"},{clsLvl:6,feat:"Improved Two-Weapon Fighting"},{clsLvl:11,feat:"Greater Two-Weapon Fighting"}],
+    }
+  },
+  "Nature's Warrior": {
+    label:"Combat Style",
+    choices:{
+      "Archery":           [{clsLvl:2,feat:"Rapid Shot"},{clsLvl:6,feat:"Manyshot"}],
+      "Two-Weapon Combat": [{clsLvl:2,feat:"Two-Weapon Fighting"},{clsLvl:6,feat:"Improved Two-Weapon Fighting"}],
+    }
+  },
+
+  // ── Monk (Fighting Styles) ─────────────────────────────────────────────────
+  // Each style grants 2-3 feats at monk class levels 1, 2, and 6
+  "Monk (Fighting Styles)": {
+    label:"Fighting Style",
+    choices:{
+      "Cobra Strike":        [{clsLvl:1,feat:"Improved Unarmed Strike"},{clsLvl:2,feat:"Weapon Finesse"},{clsLvl:6,feat:"Improved Grapple"}],
+      "Denning Dog":         [{clsLvl:1,feat:"Improved Unarmed Strike"},{clsLvl:2,feat:"Combat Reflexes"},{clsLvl:6,feat:"Stand Still"}],
+      "Falling Star":        [{clsLvl:1,feat:"Improved Unarmed Strike"},{clsLvl:2,feat:"Stunning Fist"},{clsLvl:6,feat:"Deflect Arrows"}],
+      "Invisible Eye":       [{clsLvl:1,feat:"Improved Unarmed Strike"},{clsLvl:2,feat:"Blind-Fight"},{clsLvl:6,feat:"Combat Expertise"}],
+      "Overwhelming Assault":[{clsLvl:1,feat:"Improved Unarmed Strike"},{clsLvl:2,feat:"Power Attack"},{clsLvl:6,feat:"Improved Bull Rush"}],
+      "Sleeping Tiger":      [{clsLvl:1,feat:"Improved Unarmed Strike"},{clsLvl:2,feat:"Combat Expertise"},{clsLvl:6,feat:"Improved Feint"}],
+    }
+  },
+
+  // ── Psychic Warrior (Warrior's Path) ──────────────────────────────────────
+  // Paths from Complete Psionic — each grants bonus feats/powers at cls 2/6/11
+  "Psychic Warrior": {
+    label:"Warrior's Path",
+    choices:{
+      "Path of the Ascetic":  [{clsLvl:2,feat:"Improved Unarmed Strike"},{clsLvl:6,feat:"Combat Expertise"},{clsLvl:11,feat:"Deflect Arrows"}],
+      "Path of the Blade":    [{clsLvl:2,feat:"Weapon Focus"},{clsLvl:6,feat:"Weapon Specialization"},{clsLvl:11,feat:"Greater Weapon Focus"}],
+      "Path of the Bow":      [{clsLvl:2,feat:"Point Blank Shot"},{clsLvl:6,feat:"Precise Shot"},{clsLvl:11,feat:"Improved Precise Shot"}],
+      "Path of the Fury":     [{clsLvl:2,feat:"Power Attack"},{clsLvl:6,feat:"Cleave"},{clsLvl:11,feat:"Great Cleave"}],
+      "Path of the Shield":   [{clsLvl:2,feat:"Shield Proficiency"},{clsLvl:6,feat:"Shield Specialization"},{clsLvl:11,feat:"Improved Shield Bash"}],
+      "Path of the Skirmisher":[{clsLvl:2,feat:"Dodge"},{clsLvl:6,feat:"Mobility"},{clsLvl:11,feat:"Spring Attack"}],
+      "Path of the Stalker":  [{clsLvl:2,feat:"Track"},{clsLvl:6,feat:"Improved Initiative"},{clsLvl:11,feat:"Combat Reflexes"}],
+    }
+  },
+  "Psychic Warrior (Meditant)": {
+    label:"Warrior's Path",
+    choices:{
+      "Path of the Ascetic":  [{clsLvl:2,feat:"Improved Unarmed Strike"},{clsLvl:6,feat:"Combat Expertise"},{clsLvl:11,feat:"Deflect Arrows"}],
+      "Path of the Blade":    [{clsLvl:2,feat:"Weapon Focus"},{clsLvl:6,feat:"Weapon Specialization"},{clsLvl:11,feat:"Greater Weapon Focus"}],
+      "Path of the Bow":      [{clsLvl:2,feat:"Point Blank Shot"},{clsLvl:6,feat:"Precise Shot"},{clsLvl:11,feat:"Improved Precise Shot"}],
+      "Path of the Fury":     [{clsLvl:2,feat:"Power Attack"},{clsLvl:6,feat:"Cleave"},{clsLvl:11,feat:"Great Cleave"}],
+      "Path of the Shield":   [{clsLvl:2,feat:"Shield Proficiency"},{clsLvl:6,feat:"Shield Specialization"},{clsLvl:11,feat:"Improved Shield Bash"}],
+      "Path of the Skirmisher":[{clsLvl:2,feat:"Dodge"},{clsLvl:6,feat:"Mobility"},{clsLvl:11,feat:"Spring Attack"}],
+    }
+  },
+
+  // ── Swordsage (Discipline Focus) ──────────────────────────────────────────
+  // Choose one discipline — bonus feats at cls 1, 4, 8, 12, 16 (Weapon Focus chain)
+  "Swordsage": {
+    label:"Discipline Focus",
+    choices:{
+      "Desert Wind":  [{clsLvl:1,feat:"Weapon Focus (scimitar)"},{clsLvl:4,feat:"Desert Wind Mastery"},{clsLvl:8,feat:"Weapon Specialization (scimitar)"}],
+      "Diamond Mind": [{clsLvl:1,feat:"Weapon Focus (rapier)"},{clsLvl:4,feat:"Diamond Mind Mastery"},{clsLvl:8,feat:"Weapon Specialization (rapier)"}],
+      "Setting Sun":  [{clsLvl:1,feat:"Improved Unarmed Strike"},{clsLvl:4,feat:"Setting Sun Mastery"},{clsLvl:8,feat:"Improved Trip"}],
+      "Shadow Hand":  [{clsLvl:1,feat:"Weapon Focus (short sword)"},{clsLvl:4,feat:"Shadow Hand Mastery"},{clsLvl:8,feat:"Weapon Specialization (short sword)"}],
+      "Stone Dragon": [{clsLvl:1,feat:"Weapon Focus (greatsword)"},{clsLvl:4,feat:"Stone Dragon Mastery"},{clsLvl:8,feat:"Weapon Specialization (greatsword)"}],
+      "Tiger Claw":   [{clsLvl:1,feat:"Improved Unarmed Strike"},{clsLvl:4,feat:"Tiger Claw Mastery"},{clsLvl:8,feat:"Two-Weapon Fighting"}],
+    }
+  },
+};
+
+// ─── CLASS STYLE INFO (Tier 2) ────────────────────────────────────────────────
+// Pick-once choices that affect class description / sheet display but don't
+// auto-grant feats. Stored in S.classStyleChoices for sheet printing.
+// Format: {label, choices:[...strings], description (optional)}
+const CLASS_STYLE_INFO = {
+
+  // ── Psion Discipline ───────────────────────────────────────────────────────
+  "Psion": {
+    label:"Psionic Discipline",
+    choices:["Egoist (Psychometabolism)","Kineticist (Psychokinesis)","Nomad (Psychoportation)","Seer (Clairsentience)","Shaper (Metacreativity)","Telepath (Telepathy)"],
+    description:"Your discipline determines which powers are class powers for you, granting you one extra power known per level from your discipline's list.",
+  },
+  "Erudite": {
+    label:"Psionic Discipline",
+    choices:["Egoist (Psychometabolism)","Kineticist (Psychokinesis)","Nomad (Psychoportation)","Seer (Clairsentience)","Shaper (Metacreativity)","Telepath (Telepathy)"],
+    description:"Your starting discipline determines your initial bonus power and favored power list.",
+  },
+
+  // ── Ardent Mantles ────────────────────────────────────────────────────────
+  "Ardent": {
+    label:"Mantles (choose 2)",
+    choices:["Freedom","Good & Evil","Justice & Tyranny","Life & Death","Light & Darkness","Mental Power","Natural World","Pain & Suffering","Patience & Time","Physical Power","Sloth & War"],
+    multiSelect:2,
+    description:"Your two chosen mantles determine which psionic powers are available to you and grant you their associated granted abilities.",
+  },
+
+  // ── Divine Mind Mantles ───────────────────────────────────────────────────
+  "Divine Mind": {
+    label:"Mantles (choose 2)",
+    choices:["Freedom","Good & Evil","Justice & Tyranny","Life & Death","Light & Darkness","Mental Power","Natural World","Pain & Suffering","Patience & Time","Physical Power","Sloth & War"],
+    multiSelect:2,
+    description:"Your two chosen mantles determine your Psionic Aura effects and which powers you have access to.",
+  },
+
+  // ── Barbarian (Totem) ─────────────────────────────────────────────────────
+  "Barbarian (Totem)": {
+    label:"Totem Animal",
+    choices:["Bear","Eagle","Serpent","Wolf"],
+    description:"Your totem animal determines which rage benefit is replaced by a totem power, and the nature of your Improved and Greater Totem abilities.",
+  },
+  "Barbarian (Spirit Totem)": {
+    label:"Spirit Totem",
+    choices:["Bear Spirit","Eagle Spirit","Shark Spirit","Snake Spirit","Wolf Spirit"],
+    description:"Your spirit totem grants a bonus against a specific creature type while raging, and determines your Totemic Summons and Spiritual Connection abilities.",
+  },
+
+  // ── Dragon Shaman ─────────────────────────────────────────────────────────
+  "Dragon Shaman": {
+    label:"Draconic Aura / Dragon Type",
+    choices:["Black (acid, swamp)","Blue (electricity, desert)","Green (acid, forest)","Red (fire, mountain)","White (cold, arctic)","Brass (fire, desert)","Bronze (electricity, coastal)","Copper (acid, hills)","Gold (fire, plains)","Silver (cold, mountain)"],
+    description:"Your dragon type determines your energy type for breath weapon, your draconic aura options, and your energy resistance as you level. You select auras from the standard list, but your energy type is fixed by this choice.",
+  },
+
+  // ── Marshal Auras ─────────────────────────────────────────────────────────
+  "Marshal": {
+    label:"Minor & Major Aura Selections",
+    choices:["Motivate Dexterity","Motivate Strength","Motivate Constitution","Motivate Wisdom","Motivate Charisma","Motivate Attack","Motivate Damage","Resilient Troops","Steady Advance","Motivate Care","Inspire Recklessness","Master of Opportunity","Master of Tactics","Watchful Eye","Hardy Soldiers"],
+    multiSelect:999, // pick freely as gained
+    description:"You gain Minor Auras at levels 1 and 2, and Major Auras at levels 4, 8, and 12. Each aura you select grants allies within 60 ft a bonus — note your selections here for sheet reference.",
+  },
+
+  // ── Cleric Domains ────────────────────────────────────────────────────────
+  "Cleric": {
+    label:"Domains (choose 2)",
+    choices:["Air","Animal","Chaos","Death","Destruction","Earth","Evil","Fire","Good","Healing","Knowledge","Law","Luck","Magic","Plant","Protection","Strength","Sun","Travel","Trickery","War","Water","Celerity","Community","Competition","Craft","Darkness","Domination","Drow","Dwarf","Elf","Envy","Fate","Fury","Gnome","Glory","Gluttony","Greed","Halfling","Hatred","Illusion","Liberation","Lust","Madness","Mentalism","Metal","Mind","Nobility","Ocean","Orc","Pact","Portal","Pride","Purification","Renewal","Repose","Retribution","Rune","Scalykind","Sloth","Slime","Spider","Storm","Suffering","Summoner","Time","Tyranny","Undead","Wrath"],
+    multiSelect:2,
+    description:"Your two chosen domains grant you domain spell slots each day (filled with domain spells), domain powers, and access to your deity's domain spell list.",
+  },
+  "Cleric (Spontaneous Domain Casting)": {
+    label:"Domains (choose 2)",
+    choices:["Air","Animal","Chaos","Death","Destruction","Earth","Evil","Fire","Good","Healing","Knowledge","Law","Luck","Magic","Plant","Protection","Strength","Sun","Travel","Trickery","War","Water"],
+    multiSelect:2,
+    description:"As the standard Cleric, but you spontaneously cast domain spells instead of converting to cure/inflict.",
+  },
+  "Cleric (Undead Lord)": {
+    label:"Domains (choose 2)",
+    choices:["Death","Evil","Undead","Darkness","Destruction","Necromancy"],
+    multiSelect:2,
+    description:"Your domains are restricted to those appropriate for an Undead Lord — typically Death, Evil, Undead, or similar dark domains.",
+  },
+
+  // ── Tier 4 — Informational / Narrative Choices ────────────────────────────
+  // These shape the character's description and sheet but grant no feats.
+
+  "Sorcerer (Focused Specialist)": {
+    label:"Prohibited Schools (choose 2)",
+    choices:["Abjuration","Conjuration","Divination","Enchantment","Evocation","Illusion","Necromancy","Transmutation"],
+    multiSelect:2,
+    description:"You may not cast spells from your two prohibited schools. Choose wisely — this is permanent. Your specialist school is implied by which schools you do NOT prohibit.",
+  },
+
+  "Half-Elf Paragon": {
+    label:"Divided Ancestry (at 2nd level)",
+    choices:["Elf side — gain low-light vision improvement, +1 Listen/Search/Spot, elven weapon familiarity",
+             "Human side — gain bonus feat, +2 skill points per remaining level, extra skill as class skill"],
+    description:"At 2nd level you choose which ancestral side to embrace. This determines your bonus abilities for levels 2 and 3 of this paragon class.",
+  },
+
+  "Human Paragon": {
+    label:"Adaptive Learning — Permanent Class Skill",
+    choices:["Appraise","Balance","Bluff","Climb","Concentration","Craft","Decipher Script","Diplomacy","Disable Device",
+             "Disguise","Escape Artist","Forgery","Gather Info","Handle Animal","Heal","Hide","Intimidate","Jump",
+             "Knowledge(Arcana)","Knowledge(Architecture)","Knowledge(Dungeoneering)","Knowledge(Geography)",
+             "Knowledge(History)","Knowledge(Local)","Knowledge(Nature)","Knowledge(Nobility)","Knowledge(Planes)",
+             "Knowledge(Religion)","Listen","Move Silently","Open Lock","Perform","Profession","Ride","Search",
+             "Sense Motive","Sleight of Hand","Spellcraft","Spot","Survival","Swim","Tumble","Use Magic Device","Use Rope"],
+    description:"At 1st level of Human Paragon, choose any one skill. That skill becomes a permanent class skill for you regardless of your other classes.",
+  },
+
+  "Druid (Shapeshift)": {
+    label:"Shapeshift Animal Forms",
+    choices:["Bear","Boar","Crocodile","Dire Wolf","Leopard","Lion","Shark","Snake","Tiger","Wolf"],
+    multiSelect:999,
+    description:"Note which animal forms you have access to. As a Shapeshift Druid you use a swift action to assume fixed stat-block forms rather than standard Wild Shape — mark the forms available at your druid level.",
+  },
+
+  "Shifter Paragon": {
+    label:"Enhanced Shifting Trait",
+    choices:["Beasthide (Natural Armor)","Cliffwalk (Climb speed)","Dreamsight (speak with animals)","Gorebrute (gore attack)","Longstride (speed increase)","Longtooth (bite attack)","Razorclaw (claw attacks)","Swiftwing (glide/fly)","Truedive (swim speed)","Wildshape (partial wild shape)"],
+    description:"Your paragon levels enhance one of your shifter traits. The chosen trait's bonuses improve by +1 each paragon level, and your shifting duration increases when using that trait.",
+  },
+
+  "Bear Warrior": {
+    label:"Bear Form Progression",
+    choices:["Brown Bear (Large: +16 STR, +2 CON, natural armor +5)","Dire Bear (Large: +20 STR, +4 CON, natural armor +7)","Polar Bear (Large: +14 STR, +2 CON, natural armor +4, cold resistance 5)"],
+    description:"At 5th class level you choose which bear form becomes your Greater Bear Form. Your initial Bear Form (black bear, levels 1-4) is the same regardless of this choice.",
+  },
+
+  "Animal Lord": {
+    label:"Animal Type",
+    choices:["Bear Lord","Bird Lord","Cat Lord","Crocodile Lord","Rat Lord","Serpent Lord","Shark Lord","Toad Lord","Wolf Lord"],
+    description:"Your animal type determines your totem animal, which wild empathy creatures you affect at double normal range, and the nature of your Animal Speech, Summon Animals, and Animal Body abilities.",
+  },
+
+  "Wildshaper": {
+    label:"Wildshape Focus",
+    choices:["Animal Forms","Elemental Forms","Plant Forms","Magical Beast Forms"],
+    description:"Note your primary wildshape focus. This affects which advanced forms you prioritize as you gain access to Elemental Wild Shape, Plant Wild Shape, and Magical Beast Shape.",
+  },
+
+  "Totemist": {
+    label:"Totem Chakra Focus",
+    choices:["Totem of the Bear","Totem of the Claw","Totem of the Fang","Totem of the Hunter","Totem of the Scales","Totem of the Sky","Totem of the Stone"],
+    description:"Note your primary totem chakra binding focus for sheet reference. Your totem chakra bind grants special abilities based on which soulmeld is bound there.",
+  },
+
+  "Factotum": {
+    label:"Inspiration Focus",
+    choices:["Arcane Dilettante (primary)","Cunning Insight (primary)","Brains Over Brawn (primary)","Trapfinding (primary)"],
+    description:"Note which Factotum ability you lean on most — for sheet reference and roleplay purposes. All abilities are available to you, but your inspiration point allocation tends to favor one approach.",
+  },
+
+  "Binder": {
+    label:"Bound Vestiges (note current bindings)",
+    choices:["Amon","Andromalius","Aym","Buer","Dahlver-Nar","Dantalion","Eligor","Focalor","Geryon","Haagenti","Ipos","Leraje","Marchosias","Malphas","Naberius","Paimon","Ronove","Savnok","Tenebrous","Zceryll"],
+    multiSelect:999,
+    description:"Note which vestiges you commonly bind for reference. Your available vestiges depend on your Binder level and your Binding check result — this is for sheet annotation only.",
+  },
+
+  "Crusader": {
+    label:"Discipline Focus",
+    choices:["Devoted Spirit","Stone Dragon","White Raven"],
+    description:"Your three disciplines are fixed (Devoted Spirit, Stone Dragon, White Raven), but note your primary focus for determining which maneuvers you prioritize readying.",
+  },
+
+  "Warblade": {
+    label:"Discipline Focus",
+    choices:["Diamond Mind","Iron Heart","Stone Dragon","Tiger Claw","White Raven"],
+    description:"Your five disciplines are fixed, but note your primary focus for sheet reference and maneuver prioritization.",
+  },
+
+  "Dread Necromancer": {
+    label:"Lich Transformation Path",
+    choices:["Standard Lich (INT-based phylactery)","Necropolite (Libris Mortis variant — cheaper but lesser abilities)"],
+    description:"At 20th level your Lich Transformation is complete. Note which path you follow for sheet reference — this determines your phylactery type and post-transformation abilities.",
+  },
+};
