@@ -10,6 +10,7 @@ A browser-based tool for building D&D 3.5 gestalt characters, supporting base cl
 | `classes.js` | Editable data: races, classes, skills, etc. |
 | `classes.json` | JSON version of class data |
 | `feats.js` | Feat definitions |
+| `spells.js` | Spell and psionic power reference data |
 
 ## Two Ways to Use
 
