@@ -89,3 +89,4 @@ If you edit `classes.js` and want those changes to also work in double-click mod
 ### Prereq fields (`PRESTIGE_PREREQS`)
 
 `bab`, `str` / `dex` / `con` / `int` / `wis` / `cha`, `feats[]`, `skills{}`, `casterLevel`, `casterType`, `minCasterSpellLevel`, `requiresPsionic`, `minPsionicPowerLevel`, `alignment`, `minSize`, `special`
+Credits added
