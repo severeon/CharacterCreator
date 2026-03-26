@@ -24,3 +24,5 @@ specialAbilities:
   - Talented
   - Practiced Manifester
 ---
+
+[Back to Classes](./classes.md)

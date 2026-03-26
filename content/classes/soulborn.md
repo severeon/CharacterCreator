@@ -22,3 +22,5 @@ specialAbilities:
   - Incarnum Defense
   - Aura
 ---
+
+[Back to Classes](./classes.md)

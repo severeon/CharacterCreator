@@ -32,3 +32,5 @@ bonusFeats:
   - 1
   - 5
 ---
+
+[Back to Classes](./classes.md)

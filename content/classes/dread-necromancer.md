@@ -31,3 +31,5 @@ specialAbilities:
   - Undead Mastery
   - Lich Transformation
 ---
+
+[Back to Classes](./classes.md)

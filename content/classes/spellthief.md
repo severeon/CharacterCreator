@@ -42,3 +42,5 @@ specialAbilities:
   - Steal Energy Resistance
   - Steal Spell-Like Ability
 ---
+
+[Back to Classes](./classes.md)

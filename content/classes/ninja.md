@@ -40,3 +40,5 @@ specialAbilities:
   - Speed Climb
   - Evasion
 ---
+
+[Back to Classes](./classes.md)

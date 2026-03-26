@@ -25,3 +25,5 @@ specialAbilities:
   - Wholeness of Body
   - Restore the Dead
 ---
+
+[Back to Classes](./classes.md)

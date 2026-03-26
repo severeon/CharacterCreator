@@ -27,3 +27,5 @@ specialAbilities:
   - Dark Secret
   - Shadowcaster Metamagic
 ---
+
+[Back to Classes](./classes.md)

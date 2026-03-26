@@ -31,3 +31,5 @@ specialAbilities:
   - Plant Wild Shape
   - Magical Beast Shape
 ---
+
+[Back to Classes](./classes.md)

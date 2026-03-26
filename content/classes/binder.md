@@ -29,3 +29,5 @@ specialAbilities:
   - Expel Vestige
   - Ignore Special Requirements
 ---
+
+[Back to Classes](./classes.md)

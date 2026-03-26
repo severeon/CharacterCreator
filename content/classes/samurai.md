@@ -24,3 +24,5 @@ specialAbilities:
   - Mass Staredown
   - Improved Initiative (bonus)
 ---
+
+[Back to Classes](./classes.md)

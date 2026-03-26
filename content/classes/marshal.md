@@ -25,3 +25,5 @@ specialAbilities:
   - Grant Move Action
   - Motivate (Cha bonus to saves)
 ---
+
+[Back to Classes](./classes.md)

@@ -27,3 +27,5 @@ specialAbilities:
   - Lexicon of the Crafted Tool
   - Lexicon of the Perfected Map
 ---
+
+[Back to Classes](./classes.md)
