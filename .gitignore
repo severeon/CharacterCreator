@@ -23,6 +23,8 @@
 
 # misc
 .DS_Store
+.worktrees/
+.superpowers/
 *.pem
 
 # debug
