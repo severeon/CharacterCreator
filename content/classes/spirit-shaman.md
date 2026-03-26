@@ -30,3 +30,5 @@ specialAbilities:
   - Recall Spirit
   - Fetch
 ---
+
+[Back to Classes](./classes.md)

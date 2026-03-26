@@ -39,3 +39,5 @@ specialAbilities:
   - Camouflage
   - Hide in Plain Sight
 ---
+
+[Back to Classes](./classes.md)

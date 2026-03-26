@@ -25,3 +25,5 @@ specialAbilities:
   - Quick Cast
   - Spell Power
 ---
+
+[Back to Classes](./classes.md)

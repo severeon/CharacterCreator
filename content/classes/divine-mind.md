@@ -23,3 +23,5 @@ specialAbilities:
   - Mantles
   - Armored Manifesting
 ---
+
+[Back to Classes](./classes.md)

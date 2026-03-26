@@ -21,3 +21,5 @@ specialAbilities:
   - Psionic Powers (unlimited collection)
   - Convert Spell to Power
 ---
+
+[Back to Classes](./classes.md)

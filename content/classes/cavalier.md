@@ -28,3 +28,5 @@ specialAbilities:
   - Greater Mounted Combat
   - Devastating Mounted Assault
 ---
+
+[Back to Classes](./classes.md)

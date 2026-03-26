@@ -27,3 +27,5 @@ specialAbilities:
   - Touch of Vitality
   - Dragon Form
 ---
+
+[Back to Classes](./classes.md)

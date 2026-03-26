@@ -29,3 +29,5 @@ specialAbilities:
   - Totem Chakra Bind
   - Improved Meldshaping
 ---
+
+[Back to Classes](./classes.md)
