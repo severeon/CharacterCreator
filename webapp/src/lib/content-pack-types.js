@@ -16,20 +16,23 @@
  * @typedef {'full'|'3/4'|'1/2'} BabProgression
  * @typedef {'good'|'poor'} SaveProgression
  *
+ * @typedef {Object} ClassSaves
+ * @property {SaveProgression} fort
+ * @property {SaveProgression} ref
+ * @property {SaveProgression} will
+ *
  * @typedef {Object} DndClass
  * @property {'class'} type
  * @property {string} name
  * @property {number} hd - Hit die size
  * @property {BabProgression} bab
- * @property {SaveProgression} fort
- * @property {SaveProgression} ref
- * @property {SaveProgression} will
+ * @property {ClassSaves} saves
  * @property {number} skillPoints - Skill points per level (before INT mod)
  * @property {string[]} classSkills
- * @property {boolean} prestige
- * @property {number} [maxLvl] - Max level for prestige classes
+ * @property {'prestige'|undefined} [subtype]
+ * @property {number} [maxLevel] - Max level for prestige classes
  * @property {number[]} [bonusFeats] - Levels that grant bonus feats
- * @property {string} [bonusFeatList] - Key into BONUS_FEAT_LISTS
+ * @property {string[]} [specialAbilities]
  * @property {string} [special] - Freetext special abilities note
  */
 
@@ -46,7 +49,7 @@
  * @property {'feat'} type
  * @property {string} name
  * @property {FeatPrereqs} [prereqs]
- * @property {string[]} [bonusFeatLists] - Which class bonus feat lists include this feat
+ * @property {string[]} [bonusFeatFor] - Which class bonus feat lists include this feat
  */
 
 /**
