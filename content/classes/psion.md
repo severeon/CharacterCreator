@@ -21,3 +21,5 @@ specialAbilities:
   - Discipline
   - Bonus Feats
 ---
+
+[Back to Classes](./classes.md)

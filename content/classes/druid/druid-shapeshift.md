@@ -1,0 +1,40 @@
+---
+type: class
+name: Druid (Shapeshift)
+source: PH II
+hd: 8
+bab: medium
+saves:
+  fort: good
+  ref: poor
+  will: good
+skillPoints: 4
+classSkills:
+  - Balance
+  - Climb
+  - Concentration
+  - Craft
+  - Diplomacy
+  - Handle Animal
+  - Heal
+  - Hide
+  - Jump
+  - Knowledge(Nature)
+  - Listen
+  - Move Silently
+  - Profession
+  - Ride
+  - Spellcraft
+  - Spot
+  - Survival
+  - Swim
+specialAbilities:
+  - Shapeshift (swift action, fixed animal forms)
+  - Natural Armor
+  - Scent
+  - Wild Strike
+  - Ferocity
+  - Thousand Faces
+---
+
+[Back to Druid](./druid.md)

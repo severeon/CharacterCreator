@@ -30,3 +30,5 @@ specialAbilities:
   - Hostile Empathic Transfer
   - Greater Hostile Empathic Transfer
 ---
+
+[Back to Classes](./classes.md)

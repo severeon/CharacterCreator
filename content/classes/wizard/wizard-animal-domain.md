@@ -1,0 +1,28 @@
+---
+type: class
+name: Wizard (Animal Domain)
+source: Unearthed Arcana
+hd: 4
+bab: poor
+saves:
+  fort: poor
+  ref: poor
+  will: good
+skillPoints: 2
+classSkills:
+  - Concentration
+  - Craft
+  - Knowledge(Arcana)
+  - Knowledge(Nature)
+  - Knowledge(Religion)
+  - Profession
+  - Spellcraft
+specialAbilities:
+  - Arcane Spellcasting (Int)
+  - Animal Domain spell added to spellbook each level free
+  - Animal Companion (as druid of wizard level − 3, replaces familiar)
+  - Speak with Animals 1/day
+  - Specialist or generalist wizard otherwise unchanged
+---
+
+[Back to Wizard](./wizard.md)

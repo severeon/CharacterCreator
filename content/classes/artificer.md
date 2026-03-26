@@ -28,3 +28,5 @@ specialAbilities:
   - Craft Reserve
   - Retain Essence
 ---
+
+[Back to Classes](./classes.md)

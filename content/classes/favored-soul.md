@@ -23,3 +23,5 @@ specialAbilities:
   - Energy Resistance
   - Damage Reduction
 ---
+
+[Back to Classes](./classes.md)

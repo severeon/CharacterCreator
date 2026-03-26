@@ -22,3 +22,5 @@ specialAbilities:
   - Taboos
   - Elemental Mastery
 ---
+
+[Back to Classes](./classes.md)

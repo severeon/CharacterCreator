@@ -25,3 +25,5 @@ specialAbilities:
   - Bonus Spells
   - Sense Elements
 ---
+
+[Back to Classes](./classes.md)
