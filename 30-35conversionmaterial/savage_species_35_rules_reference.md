@@ -17,30 +17,13 @@ this reference use 3.5 Edition mechanics.
 
 ### 1.1 Key Terms
 
-  -----------------------------------------------------------------------
-  **Term**              **Definition**
-  --------------------- -------------------------------------------------
-  Racial Hit Dice (RHD) Hit Dice a creature possesses by virtue of its
-                        monster type, before any class levels. These
-                        function like class levels for saves, BAB, and
-                        skills.
-
-  Level Adjustment (LA) A penalty added to a monster\'s effective level
-                        to account for powerful racial abilities. LA does
-                        not grant additional HP, skill points, or class
-                        features.
-
-  Effective Character   ECL = Racial HD + Level Adjustment + Class
-  Level (ECL)           Levels. This is used to determine XP thresholds
-                        and party balance.
-
-  Monster Class         A special class progression from Savage Species
-                        that lets a player \'grow into\' a monster over
-                        multiple levels, beginning at ECL 1.
-
-  Challenge Rating (CR) CR measures NPC/encounter difficulty. It is NOT
-                        the same as ECL and should not be used to set LA.
-  -----------------------------------------------------------------------
+| **Term**              | **Definition**
+  --------------------- | -------------------------------------------------
+  Racial Hit Dice (RHD) | Hit Dice a creature possesses by virtue of its monster type, before any class levels. These function like class levels for saves, BAB, and skills.
+  Level Adjustment (LA) | A penalty added to a monster's effective level to account for powerful racial abilities. LA does not grant additional HP, skill points, or class features.
+  Effective Character Level (ECL) | ECL = Racial HD + Level Adjustment + Class Levels. This is used to determine XP thresholds and party balance.
+  Monster Class | A special class progression from Savage Species that lets a player 'grow into' a monster over multiple levels, beginning at ECL 1.
+  Challenge Rating (CR) | CR measures NPC/encounter difficulty. It is NOT the same as ECL and should not be used to set LA.
 
 **1.2 The ECL Formula**
 
@@ -95,39 +78,23 @@ throws, and number of skill points before class levels are applied.
 
 Base Attack Bonus by creature type (3.5 rules):
 
-  ------------------------------------------------------------------------
-  **Creature Type**     **BAB Progression**   **Good Saves**
-  --------------------- --------------------- ----------------------------
-  Aberration            3/4 HD (as Cleric)    Will
-
-  Animal                3/4 HD (as Cleric)    Fort, Ref
-
-  Construct             3/4 HD (as Cleric)    None (immune)
-
-  Dragon                Full HD (as Fighter)  Fort, Ref, Will
-
-  Elemental             3/4 HD (as Cleric)    Ref or Fort (by type)
-
-  Fey                   1/2 HD (as Wizard)    Ref, Will
-
-  Giant                 3/4 HD (as Cleric)    Fort
-
-  Humanoid              3/4 HD (as Cleric)    Varies by subtype
-
-  Magical Beast         Full HD (as Fighter)  Fort, Ref
-
-  Monstrous Humanoid    Full HD (as Fighter)  Ref, Will
-
-  Ooze                  3/4 HD (as Cleric)    None
-
-  Outsider              Full HD (as Fighter)  Fort, Ref, Will
-
-  Plant                 3/4 HD (as Cleric)    Fort
-
-  Undead                1/2 HD (as Wizard)    Will
-
-  Vermin                3/4 HD (as Cleric)    Fort
-  ------------------------------------------------------------------------
+| **Creature Type**     | **BAB Progression**   | **Good Saves**
+  --------------------- | --------------------- | ----------------------------
+  Aberration            | 3/4 HD (as Cleric)   | Will
+  Animal                | 3/4 HD (as Cleric)   | Fort, Ref
+  Construct             | 3/4 HD (as Cleric)   | None (immune)
+  Dragon                | Full HD (as Fighter) | Fort, Ref, Will
+  Elemental             | 3/4 HD (as Cleric)   | Ref or Fort (by type)
+  Fey                   | 1/2 HD (as Wizard)   | Ref, Will
+  Giant                 | 3/4 HD (as Cleric)   | Fort
+  Humanoid              | 3/4 HD (as Cleric)   | Varies by subtype
+  Magical Beast         | Full HD (as Fighter) | Fort, Ref
+  Monstrous Humanoid    | Full HD (as Fighter) | Ref, Will
+  Ooze                  | 3/4 HD (as Cleric)   | None
+  Outsider              | Full HD (as Fighter) | Fort, Ref, Will
+  Plant                 | 3/4 HD (as Cleric)   | Fort
+  Undead                | 1/2 HD (as Wizard)   | Will
+  Vermin                | 3/4 HD (as Cleric)   | Fort
 
 **Step 3: Determine Level Adjustment**
 
@@ -232,91 +199,48 @@ class tables must be converted using this section.
 
 **3.1 The Old System vs. The New System**
 
-  -----------------------------------------------------------------------
-  **3.0 System**                      **3.5 System**
-  ----------------------------------- -----------------------------------
-  DR expressed as DR X/+Y (e.g., DR   DR expressed as DR X/\[type\]
-  15/+2)                              (e.g., DR 10/cold iron)
-
-  Higher magic weapon plus bypasses   Specific materials, alignments, or
-  higher DR                           weapon types bypass DR
-
-  DR values often very high (up to 40 DR values capped: most at 5, 10, or
-  or more)                            15; epic at 15+
-
-  Half damage from weapons = separate Half damage from weapons converted
-  mechanic                            to flat DR
-
-  All weapons hitting = consistent    Only the bypass type negates the
-  reduction                           reduction entirely
-  -----------------------------------------------------------------------
+| **3.0 System** | **3.5 System**
+  ----------------------------------- | -----------------------------------
+  DR expressed as DR X/+Y (e.g., DR 15/+2) | DR expressed as DR X/[type] (e.g., DR 10/cold iron)
+  Higher magic weapon plus bypasses higher DR | Specific materials, alignments, or weapon types bypass DR
+  DR values often very high (up to 40 or more) | DR values capped: most at 5, 10, or 15; epic at 15+
+  Half damage from weapons = separate mechanic | Half damage from weapons converted to flat DR
+  All weapons hitting = consistent reduction | Only the bypass type negates the reduction entirely
 
 **3.2 Numeric Conversion**
 
 Reduce DR amounts significantly when converting from 3.0 to 3.5:
 
-  -----------------------------------------------------------------------
-  **3.0 DR Value**           **Typical 3.5 Equivalent**
-  -------------------------- --------------------------------------------
-  DR 5/+1 or DR 5/+2         DR 5/magic
-
-  DR 10/+1 or DR 10/+2       DR 10/magic
-
-  DR 15/+2 or DR 15/+3       DR 10/\[material\] or DR 15/magic
-
-  DR 20/+3 or higher         DR 15/\[material\] and magic (powerful
-                             creature)
-
-  DR 25--40 (very powerful)  DR 15/\[two conditions\] or epic DR
-
-  Half damage from non-magic DR 5/magic or DR 10/magic depending on
-  weapons                    creature power
-  -----------------------------------------------------------------------
+| **3.0 DR Value** | **Typical 3.5 Equivalent**
+  -------------------------- | --------------------------------------------
+  DR 5/+1 or DR 5/+2 | DR 5/magic
+  DR 10/+1 or DR 10/+2 | DR 10/magic
+  DR 15/+2 or DR 15/+3 | DR 10/[material] or DR 15/magic
+  DR 20/+3 or higher | DR 15/[material] and magic (powerful creature)
+  DR 25--40 (very powerful) | DR 15/[two conditions] or epic DR
+  Half damage from non-magic weapons | DR 5/magic or DR 10/magic depending on creature power
 
 **3.3 Bypass Type by Creature Category**
 
 The correct bypass type depends on the creature\'s nature. Use this
 table as your primary reference:
 
-  -----------------------------------------------------------------------
-  **Creature Category**      **3.5 DR Bypass Type**
-  -------------------------- --------------------------------------------
-  Demons (Tanar\'ri), weak   DR/cold iron or good
-  (CR 1--9)                  
-
-  Demons (Tanar\'ri),        DR/cold iron and good
-  powerful (CR 10--15)       
-
-  Demons (Tanar\'ri), very   DR/epic (or cold iron and good at very high
-  powerful (CR 16+)          values)
-
-  Devils (Baatezu), weak     DR/silver or good
-
-  Devils (Baatezu), powerful DR/silver and good
-
-  Fey                        DR/cold iron
-
-  Lycanthropes (natural      DR/silver
-  form)                      
-
-  Skeletons and most undead  DR/bludgeoning
-
-  Vampires, mummies          DR/magic and bludgeoning (or specific)
-
-  Constructs (golems)        DR/adamantine
-
-  Earth-type                 DR/adamantine
-  elementals/creatures       
-
-  Good outsiders (archons,   DR/evil
-  etc.)                      
-
-  Evil outsiders             DR/good or silver
-  (yugoloth/neutral evil)    
-
-  Incorporeal creatures      No DR --- use Incorporeal rules (50% miss
-                             chance)
-  -----------------------------------------------------------------------
+| **Creature Category** | **3.5 DR Bypass Type**
+  -------------------------- | --------------------------------------------
+  Demons (Tanar'ri), weak (CR 1-9) | DR/cold iron or good
+  Demons (Tanar'ri), powerful (CR 10-15) | DR/cold iron and good
+  Demons (Tanar'ri), very powerful (CR 16+) | DR/epic (or cold iron and good at very high values)
+  Devils (Baatezu), weak | DR/silver or good
+  Devils (Baatezu), powerful | DR/silver and good
+  Fey | DR/cold iron
+  Lycanthropes (natural form) | DR/silver
+  Skeletons and most undead | DR/bludgeoning
+  Vampires, mummies | DR/magic and bludgeoning (or specific)
+  Constructs (golems) | DR/adamantine
+  Earth-type elementals/creatures | DR/adamantine
+  Good outsiders (archons, etc.) | DR/evil
+  Evil outsiders (yugoloth/neutral evil) | DR/good or silver
+  Incorporeal creatures | No DR --- use Incorporeal rules (50% miss chance)
 
 > *\'Or\' combinations (DR/cold iron or good) are appropriate for
 > monsters of CR 3 and below. \'And\' combinations (DR/cold iron and
@@ -347,23 +271,13 @@ Because per-hit resistance is weaker against multiple rapid attacks than
 per-round resistance was, reduce the numeric value slightly when
 converting:
 
-  -----------------------------------------------------------------------
-  **3.0 Per-Round          **Suggested 3.5 Per-Hit Resistance**
-  Resistance**             
-  ------------------------ ----------------------------------------------
-  Resist 5/round           Resist 5 per hit (unchanged; single-hit
-                           difference is negligible)
-
-  Resist 10/round          Resist 10 per hit (approximately equivalent
-                           for most encounters)
-
-  Resist 20/round          Resist 12--15 per hit (reduce to account for
-                           multi-hit spells)
-
-  Resist 30/round          Resist 20 per hit
-
-  Complete immunity        Complete immunity (no change)
-  -----------------------------------------------------------------------
+| **3.0 Per-Round Resistance** | **Suggested 3.5 Per-Hit Resistance**
+  ------------------------ | ----------------------------------------------
+  Resist 5/round | Resist 5 per hit (unchanged; single-hit difference is negligible)
+  Resist 10/round | Resist 10 per hit (approximately equivalent for most encounters)
+  Resist 20/round | Resist 12-15 per hit (reduce to account for multi-hit spells)
+  Resist 30/round | Resist 20 per hit
+  Complete immunity | Complete immunity (no change)
 
 > *The reduction matters most when facing spells or attacks that deal
 > damage in multiple hits per round (e.g., Magic Missile, multiple
@@ -377,41 +291,18 @@ Several skills were removed, renamed, or merged between 3.0 and 3.5.
 When a Savage Species monster class table or stat block lists ranks in
 or bonuses to a 3.0 skill, use the following conversion:
 
-  ------------------------------------------------------------------------
-  **3.0 Skill**       **3.5 Replacement**      **Notes**
-  ------------------- ------------------------ ---------------------------
-  Alchemy             Craft (alchemy)          Now a subskill of Craft
-
-  Animal Empathy      Handle Animal            No longer a Druid class
-                                               feature; is now a trained
-                                               skill
-
-  Innuendo            Bluff or Sense Motive    Use Bluff to transmit,
-                                               Sense Motive to detect
-
-  Intuit Direction    Survival                 Covered under Survival\'s
-                                               navigation uses
-
-  Read Lips           Spot                     Use Spot with a -5 penalty
-                                               if lip-reading; DM
-                                               discretion
-
-  Scry                Spellcraft or removed    Detect/analyze scrying
-                                               effects use Spellcraft; the
-                                               standalone skill is gone
-
-  Wilderness Lore     Survival                 Fully replaced by Survival
-
-  Pick Pocket         Sleight of Hand          Renamed only; same function
-
-  Swim (racial check) Swim skill               Functions identically;
-                                               racial swim speed grants +8
-                                               bonus
-
-  Speak Language      Speak Language           Unchanged; still not a
-                                               class/cross-class
-                                               distinction applies
-  ------------------------------------------------------------------------
+| **3.0 Skill** | **3.5 Replacement** | **Notes**
+  ------------------- | ------------------------ | ---------------------------
+  Alchemy | Craft (alchemy) | Now a subskill of Craft
+  Animal Empathy | Handle Animal | No longer a Druid class feature; is now a trained skill
+  Innuendo | Bluff or Sense Motive | Use Bluff to transmit, Sense Motive to detect
+  Intuit Direction | Survival | Covered under Survival's navigation uses
+  Read Lips | Spot | Use Spot with a -5 penalty if lip-reading; DM discretion
+  Scry | Spellcraft or removed | Detect/analyze scrying effects use Spellcraft; the standalone skill is gone
+  Wilderness Lore | Survival | Fully replaced by Survival
+  Pick Pocket | Sleight of Hand | Renamed only; same function
+  Swim (racial check) | Swim skill | Functions identically; racial swim speed grants +8 bonus
+  Speak Language | Speak Language | Unchanged; still not a class/cross-class distinction applies
 
 Additionally, the following skills had their DCs or mechanics adjusted
 in 3.5:
@@ -433,53 +324,19 @@ The following feats were renamed, restructured, or removed. When a
 monster class table or monster stat block lists one of these feats,
 apply the 3.5 version:
 
-  ------------------------------------------------------------------------
-  **3.0 Feat**          **3.5 Status /        **Notes**
-                        Replacement**         
-  --------------------- --------------------- ----------------------------
-  Ambidexterity         Removed               Its effect is built into
-                                              Two-Weapon Fighting in 3.5.
-                                              Characters no longer need
-                                              both feats.
-
-  Two-Weapon Fighting   Two-Weapon Fighting   Now covers what required
-  (3.0)                 (3.5)                 both TWF + Ambidexterity in
-                                              3.0. Prerequisite: Dex 15.
-
-  Expertise             Combat Expertise      Renamed only. Same function
-                                              (trade attack bonus for AC
-                                              bonus).
-
-  Improved Two-Weapon   Improved Two-Weapon   Prerequisites changed;
-  Fighting              Fighting              requires BAB +6 and TWF.
-
-  Greater Two-Weapon    Greater Two-Weapon    New in 3.5; requires BAB
-  Fighting              Fighting              +11. Grants third off-hand
-                                              attack.
-
-  Spell Mastery (3.0)   Spell Mastery (3.5)   Largely unchanged; minor
-                                              wording adjustments.
-
-  Power Attack          Power Attack          Mechanic updated: 1-for-1 on
-                                              one-handed, 1-for-2 on
-                                              two-handed. Does NOT add to
-                                              TWF attacks in 3.5.
-
-  Improved Unarmed      Improved Unarmed      Functions the same; provokes
-  Strike                Strike                AoO rules clarified.
-
-  Point Blank Shot      Point Blank Shot      Unchanged; still
-                                              prerequisite for most ranged
-                                              feat trees.
-
-  Weapon Finesse (3.0,  Weapon Finesse (3.5,  Now applies to all
-  per weapon)           general)              applicable light weapons,
-                                              not one specific weapon.
-
-  Run                   Run                   Updated: Run grants x5 speed
-                                              on a charge (was x4 in some
-                                              printings).
-  ------------------------------------------------------------------------
+| **3.0 Feat** | **3.5 Status / Replacement** | **Notes**
+  --------------------- | --------------------- | ----------------------------
+  Ambidexterity | Removed | Its effect is built into Two-Weapon Fighting in 3.5. Characters no longer need both feats.
+  Two-Weapon Fighting (3.0) | Two-Weapon Fighting (3.5) | Now covers what required both TWF + Ambidexterity in 3.0. Prerequisite: Dex 15.
+  Expertise | Combat Expertise | Renamed only. Same function (trade attack bonus for AC bonus).
+  Improved Two-Weapon Fighting | Improved Two-Weapon Fighting | Prerequisites changed; requires BAB +6 and TWF.
+  Greater Two-Weapon Fighting | Greater Two-Weapon Fighting | New in 3.5; requires BAB +11. Grants third off-hand attack.
+  Spell Mastery (3.0) | Spell Mastery (3.5) | Largely unchanged; minor wording adjustments.
+  Power Attack | Power Attack | Mechanic updated: 1-for-1 on one-handed, 1-for-2 on two-handed. Does NOT add to TWF attacks in 3.5.
+  Improved Unarmed Strike | Improved Unarmed Strike | Functions the same; provokes AoO rules clarified.
+  Point Blank Shot | Point Blank Shot | Unchanged; still prerequisite for most ranged feat trees.
+  Weapon Finesse (3.0, per weapon) | Weapon Finesse (3.5, general) | Now applies to all applicable light weapons, not one specific weapon.
+  Run | Run | Updated: Run grants x5 speed on a charge (was x4 in some printings).
 
 > *Some 3.0 feats were split into feat chains in 3.5, requiring more
 > investment to reach the same level of proficiency. If a monster class
@@ -494,21 +351,13 @@ In 3.0, Shapechanger was a creature type. In 3.5, it became a subtype.
 Any monster whose Savage Species entry lists its type as
 \'Shapechanger\' must be assigned a primary type for 3.5 play.
 
-  ------------------------------------------------------------------------
-  **Creature**          **3.5 Primary Type**     **Subtype**
-  --------------------- ------------------------ -------------------------
-  Doppelganger          Monstrous Humanoid       Shapechanger
-
-  Mimic                 Aberration               Shapechanger
-
-  Lycanthrope (human    Humanoid (human)         Shapechanger
-  base)                                          
-
-  Phasm                 Aberration               Shapechanger
-
-  Barghest              Outsider                 Evil, Lawful,
-                                                 Shapechanger
-  ------------------------------------------------------------------------
+| **Creature** | **3.5 Primary Type** | **Subtype**
+  --------------------- | ------------------------ | -------------------------
+  Doppelganger | Monstrous Humanoid | Shapechanger
+  Mimic | Aberration | Shapechanger
+  Lycanthrope (human base) | Humanoid (human) | Shapechanger
+  Phasm | Aberration | Shapechanger
+  Barghest | Outsider | Evil, Lawful, Shapechanger
 
 For creatures not listed above, consult the 3.5 MM. If not present,
 assign the type that best describes the creature\'s nature (aberration
@@ -534,59 +383,23 @@ required unless a Savage Species entry described different mechanics.
 Each creature type carries automatic traits in 3.5. These supersede any
 conflicting information in Savage Species:
 
-  -----------------------------------------------------------------------
-  **Type**           **Key Traits (3.5)**
-  ------------------ ----------------------------------------------------
-  Aberration         Darkvision 60 ft.
-
-  Animal             Low-light vision; Int 1 or 2; cannot speak
-
-  Construct          No Con score; immunity to mind-affecting, poison,
-                     disease, death effects, paralysis, stun, sleep,
-                     nonlethal damage, ability drain, energy drain; not
-                     subject to critical hits or subdual damage; does not
-                     eat, sleep, or breathe
-
-  Dragon             Darkvision 60 ft., low-light vision; immunity to
-                     sleep and paralysis
-
-  Elemental          Darkvision 60 ft.; immunity to poison, sleep,
-                     paralysis, stunning; not subject to critical hits or
-                     flanking; does not eat or sleep
-
-  Fey                Low-light vision
-
-  Giant              Low-light vision
-
-  Humanoid           Usually speaks a language; breathes
-
-  Magical Beast      Darkvision 60 ft., low-light vision
-
-  Monstrous Humanoid Darkvision 60 ft.
-
-  Ooze               Blindsight 60 ft.; immunity to mind-affecting, gaze
-                     attacks, visual effects, illusions, poison, sleep,
-                     paralysis, polymorph, stunning; not subject to
-                     critical hits or flanking; no Intelligence score
-
-  Outsider           Darkvision 60 ft.; cannot be raised or resurrected
-                     (except by specific spells); does not need to
-                     breathe
-
-  Plant              Low-light vision; immunity to mind-affecting,
-                     poison, sleep, paralysis, polymorph, stunning; not
-                     subject to critical hits
-
-  Undead             No Con score; darkvision 60 ft.; immunity to
-                     mind-affecting, poison, sleep, paralysis, stunning,
-                     disease, death effects, critical hits, nonlethal
-                     damage, ability drain, energy drain,
-                     fatigue/exhaustion; not subject to massive damage;
-                     does not eat, sleep, or breathe
-
-  Vermin             Darkvision 60 ft.; mindless (no Intelligence score);
-                     immunity to mind-affecting
-  -----------------------------------------------------------------------
+| **Type** | **Key Traits (3.5)**
+  ------------------ | ----------------------------------------------------
+  Aberration | Darkvision 60 ft.
+  Animal | Low-light vision; Int 1 or 2; cannot speak
+  Construct | No Con score; immunity to mind-affecting, poison, disease, death effects, paralysis, stun, sleep, nonlethal damage, ability drain, energy drain; not subject to critical hits or subdual damage; does not eat, sleep, or breathe
+  Dragon | Darkvision 60 ft., low-light vision; immunity to sleep and paralysis
+  Elemental | Darkvision 60 ft.; immunity to poison, sleep, paralysis, stunning; not subject to critical hits or flanking; does not eat or sleep
+  Fey | Low-light vision
+  Giant | Low-light vision
+  Humanoid | Usually speaks a language; breathes
+  Magical Beast | Darkvision 60 ft., low-light vision
+  Monstrous Humanoid | Darkvision 60 ft.
+  Ooze | Blindsight 60 ft.; immunity to mind-affecting, gaze attacks, visual effects, illusions, poison, sleep, paralysis, polymorph, stunning; not subject to critical hits or flanking; no Intelligence score
+  Outsider | Darkvision 60 ft.; cannot be raised or resurrected (except by specific spells); does not need to breathe
+  Plant | Low-light vision; immunity to mind-affecting, poison, sleep, paralysis, polymorph, stunning; not subject to critical hits
+  Undead | No Con score; darkvision 60 ft.; immunity to mind-affecting, poison, sleep, paralysis, stunning, disease, death effects, critical hits, nonlethal damage, ability drain, energy drain, fatigue/exhaustion; not subject to massive damage; does not eat, sleep, or breathe
+  Vermin | Darkvision 60 ft.; mindless (no Intelligence score); immunity to mind-affecting
 
 **SECTION 8: SPELL-LIKE ABILITIES (3.5 UPDATES)**
 
@@ -600,69 +413,19 @@ This formula is unchanged from 3.0.
 
 Key spells that changed and commonly appear as monster SLAs:
 
-  ------------------------------------------------------------------------
-  **Spell**       **Change in 3.5**            **Impact on SLAs**
-  --------------- ---------------------------- ---------------------------
-  Haste           Redesigned as a group buff:  Old monster SLAs granting
-                  +1 to attack rolls, +1 dodge Haste now grant the far
-                  bonus to AC and Reflex       less powerful 3.5 version.
-                  saves, +30 ft speed; grants  Not a significant buff for
-                  one additional attack on a   monsters compared to 3.0.
-                  full attack action.          
-                  Duration: 1 round/level.     
-
-  Polymorph Self  Replaced by Polymorph (3.5)  Use 3.5 Polymorph rules.
-                                               Creature may assume the
-                                               form of any creature of the
-                                               same type with fewer HD,
-                                               gaining physical ability
-                                               scores only.
-
-  Polymorph Other Replaced by Baleful          Use Baleful Polymorph. The
-                  Polymorph (3.5)              target gets two saves: one
-                                               against the physical
-                                               change, one against mental
-                                               change.
-
-  Bull\'s         Changed to fixed +4          Monster SLAs using these
-  Strength /      enhancement bonus (from      spells grant flat +4 to the
-  Bear\'s         1d4+1); duration shortened.  relevant score, not a
-  Endurance /                                  variable bonus.
-  etc.                                         
-
-  Harm            Wording clarified; in 3.5 it Saves behave differently;
-                  deals damage equal to the    clarify with DM for monster
-                  target\'s current HP minus   use.
-                  1d4, dealing at minimum 150  
-                  damage on a failed save.     
-
-  Cure spells     Minor wording changes;       No conversion needed.
-                  functionally the same.       
-
-  Charm Monster / Functionally unchanged;      No conversion needed.
-  Charm Person    minor language updates.      
-
-  Dominate Person Functionally unchanged.      No conversion needed.
-  / Monster                                    
-
-  Summon Monster  Updated summon lists; some   Use 3.5 summon monster
-  I--IX           creatures replaced.          tables for what the SLA can
-                                               call.
-
-  Darkness        In 3.5, Darkness creates a   Less powerful than 3.0
-                  20 ft radius area of dim     version for combat use.
-                  light (not total darkness)   
-                  centered on a point, lasting 
-                  10 min/level. Does not       
-                  suppress magical light of    
-                  equal level.                 
-
-  Dispel Magic    Functions the same but       No major change for most
-                  improved action economy      monster SLAs.
-                  notes; Greater Dispel Magic  
-                  is a separate 6th-level      
-                  spell.                       
-  ------------------------------------------------------------------------
+| **Spell** | **Change in 3.5** | **Impact on SLAs**
+  --------------- | ---------------------------- | ---------------------------
+  Haste | Redesigned as a group buff: +1 to attack rolls, +1 dodge bonus to AC and Reflex saves, +30 ft speed; grants one additional attack on a full attack action. Duration: 1 round/level. | Old monster SLAs granting Haste now grant the far less powerful 3.5 version. Not a significant buff for monsters compared to 3.0.
+  Polymorph Self | Replaced by Polymorph (3.5) | Use 3.5 Polymorph rules. Creature may assume the form of any creature of the same type with fewer HD, gaining physical ability scores only.
+  Polymorph Other | Replaced by Baleful Polymorph (3.5) | Use Baleful Polymorph. The target gets two saves: one against the physical change, one against mental change.
+  Bull's Strength / Bear's Endurance / etc. | Changed to fixed +4 enhancement bonus (from 1d4+1); duration shortened. | Monster SLAs using these spells grant flat +4 to the relevant score, not a variable bonus.
+  Harm | Wording clarified; in 3.5 it deals damage equal to the target's current HP minus 1d4, dealing at minimum 150 damage on a failed save. | Saves behave differently; clarify with DM for monster use.
+  Cure spells | Minor wording changes; functionally the same. | No conversion needed.
+  Charm Monster / Charm Person | Functionally unchanged; minor language updates. | No conversion needed.
+  Dominate Person / Monster | Functionally unchanged. | No conversion needed.
+  Summon Monster I-IX | Updated summon lists; some creatures replaced. | Use 3.5 summon monster tables for what the SLA can call.
+  Darkness | In 3.5, Darkness creates a 20 ft radius area of dim light (not total darkness) centered on a point, lasting 10 min/level. Does not suppress magical light of equal level. | Less powerful than 3.0 version for combat use.
+  Dispel Magic | Functions the same but improved action economy notes; Greater Dispel Magic is a separate 6th-level spell. | No major change for most monster SLAs.
 
 **8.1 Conjuration and Spell Resistance**
 
@@ -803,37 +566,21 @@ monster characters. When applying a template from Savage Species to a
 a creature\'s space on the grid and whether it had reach. 3.5 simplified
 this: each size category has standardized space and reach values.
 
-  -------------------------------------------------------------------------
-  **Size**        **Space**     **Reach (Tall/Legs)** **Reach (Long/Body)**
-  --------------- ------------- --------------------- ---------------------
-  Fine            1/2 ft.       0 ft.                 0 ft.
-
-  Diminutive      1 ft.         0 ft.                 0 ft.
-
-  Tiny            2.5 ft.       0 ft.                 0 ft.
-
-  Small           5 ft.         5 ft.                 5 ft.
-
-  Medium          5 ft.         5 ft.                 5 ft.
-
-  Large (tall)    10 ft.        10 ft.                ---
-
-  Large (long)    10 ft.        ---                   5 ft.
-
-  Huge (tall)     15 ft.        15 ft.                ---
-
-  Huge (long)     15 ft.        ---                   10 ft.
-
-  Gargantuan      20 ft.        20 ft.                ---
-  (tall)                                              
-
-  Gargantuan      20 ft.        ---                   15 ft.
-  (long)                                              
-
-  Colossal (tall) 30 ft.        30 ft.                ---
-
-  Colossal (long) 30 ft.        ---                   20 ft.
-  -------------------------------------------------------------------------
+| **Size** | **Space** | **Reach (Tall/Legs)** | **Reach (Long/Body)**
+  --------------- | ------------- | --------------------- | ---------------------
+  Fine | 1/2 ft. | 0 ft. | 0 ft.
+  Diminutive | 1 ft. | 0 ft. | 0 ft.
+  Tiny | 2.5 ft. | 0 ft. | 0 ft.
+  Small | 5 ft. | 5 ft. | 5 ft.
+  Medium | 5 ft. | 5 ft. | 5 ft.
+  Large (tall) | 10 ft. | 10 ft. | ---
+  Large (long) | 10 ft. | --- | 5 ft.
+  Huge (tall) | 15 ft. | 15 ft. | ---
+  Huge (long) | 15 ft. | --- | 10 ft.
+  Gargantuan (tall) | 20 ft. | 20 ft. | ---
+  Gargantuan (long) | 20 ft. | --- | 15 ft.
+  Colossal (tall) | 30 ft. | 30 ft. | ---
+  Colossal (long) | 30 ft. | --- | 20 ft.
 
 For creatures not clearly \'tall\' or \'long\', the 3.5 MM entry lists
 the creature\'s space and reach directly. Always defer to that entry.
@@ -876,59 +623,16 @@ Savage Species entries need more than routine conversion. Always
 cross-reference the 3.5 MM entry for these creatures before finalizing a
 monster class character.
 
-  ------------------------------------------------------------------------
-  **Monster**     **Key Changes in 3.5**     **Conversion Notes**
-  --------------- -------------------------- -----------------------------
-  Rakshasa        Significant revision to    Rebuild the monster class
-                  abilities and immunity     progression using the 3.5 MM
-                  rules in 3.5. Immunity     entry as the baseline. Do not
-                  changed from \'immune to   use the 3.0 stat block.
-                  spells of 7th level and    
-                  lower\' to \'immunity to   
-                  all spells except when     
-                  cast by 18th-level+        
-                  casters\'.                 
-
-  Astral Deva     Ability scores changed;    Use the 3.5 MM stat block as
-                  Savage Species entry has   authoritative. Rebuild
-                  discrepancies (+2 extra    ability score progression in
-                  Cha vs MM; Dex increases   the monster class to end at
-                  missing).                  3.5 values.
-
-  Ghaele          No longer has a listed LA  DM must assign an appropriate
-  (Eladrin)       in the 3.5 MM. DR          ECL. Recommended: treat as
-                  significantly more         too high for standard PC play
-                  powerful in 3.5.           unless starting at very high
-                                             level.
-
-  Trumpet Archon  Gained approximately +10   If converting an existing
-                  Con in 3.5, nearly         character, recalculate HP
-                  doubling HP. DR improved.  retroactively. Consider
-                                             adjusting ECL upward due to
-                                             improved DR.
-
-  Dragons (all)   CR bumped upward across    Use 3.5 MM CR values. Monster
-                  the board in 3.5.          class ECLs derived from CR
-                                             may need to increase by 1--2.
-
-  Golems (all)    Magic immunity             Replace magic immunity in the
-                  significantly weakened in  monster class with the
-                  3.5 (no longer immune to   specific 3.5 construct
-                  almost all magic).         immunities. Golems are now
-                                             vulnerable to certain spells
-                                             as listed in the 3.5 MM.
-
-  Deva (Astral,   Some Deva variants in      Use 3.5 MM size for the
-  Monadic,        Savage Species have size   creature throughout
-  Movanic)        errors (Large at high HD   progression. Ignore erroneous
-                  when they should remain    size entries in the monster
-                  Medium).                   class table.
-
-  Yuan-ti         Subtype and ability        Use 3.5 MM entry; verify
-                  changes in 3.5.            ability scores match the
-                                             endpoint of the monster class
-                                             progression.
-  ------------------------------------------------------------------------
+| **Monster** | **Key Changes in 3.5** | **Conversion Notes**
+  --------------- | -------------------------- | -----------------------------
+  Rakshasa | Significant revision to abilities and immunity rules in 3.5. Immunity changed from 'immune to spells of 7th level and lower' to 'immunity to all spells except when cast by 18th-level+ casters'. | Rebuild the monster class progression using the 3.5 MM entry as the baseline. Do not use the 3.0 stat block.
+  Astral Deva | Ability scores changed; Savage Species entry has discrepancies (+2 extra Cha vs MM; Dex increases missing). | Use the 3.5 MM stat block as authoritative. Rebuild ability score progression in the monster class to end at 3.5 values.
+  Ghaele (Eladrin) | No longer has a listed LA in the 3.5 MM. DR significantly more powerful in 3.5. | DM must assign an appropriate ECL. Recommended: treat as too high for standard PC play unless starting at very high level.
+  Trumpet Archon | Gained approximately +10 Con in 3.5, nearly doubling HP. DR improved. | If converting an existing character, recalculate HP retroactively. Consider adjusting ECL upward due to improved DR.
+  Dragons (all) | CR bumped upward across the board in 3.5. | Use 3.5 MM CR values. Monster class ECLs derived from CR may need to increase by 1-2.
+  Golems (all) | Magic immunity significantly weakened in 3.5 (no longer immune to almost all magic). | Replace magic immunity in the monster class with the specific 3.5 construct immunities. Golems are now vulnerable to certain spells as listed in the 3.5 MM.
+  Deva (Astral, Monadic, Movanic) | Some Deva variants in Savage Species have size errors (Large at high HD when they should remain Medium). | Use 3.5 MM size for the creature throughout progression. Ignore erroneous size entries in the monster class table.
+  Yuan-ti | Subtype and ability changes in 3.5. | Use 3.5 MM entry; verify ability scores match the endpoint of the monster class progression.
 
 **SECTION 13: SAVAGE PROGRESSIONS --- THE 3.5 ALTERNATIVE**
 
@@ -942,28 +646,13 @@ Savage Species framework but were written from the ground up for 3.5.
 
 **13.2 Key Rule Differences from Savage Species**
 
-  -----------------------------------------------------------------
-  **Rule Area**      **Savage Species      **Savage Progressions
-                     (3.0)**               (3.5)**
-  ------------------ --------------------- ------------------------
-  Multiclassing      Must complete monster May freely multiclass in
-  during monster     class before any      and out; first level
-  class              other class           must precede second,
-                                           etc.
-
-  DR values          3.0 style (DR X/+Y)   3.5 style (DR
-                                           X/\[type\]) --- already
-                                           converted
-
-  Skill names        3.0 skill names       3.5 skill names --- no
-                                           conversion needed
-
-  Spell-like         3.0 spell             3.5 spell descriptions
-  abilities          descriptions          --- no conversion needed
-
-  Monster stat       3.0 MM statistics     3.5 MM statistics ---
-  endpoints                                already matches
-  -----------------------------------------------------------------
+| **Rule Area** | **Savage Species (3.0)** | **Savage Progressions (3.5)**
+  ------------------ | --------------------- | ------------------------
+  Multiclassing during monster class | Must complete monster class before any other class | May freely multiclass in and out; first level must precede second, etc.
+  DR values | 3.0 style (DR X/+Y) | 3.5 style (DR X/[type]) --- already converted
+  Skill names | 3.0 skill names | 3.5 skill names --- no conversion needed
+  Spell-like abilities | 3.0 spell descriptions | 3.5 spell descriptions --- no conversion needed
+  Monster stat endpoints | 3.0 MM statistics | 3.5 MM statistics --- already matches
 
 **13.3 Which Races Have Savage Progressions?**
 
