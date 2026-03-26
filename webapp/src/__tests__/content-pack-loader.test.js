@@ -30,16 +30,15 @@ type: class
 name: Fighter
 hd: 10
 bab: full
-fort: good
-ref: poor
-will: poor
+saves:
+  fort: good
+  ref: poor
+  will: poor
 skillPoints: 2
 classSkills:
   - Climb
   - Jump
-prestige: false
 bonusFeats: [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-bonusFeatList: fighter
 ---
 `
 
@@ -141,7 +140,8 @@ describe('loadContentPacks', () => {
     expect(fighter.name).toBe('Fighter')
     expect(fighter.hd).toBe(10)
     expect(fighter.bab).toBe('full')
-    expect(fighter.prestige).toBe(false)
+    expect(fighter.saves.fort).toBe('good')
+    expect(fighter.subtype).toBeUndefined()
     expect(fighter.bonusFeats).toContain(1)
     expect(fighter.classSkills).toContain('Climb')
   })
