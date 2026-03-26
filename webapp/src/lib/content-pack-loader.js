@@ -33,7 +33,9 @@ function parseEntityFile(filePath) {
   const raw = readFileSync(filePath, 'utf8')
   const { data } = matter(raw)
 
-  if (!data.type || !VALID_TYPES.has(data.type)) {
+  if (!data.type) return null  // index/nav files with no frontmatter type — skip
+
+  if (!VALID_TYPES.has(data.type)) {
     throw new Error(`Unknown type "${data.type}" in ${filePath}. Expected one of: ${[...VALID_TYPES].join(', ')}`)
   }
 
@@ -61,6 +63,7 @@ export async function loadContentPacks(dir) {
 
   for (const filePath of files) {
     const entity = parseEntityFile(filePath)
+    if (entity === null) continue
     switch (entity.type) {
       case 'race':       pack.races.push(entity);       break
       case 'class':      pack.classes.push(entity);     break
