@@ -13,6 +13,7 @@
 
 # testing
 /coverage
+webapp/src/__tests__/__fixtures__/
 
 # next.js
 **/.next/
