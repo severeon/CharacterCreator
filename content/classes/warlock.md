@@ -29,3 +29,5 @@ specialAbilities:
   - Energy Resistance
   - Imbue Item
 ---
+
+[Back to Classes](./classes.md)

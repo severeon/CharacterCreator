@@ -21,3 +21,5 @@ specialAbilities:
   - Advanced Learning
   - Warmage Edge
 ---
+
+[Back to Classes](./classes.md)

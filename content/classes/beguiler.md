@@ -44,3 +44,5 @@ specialAbilities:
   - Surprise Casting
   - Advanced Learning
 ---
+
+[Back to Classes](./classes.md)

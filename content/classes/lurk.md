@@ -31,3 +31,5 @@ specialAbilities:
   - Augment
   - Lurk Augments
 ---
+
+[Back to Classes](./classes.md)

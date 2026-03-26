@@ -27,3 +27,5 @@ specialAbilities:
   - Aura of Unluck
   - Dark Companion
 ---
+
+[Back to Classes](./classes.md)

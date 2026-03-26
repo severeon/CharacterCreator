@@ -27,3 +27,5 @@ specialAbilities:
   - Psychic Enervation
   - Volatile Mind
 ---
+
+[Back to Classes](./classes.md)

@@ -47,3 +47,5 @@ specialAbilities:
   - Arcane Dilettante
   - Brains Over Brawn
 ---
+
+[Back to Classes](./classes.md)

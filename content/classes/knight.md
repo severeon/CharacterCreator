@@ -26,3 +26,5 @@ specialAbilities:
 bonusFeats:
   - 1
 ---
+
+[Back to Classes](./classes.md)
