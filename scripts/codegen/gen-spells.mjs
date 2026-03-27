@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { slugify } from './lib/slugger.mjs'
 import { writeMdx } from './lib/writer.mjs'
 import { inferSpellTags } from './lib/tags.mjs'
+import { toArcanumFm } from './lib/arcanum.mjs'
 
 export function generateSpells(data) {
   const { SPELL_LIBRARY, ROOT } = data
@@ -13,7 +14,7 @@ export function generateSpells(data) {
     return 0
   }
 
-  const baseDir = join(ROOT, 'content', 'spells')
+  const baseDir = join(ROOT, 'entities', 'spells')
 
   // Group by school
   const bySchool = {}
@@ -51,14 +52,12 @@ export function generateSpells(data) {
       const slug = slugify(spell.name)
       const tags = inferSpellTags(spell)
 
-      const fm = {
-        type: 'spell',
-        name: spell.name,
+      const fields = {
         school: spell.school,
         level: spell.level,
         classes: spell.classes,
-        tags,
       }
+      const fm = toArcanumFm('spell', spell.name, fields, tags)
 
       const body = buildSpellBody(spell, school, schoolName)
       writeMdx(dir, slug, fm, body)
