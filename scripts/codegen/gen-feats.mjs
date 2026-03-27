@@ -5,11 +5,12 @@ import { join } from 'node:path'
 import { slugify } from './lib/slugger.mjs'
 import { writeMdx } from './lib/writer.mjs'
 import { inferFeatTags } from './lib/tags.mjs'
+import { toArcanumFm } from './lib/arcanum.mjs'
 
 export function generateFeats(data) {
   const { BASE_FEATS, FEAT_PREREQS, FEATS_STACKABLE, FEAT_CHOICES,
           featToBonusSources, featToUnlocks, ROOT } = data
-  const dir = join(ROOT, 'content', 'feats')
+  const dir = join(ROOT, 'entities', 'feats')
   let count = 0
 
   for (const featName of BASE_FEATS) {
@@ -22,16 +23,13 @@ export function generateFeats(data) {
 
     const tags = inferFeatTags(featName, prereqs, bonusFeatFor)
 
-    const fm = {
-      type: 'feat',
-      name: featName,
-      tags,
-    }
-    if (Object.keys(prereqs).length) fm.prereqs = prereqs
-    if (bonusFeatFor.length) fm.bonusFeatFor = bonusFeatFor
-    if (unlocks.length) fm.unlocks = unlocks
-    if (stackable) fm.stackable = true
-    if (choices) fm.choices = choices
+    const fields = {}
+    if (Object.keys(prereqs).length) fields.prereqs = prereqs
+    if (bonusFeatFor.length) fields.bonusFeatFor = bonusFeatFor
+    if (unlocks.length) fields.unlocks = unlocks
+    if (stackable) fields.stackable = true
+    if (choices) fields.choices = choices
+    const fm = toArcanumFm('feat', featName, fields, tags)
 
     const body = buildFeatBody(featName, prereqs, bonusFeatFor, unlocks, choices, stackable)
     writeMdx(dir, slug, fm, body)
@@ -41,6 +39,8 @@ export function generateFeats(data) {
   // Feats index
   const chains = buildChains(BASE_FEATS, FEAT_PREREQS)
   const indexFm = {
+    id: 'srd:feat:feats',
+    entity_type: 'feat',
     type: 'index',
     name: 'Feats',
     tags: ['index'],

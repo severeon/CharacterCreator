@@ -1,0 +1,59 @@
+---
+id: "srd:feat:weapon-specialization"
+entity_type: feat
+properties:
+  name: Weapon Specialization
+  prereqs:
+    bab: 4
+    feats:
+      - Weapon Focus
+    special: Fighter level 4 required
+  bonusFeatFor:
+    - Fighter
+    - Warblade
+    - Knight
+  unlocks:
+    - Greater Weapon Specialization
+  stackable: true
+  choices:
+    prompt: "Choose a weapon (must match a Weapon Focus you have):"
+    options: open
+    chainKey: weapon
+tags:
+  - "source:phb"
+  - combat-maneuver
+  - combat
+  - fighter
+---
+
+## Weapon Specialization
+
+> *This feat can be taken multiple times.*
+
+### Prerequisites
+
+- **Base Attack Bonus:** +4
+- [Weapon Focus](./weapon-focus.mdx)
+- *Fighter level 4 required*
+
+### Unlocks
+
+- [Greater Weapon Specialization](./greater-weapon-specialization.mdx)
+
+### Available as Bonus Feat
+
+- Fighter
+- Warblade
+- Knight
+
+### Selection Required
+
+**Choose a weapon (must match a Weapon Focus you have):**
+
+*(open choice)*
+
+
+---
+
+[Back to Feats](./feats.mdx)
+
