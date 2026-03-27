@@ -38,6 +38,8 @@ export function generateSpells(data) {
     }
 
     const schoolIndexFm = {
+      id: `srd:spell:${school}`,
+      entity_type: 'spell',
       type: 'index',
       name: `${schoolName} Spells`,
       school: schoolName,
@@ -67,6 +69,8 @@ export function generateSpells(data) {
 
   // Spells index
   const spellsIndexFm = {
+    id: 'srd:spell:spells',
+    entity_type: 'spell',
     type: 'index',
     name: 'Spells',
     tags: ['index'],
