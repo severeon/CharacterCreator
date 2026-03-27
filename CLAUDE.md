@@ -39,8 +39,8 @@ python -m http.server 8080
 
 ### Tauri App (Milestone 1: Content Browser)
 
-- **Rust backend** (`src-tauri/src/`): `pack_loader` parses manifest.yaml and MDX files with YAML frontmatter into entities. `store` holds all entities in memory with search/filter by type, name, and tags. `main.rs` exposes Tauri IPC commands (`list_entities`, `get_entity`, `search_entities`).
-- **React frontend** (`src/`): Vite + React + TypeScript + TailwindCSS. Routes: `/` (entity list), `/entity/:id` (detail view). Sidebar with type filters and search. MDX body rendered from entity content.
+- **Rust backend** (`src-tauri/src/`): `pack_loader` parses manifest.yaml and MDX files with YAML frontmatter into entities. `store` holds all entities in memory with search/filter by type, name, and tags. `ipc.rs` exposes Tauri IPC commands (`get_entities_by_type`, `get_entity_by_id`, `search_entities`).
+- **React frontend** (`src/`): Vite + React + TypeScript + TailwindCSS. Routes: `/` redirects to `/races`, `/:entityType` (entity list), `/:entityType/:id` (detail view). Sidebar with type filters and search. MDX body rendered from entity content.
 - **Content packs** (`content/packs/`): Each pack has a `manifest.yaml` and an `entities/` directory of `.mdx` files organized by type (classes/, races/, feats/, spells/).
 
 ### Legacy Character Creator
@@ -71,7 +71,7 @@ node --test scripts/codegen/tests/arcanum.test.mjs
 To regenerate content from legacy data:
 
 ```sh
-node scripts/codegen/generate-arcanum.mjs
+node scripts/codegen/run.mjs
 ```
 
 This reads `classes.js`, `feats.js`, and `spells.js`, then writes MDX files to `content/packs/srd-3.5e/entities/`.
