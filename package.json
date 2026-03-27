@@ -1,11 +1,8 @@
 {
-  "name": "milestone-1-content-browser",
-  "version": "1.0.0",
-  "description": "A browser-based tool for building D&D 3.5 gestalt characters, supporting base classes, prestige classes, feats, and prerequisite checking.",
-  "main": "classes.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "name": "character-creator",
+  "version": "0.1.0",
+  "description": "Tauri v2 desktop app for browsing D&D 3.5e content (classes, races, feats, spells)",
+  "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build",

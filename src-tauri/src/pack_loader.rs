@@ -11,6 +11,10 @@ pub struct Manifest {
     pub id: String,
     pub name: String,
     pub version: String,
+    #[serde(default)]
+    pub pack_type: String,
+    #[serde(default)]
+    pub dependencies: Vec<String>,
 }
 
 /// Load and parse the manifest.yaml from a pack directory.
