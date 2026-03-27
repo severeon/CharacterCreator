@@ -34,7 +34,32 @@ impl EntityStore {
 
     /// Get a single entity by its exact id.
     pub fn get_by_id(&self, id: &str) -> Option<&Entity> {
-        self.entities.get(id)
+        if let Some(e) = self.entities.get(id) {
+            return Some(e);
+        }
+        self.get_by_name_or_short_id(id)
+    }
+
+    /// Fallback lookup: try name match or short ID (e.g., "abjuration" → "srd:spell:abjuration")
+    fn get_by_name_or_short_id(&self, id: &str) -> Option<&Entity> {
+        let q = id.to_lowercase();
+
+        for entity in self.entities.values() {
+            let name = match entity.properties.get("name") {
+                Some(Value::Str(s)) => s.to_lowercase(),
+                _ => continue,
+            };
+            if name == q {
+                return Some(entity);
+            }
+
+            let entity_id = entity.id.to_lowercase();
+            let short_id = entity_id.split(':').last().unwrap_or(&entity_id);
+            if short_id == q {
+                return Some(entity);
+            }
+        }
+        None
     }
 
     /// Search entities by case-insensitive substring match on name and tags.

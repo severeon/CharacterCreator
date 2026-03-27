@@ -26,7 +26,7 @@ pub fn load_manifest(pack_dir: &Path) -> Option<Manifest> {
 
 /// Parse a single MDX file's content into an Entity.
 /// Returns None if the frontmatter is missing or unparseable.
-pub fn parse_mdx(content: &str, pack_id: &str) -> Option<Entity> {
+pub fn parse_mdx(content: &str, pack_id: &str, file_path: &Path) -> Option<Entity> {
     let trimmed = content.trim_start();
     if !trimmed.starts_with("---") {
         return None;
@@ -39,6 +39,21 @@ pub fn parse_mdx(content: &str, pack_id: &str) -> Option<Entity> {
     let body = after_open[close_pos + 3..].trim().to_string();
 
     let mut entity: Entity = serde_yaml::from_str(frontmatter).ok()?;
+
+    if entity.id.is_empty() && entity.entity_type.is_empty() {
+        let _file_stem = file_path.file_stem()?.to_str()?;
+        let parent_path = file_path.parent()?;
+        let category = parent_path.file_name()?.to_str()?;
+        let entity_type = parent_path.parent()?.file_name()?.to_str()?;
+
+        if entity_type == "entities" {
+            return None;
+        }
+
+        entity.id = format!("{}:{}:{}", pack_id, entity_type, category);
+        entity.entity_type = entity_type.trim_end_matches('s').to_string();
+    }
+
     entity.mdx_body = body;
     entity.source_pack = pack_id.to_string();
 
@@ -71,7 +86,7 @@ pub fn load_entities(pack_dir: &Path) -> HashMap<String, Entity> {
         let path = entry.path();
         if path.extension().map_or(false, |ext| ext == "mdx") {
             if let Ok(content) = fs::read_to_string(path) {
-                if let Some(entity) = parse_mdx(&content, &manifest.id) {
+                if let Some(entity) = parse_mdx(&content, &manifest.id, path) {
                     entities.insert(entity.id.clone(), entity);
                 }
             }
@@ -118,7 +133,12 @@ tags:
 
 A master of arcane magic.
 "#;
-        let entity = parse_mdx(content, "test-pack").expect("should parse");
+        let entity = parse_mdx(
+            content,
+            "test-pack",
+            Path::new("test-pack/entities/test/class/wizard.mdx"),
+        )
+        .expect("should parse");
         assert_eq!(entity.id, "test:class:wizard");
         assert_eq!(entity.entity_type, "class");
         assert_eq!(entity.source_pack, "test-pack");
@@ -139,13 +159,13 @@ A master of arcane magic.
     #[test]
     fn test_parse_mdx_no_frontmatter() {
         let content = "Just some text without frontmatter.";
-        assert!(parse_mdx(content, "test").is_none());
+        assert!(parse_mdx(content, "test", Path::new("test/entity.mdx")).is_none());
     }
 
     #[test]
     fn test_parse_mdx_incomplete_frontmatter() {
         let content = "---\nid: broken\n";
-        assert!(parse_mdx(content, "test").is_none());
+        assert!(parse_mdx(content, "test", Path::new("test/entity.mdx")).is_none());
     }
 
     #[test]

@@ -28,6 +28,8 @@ export function generateRaces(data) {
     // If grouped, create category index
     if (useDir) {
       const indexFm = {
+        id: `srd:race:${catSlug}`,
+        entity_type: 'race',
         type: 'index',
         name: cat,
         tags: ['index', 'race-category'],
@@ -87,6 +89,8 @@ export function generateRaces(data) {
 
   // Races index
   const racesIndexFm = {
+    id: 'srd:race:races',
+    entity_type: 'race',
     type: 'index',
     name: 'Races',
     tags: ['index'],

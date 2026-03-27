@@ -14,19 +14,13 @@ pub fn get_entities_by_type(
 }
 
 #[tauri::command]
-pub fn get_entity_by_id(
-    id: String,
-    store: State<'_, Mutex<EntityStore>>,
-) -> Option<Entity> {
+pub fn get_entity_by_id(id: String, store: State<'_, Mutex<EntityStore>>) -> Option<Entity> {
     let store = store.lock().unwrap();
     store.get_by_id(&id).cloned()
 }
 
 #[tauri::command]
-pub fn search_entities(
-    query: String,
-    store: State<'_, Mutex<EntityStore>>,
-) -> Vec<EntitySummary> {
+pub fn search_entities(query: String, store: State<'_, Mutex<EntityStore>>) -> Vec<EntitySummary> {
     let store = store.lock().unwrap();
     store.search(&query)
 }

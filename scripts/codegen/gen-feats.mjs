@@ -39,6 +39,8 @@ export function generateFeats(data) {
   // Feats index
   const chains = buildChains(BASE_FEATS, FEAT_PREREQS)
   const indexFm = {
+    id: 'srd:feat:feats',
+    entity_type: 'feat',
     type: 'index',
     name: 'Feats',
     tags: ['index'],
