@@ -1,0 +1,18 @@
+{
+  "productName": "Character Creator",
+  "version": "0.1.0",
+  "identifier": "com.wastelandwares.character-creator",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Character Creator",
+        "width": 1200,
+        "height": 800
+      }
+    ]
+  }
+}
