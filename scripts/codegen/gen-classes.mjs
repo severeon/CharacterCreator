@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { slugify } from './lib/slugger.mjs'
 import { writeMdx } from './lib/writer.mjs'
 import { inferClassTags } from './lib/tags.mjs'
+import { toArcanumFm } from './lib/arcanum.mjs'
 
 // Classes with known variant groupings
 const VARIANT_DIRS = {
@@ -37,7 +38,7 @@ export function generateClasses(data) {
           BONUS_FEAT_LISTS, CLASS_PROFICIENCIES, CLASS_STYLE_TRACKS, CLASS_STYLE_INFO,
           ROOT } = data
 
-  const baseDir = join(ROOT, 'content', 'classes')
+  const baseDir = join(ROOT, 'entities', 'classes')
   let count = 0
 
   // Separate base classes from variants
@@ -79,7 +80,7 @@ export function generateClasses(data) {
 
     const tags = inferClassTags(cls)
     const fm = buildClassFm(cls, bonusFeats, profs, tags)
-    if (classVariants.length) fm.variants = classVariants.map(v => ({ name: v.n, slug: slugify(v.n) }))
+    if (classVariants.length) fm.properties.variants = classVariants.map(v => ({ name: v.n, slug: slugify(v.n) }))
 
     const body = buildClassBody(cls, classVariants, bonusFeats, profs, hasVariants ? dirSlug : null)
     writeMdx(dir, slug, fm, body)
@@ -93,7 +94,7 @@ export function generateClasses(data) {
       const vTags = inferClassTags(v)
 
       const vFm = buildClassFm(v, vBonusFeats, vProfs, vTags)
-      vFm.baseClass = cls.n
+      vFm.properties.baseClass = cls.n
       const vBody = buildVariantBody(v, cls.n, vBonusFeats, vProfs)
       writeMdx(dir, vSlug, vFm, vBody)
       count++
@@ -116,10 +117,8 @@ export function generateClasses(data) {
     const profs = CLASS_PROFICIENCIES[cls.n] || []
     const tags = inferClassTags(cls)
 
-    const fm = {
-      type: 'class',
+    const fields = {
       subtype: 'prestige',
-      name: cls.n,
       source: cls.s,
       hd: cls.hd,
       bab: cls.bab,
@@ -128,12 +127,12 @@ export function generateClasses(data) {
       maxLevel: cls.maxLvl || null,
       classSkills: cls.cs,
       specialAbilities: cls.f,
-      tags,
     }
-    if (prereqs) fm.prereqs = prereqs
-    if (bonusFeats) fm.bonusFeats = bonusFeats
-    if (cls.special) fm.entryRequirements = cls.special
-    if (profs.length) fm.proficiencies = profs
+    if (prereqs) fields.prereqs = prereqs
+    if (bonusFeats) fields.bonusFeats = bonusFeats
+    if (cls.special) fields.entryRequirements = cls.special
+    if (profs.length) fields.proficiencies = profs
+    const fm = toArcanumFm('class', cls.n, fields, tags)
 
     const body = buildPrestigeBody(cls, prereqs)
     writeMdx(prestigeDir, slug, fm, body)
@@ -148,10 +147,8 @@ export function generateClasses(data) {
     const profs = CLASS_PROFICIENCIES[cls.n] || []
     const tags = inferClassTags(cls)
 
-    const fm = {
-      type: 'class',
+    const fields = {
       subtype: 'paragon',
-      name: cls.n,
       source: cls.s,
       hd: cls.hd,
       bab: cls.bab,
@@ -160,9 +157,9 @@ export function generateClasses(data) {
       maxLevel: cls.maxLvl,
       classSkills: cls.cs,
       specialAbilities: cls.f,
-      tags,
     }
-    if (profs.length) fm.proficiencies = profs
+    if (profs.length) fields.proficiencies = profs
+    const fm = toArcanumFm('class', cls.n, fields, tags)
 
     const body = buildParagonBody(cls)
     writeMdx(paragonDir, slug, fm, body)
@@ -203,9 +200,7 @@ export function generateClasses(data) {
 }
 
 function buildClassFm(cls, bonusFeats, profs, tags) {
-  const fm = {
-    type: 'class',
-    name: cls.n,
+  const fields = {
     source: cls.s,
     hd: cls.hd,
     bab: cls.bab,
@@ -213,12 +208,11 @@ function buildClassFm(cls, bonusFeats, profs, tags) {
     skillPoints: cls.sp,
     classSkills: cls.cs,
     specialAbilities: cls.f,
-    tags,
   }
-  if (bonusFeats) fm.bonusFeats = bonusFeats
-  if (cls.maxLvl) fm.maxLevel = cls.maxLvl
-  if (profs.length) fm.proficiencies = profs
-  return fm
+  if (bonusFeats) fields.bonusFeats = bonusFeats
+  if (cls.maxLvl) fields.maxLevel = cls.maxLvl
+  if (profs.length) fields.proficiencies = profs
+  return toArcanumFm('class', cls.n, fields, tags)
 }
 
 function buildClassBody(cls, classVariants, bonusFeats, profs, parentSlug) {

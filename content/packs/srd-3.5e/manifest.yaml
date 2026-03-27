@@ -1,0 +1,5 @@
+id: "srd-3.5e"
+name: "D&D 3.5e System Reference Document"
+version: "1.0.0"
+pack_type: source
+dependencies: []
