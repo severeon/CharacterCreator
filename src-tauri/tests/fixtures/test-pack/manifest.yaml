@@ -1,0 +1,5 @@
+id: "test-pack"
+name: "Test Content Pack"
+version: "1.0.0"
+pack_type: source
+dependencies: []
