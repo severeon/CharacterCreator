@@ -42,13 +42,18 @@ fn main() {
         EntityStore::new()
     };
 
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .manage(Mutex::new(entity_store))
         .invoke_handler(tauri::generate_handler![
             ipc::get_entities_by_type,
             ipc::get_entity_by_id,
             ipc::search_entities,
-        ])
+        ]);
+
+    #[cfg(debug_assertions)]
+    let builder = builder.plugin(tauri_plugin_mcp_bridge::init());
+
+    builder
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
