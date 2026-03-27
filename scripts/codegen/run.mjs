@@ -2,6 +2,8 @@
 // scripts/codegen/run.mjs
 // Orchestrator: loads data, builds link maps, runs all generators
 
+import { writeFileSync, mkdirSync } from 'node:fs'
+import { join } from 'node:path'
 import { loadAll } from './lib/loader.mjs'
 import { buildAllLinks } from './lib/links.mjs'
 import { generateRaces } from './gen-races.mjs'
@@ -21,7 +23,24 @@ console.log('Building link maps...')
 const links = buildAllLinks(data)
 Object.assign(data, links)
 
-// Phase 3: Generate all content
+// Phase 3: Set up Arcanum pack structure
+const PACK_ROOT = join(data.ROOT, 'content', 'packs', 'srd-3.5e')
+mkdirSync(join(PACK_ROOT, 'entities'), { recursive: true })
+
+// Write pack manifest
+const manifest = `id: "srd-3.5e"
+name: "D&D 3.5e System Reference Document"
+version: "1.0.0"
+pack_type: source
+dependencies: []
+`
+writeFileSync(join(PACK_ROOT, 'manifest.yaml'), manifest, 'utf8')
+console.log('  Wrote manifest.yaml')
+
+// Point generators at the pack root
+data.ROOT = PACK_ROOT
+
+// Phase 4: Generate all content
 console.log('\nGenerating content...\n')
 
 const racesCount  = generateRaces(data)
@@ -29,7 +48,7 @@ const classesCount = generateClasses(data)
 const featsCount  = generateFeats(data)
 const spellsCount = generateSpells(data)
 
-// Phase 4: Root index
+// Phase 5: Root index
 generateContentRoot(data.ROOT, {
   races: racesCount,
   classes: classesCount,

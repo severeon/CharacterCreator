@@ -5,10 +5,11 @@ import { join } from 'node:path'
 import { slugify } from './lib/slugger.mjs'
 import { writeMdx } from './lib/writer.mjs'
 import { inferRaceTags, inferTemplateTags, inferSourceTag } from './lib/tags.mjs'
+import { toArcanumFm } from './lib/arcanum.mjs'
 
 export function generateRaces(data) {
   const { RACES, TEMPLATES, RACE_PHYSICAL, RACE_PROFICIENCIES, catToRaceSlugs, ROOT } = data
-  const baseDir = join(ROOT, 'content', 'races')
+  const baseDir = join(ROOT, 'entities', 'races')
 
   // Group races by category
   const byCat = {}
@@ -44,19 +45,17 @@ export function generateRaces(data) {
       const physical = RACE_PHYSICAL[race.name] || null
       const profs = RACE_PROFICIENCIES[race.name] || []
 
-      const fm = {
-        type: 'race',
-        name: race.name,
+      const fields = {
         category: race.cat,
         la: race.la,
         rhd: race.rhd,
         rhdType: race.rhdType,
         bonuses: race.bonuses,
         traits: race.traits,
-        tags,
       }
-      if (physical) fm.physical = physical
-      if (profs.length) fm.proficiencies = profs
+      if (physical) fields.physical = physical
+      if (profs.length) fields.proficiencies = profs
+      const fm = toArcanumFm('race', race.name, fields, tags)
 
       const body = buildRaceBody(race, physical, profs, useDir ? catSlug : null)
       writeMdx(dir, slug, fm, body)
@@ -71,17 +70,15 @@ export function generateRaces(data) {
     const slug = `template-${slugify(tpl.name)}`
     const tags = inferTemplateTags(tpl)
 
-    const fm = {
-      type: 'race',
+    const fields = {
       subtype: 'template',
-      name: tpl.name,
       category: 'Templates',
       la: tpl.la,
       bonuses: tpl.bonuses,
       traits: tpl.traits,
       features: tpl.features,
-      tags,
     }
+    const fm = toArcanumFm('race', tpl.name, fields, tags)
 
     const body = buildTemplateBody(tpl)
     writeMdx(tplDir, slug, fm, body)

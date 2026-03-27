@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { writeMdx } from './lib/writer.mjs'
 
 export function generateContentRoot(ROOT, counts) {
-  const dir = join(ROOT, 'content')
+  const dir = join(ROOT, 'entities')
   const fm = {
     type: 'index',
     name: 'Content',
