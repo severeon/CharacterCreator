@@ -3,18 +3,9 @@
 
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-let yaml
-try {
-  yaml = require('../../../webapp/node_modules/js-yaml')
-} catch {
-  // Fallback: simple YAML serializer
-  yaml = {
-    dump(obj) {
-      return simpleYaml(obj, 0)
-    }
+const yaml = {
+  dump(obj) {
+    return simpleYaml(obj, 0)
   }
 }
 
