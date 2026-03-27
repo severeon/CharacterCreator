@@ -4,60 +4,77 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A single-page browser app for building D&D 3.5 gestalt characters. No build step, no framework, no dependencies — just HTML/CSS/JS served statically.
+A Tauri v2 desktop application for browsing D&D 3.5e content (classes, races, feats, spells). Built with Rust backend + React/TypeScript frontend. The app loads content packs of MDX entity files and presents them in a searchable, filterable browser.
+
+A legacy single-page HTML character creator (`dnd35_gestalt_v4.html`) also lives in this repo and serves as the data source for codegen.
 
 ## Running Locally
 
 ```sh
+# Tauri dev mode (Rust backend + Vite frontend)
+cargo tauri dev
+
+# Frontend only (no Tauri IPC)
+npx vite dev
+
+# Legacy character creator
 python -m http.server 8080
 # then open http://localhost:8080/dnd35_gestalt_v4.html
 ```
 
-No server is needed to open the file directly, but `classes.js` is only loaded in server mode (browser security blocks local file imports). Double-click mode uses the `INLINE DATA FALLBACK` section embedded inside the HTML.
+## Project Structure
 
-## File Roles
-
-| File | Role |
+| Path | Role |
 |------|------|
-| `dnd35_gestalt_v4.html` | Entire app: CSS, HTML structure, all JS logic, and inline data fallback |
-| `classes.js` | External data file loaded at runtime (server mode only) — races, classes, prestige prereqs |
-| `classes.json` | JSON mirror of `classes.js` — used for the drag-and-drop import feature |
-| `feats.js` | Feat definitions (currently embedded in HTML; this file is a reference/export) |
-| `temp_spells.js` | Untracked scratch file — not loaded by the app |
+| `src-tauri/` | Rust backend — entity store, pack loader, Tauri IPC commands |
+| `src/` | React + TypeScript frontend — Vite, TailwindCSS, routes, components |
+| `content/packs/srd-3.5e/` | SRD 3.5e content pack — manifest.yaml + ~960 MDX entity files |
+| `scripts/codegen/` | Node scripts that generate MDX entities from legacy JS data files |
+| `dnd35_gestalt_v4.html` | Legacy character creator (single-page app, codegen data source) |
+| `classes.js` | Legacy data file — races, classes, prestige prereqs (used by codegen) |
+| `feats.js` | Legacy feat definitions (used by codegen) |
+| `spells.js` | Legacy spell data (used by codegen) |
 
 ## Architecture
 
+### Tauri App (Milestone 1: Content Browser)
+
+- **Rust backend** (`src-tauri/src/`): `pack_loader` parses manifest.yaml and MDX files with YAML frontmatter into entities. `store` holds all entities in memory with search/filter by type, name, and tags. `main.rs` exposes Tauri IPC commands (`list_entities`, `get_entity`, `search_entities`).
+- **React frontend** (`src/`): Vite + React + TypeScript + TailwindCSS. Routes: `/` (entity list), `/entity/:id` (detail view). Sidebar with type filters and search. MDX body rendered from entity content.
+- **Content packs** (`content/packs/`): Each pack has a `manifest.yaml` and an `entities/` directory of `.mdx` files organized by type (classes/, races/, feats/, spells/).
+
+### Legacy Character Creator
+
 Everything lives in `dnd35_gestalt_v4.html`. Key structural regions (searchable by comment):
 
-- **`INLINE DATA FALLBACK`** — copy of the `classes.js` arrays embedded for offline use. Must be kept in sync with `classes.js` when data changes.
-- **`SPELLCASTING DATA`** (~line 4339) — `SPELL_SLOTS`, `SPELLS_KNOWN_TABLE`, `POWER_POINTS`, `POWERS_KNOWN`, `WARLOCK_INVOCATIONS`, `SPELL_LIBRARY`, `POWER_LIBRARY` constants.
-- **Render functions** — `renderLevels()`, `renderSkills()`, `renderFeats()`, `renderSpells()`, `renderSheet()`, `renderAbilities()` each own one tab's output.
-- **State object `S`** — single global object holding all character data (scores, class picks, feat slots, skill ranks, etc.).
-- **DM object `DM`** — campaign-level settings (ability score method, point buy budget, enabled/disabled content, password lock).
-- **Modals** — class picker (`_cpicker`), race picker, feat picker (`_fpicker`), template picker, choice modal — opened/closed with `open*/close*` function pairs.
+- **`INLINE DATA FALLBACK`** — copy of the `classes.js` arrays embedded for offline use.
+- **`SPELLCASTING DATA`** (~line 4339) — spell slots, spells known, power points, spell/power libraries.
+- **Render functions** — `renderLevels()`, `renderSkills()`, `renderFeats()`, `renderSpells()`, `renderSheet()`, `renderAbilities()`.
+- **State object `S`** — single global object holding all character data.
+- **DM object `DM`** — campaign-level settings.
 
-## Data Schemas
+## Running Tests
 
-**`CLASSES` entry** (in `classes.js`):
-```js
-{n, s, hd, bab, fort, ref, will, sp, cs[], f[], prestige?, maxLvl?, special?}
+```sh
+# Rust tests (18 tests)
+cd src-tauri && cargo test
+
+# Frontend tests (3 tests, via Vitest)
+npx vitest run
+
+# Codegen tests (2 tests, Node native test runner)
+node --test scripts/codegen/tests/arcanum.test.mjs
 ```
 
-**`RACES` entry**:
-```js
-{cat, name, la, rhd, rhdType, bonuses{str,dex,...}, traits[]}
+## Codegen
+
+To regenerate content from legacy data:
+
+```sh
+node scripts/codegen/generate-arcanum.mjs
 ```
 
-**`PRESTIGE_PREREQS` entry**:
-```js
-"Class Name": {bab?, str/dex/con/int/wis/cha?, feats[]?, skills{}?, casterLevel?,
-               casterType?, minCasterSpellLevel?, requiresPsionic?,
-               minPsionicPowerLevel?, alignment?, minSize?, special?}
-```
-
-## Syncing Data Between Files
-
-When editing `classes.js`, also update the `INLINE DATA FALLBACK` block inside `dnd35_gestalt_v4.html` if you want offline (double-click) mode to reflect the change. Search for `INLINE DATA FALLBACK` to find the exact location.
+This reads `classes.js`, `feats.js`, and `spells.js`, then writes MDX files to `content/packs/srd-3.5e/entities/`.
 
 ## CI
 

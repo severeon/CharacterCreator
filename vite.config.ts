@@ -9,4 +9,7 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
   },
+  test: {
+    exclude: ['scripts/**', 'node_modules/**'],
+  },
 })
