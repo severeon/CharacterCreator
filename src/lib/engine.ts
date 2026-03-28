@@ -72,6 +72,34 @@ export async function getAvailableFeats(characterId: string): Promise<Entity[]> 
   return invoke('get_available_feats', { characterId })
 }
 
+export interface DMSettings {
+  ability_method: string
+  max_ability_score: number
+  gestalt_required: boolean
+  no_templates: boolean
+  max_ecl: number
+  no_racial_hd: boolean
+  enforce_prerequisites: boolean
+  notes: string
+  restricted_entities: string[]
+}
+
+export async function getDmSettings(): Promise<DMSettings> {
+  return invoke('get_dm_settings')
+}
+
+export async function setDmSettings(settings: DMSettings): Promise<void> {
+  return invoke('set_dm_settings', { settings })
+}
+
+export async function exportCharacterJson(characterId: string): Promise<string> {
+  return invoke('export_character_json', { characterId })
+}
+
+export async function exportCharacterMarkdown(characterId: string): Promise<string> {
+  return invoke('export_character_markdown', { characterId })
+}
+
 export interface WorkflowStatus {
   completed: string[]
   pending: string[]
