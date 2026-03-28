@@ -7,6 +7,35 @@ use crate::event::EventBuilder;
 use crate::queue::{Changeset, QueueManager};
 use crate::workflow::{create_character_creation_workflow, WorkflowEngine};
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct DMSettings {
+    pub ability_method: String,
+    pub max_ability_score: i32,
+    pub gestalt_required: bool,
+    pub no_templates: bool,
+    pub max_ecl: i32,
+    pub no_racial_hd: bool,
+    pub enforce_prerequisites: bool,
+    pub notes: String,
+    pub restricted_entities: Vec<String>,
+}
+
+impl Default for DMSettings {
+    fn default() -> Self {
+        Self {
+            ability_method: "pointbuy".to_string(),
+            max_ability_score: 18,
+            gestalt_required: false,
+            no_templates: false,
+            max_ecl: 20,
+            no_racial_hd: false,
+            enforce_prerequisites: false,
+            notes: String::new(),
+            restricted_entities: vec![],
+        }
+    }
+}
+
 pub struct Engine {
     entities: HashMap<String, Entity>,
     queue_manager: QueueManager,
@@ -15,6 +44,7 @@ pub struct Engine {
     active_character_id: Option<String>,
     completed_workflow_steps: HashMap<String, Vec<String>>,
     active_queues: HashMap<String, Uuid>,
+    dm_settings: DMSettings,
 }
 
 impl Engine {
@@ -27,11 +57,129 @@ impl Engine {
             active_character_id: None,
             completed_workflow_steps: HashMap::new(),
             active_queues: HashMap::new(),
+            dm_settings: DMSettings::default(),
         };
         engine
             .workflow_engine
             .register(create_character_creation_workflow());
         engine
+    }
+
+    pub fn get_dm_settings(&self) -> DMSettings {
+        self.dm_settings.clone()
+    }
+
+    pub fn set_dm_settings(&mut self, settings: DMSettings) {
+        self.dm_settings = settings;
+    }
+
+    pub fn export_character_json(&self, character_id: &str) -> Result<String, String> {
+        let character = self
+            .entities
+            .get(character_id)
+            .ok_or_else(|| format!("Character not found: {}", character_id))?;
+
+        serde_json::to_string_pretty(&character.properties)
+            .map_err(|e| format!("Failed to serialize: {}", e))
+    }
+
+    pub fn export_character_markdown(&self, character_id: &str) -> Result<String, String> {
+        let character = self
+            .entities
+            .get(character_id)
+            .ok_or_else(|| format!("Character not found: {}", character_id))?;
+
+        let name = character
+            .properties
+            .get("name")
+            .and_then(|v| match v {
+                Value::Str(s) => Some(s.as_str()),
+                _ => None,
+            })
+            .unwrap_or("Unnamed Character");
+
+        let race = character
+            .properties
+            .get("race_name")
+            .or_else(|| character.properties.get("race"))
+            .and_then(|v| match v {
+                Value::Str(s) => Some(s.as_str()),
+                _ => None,
+            })
+            .unwrap_or("None");
+
+        let class_name = character
+            .properties
+            .get("class_name")
+            .or_else(|| character.properties.get("class"))
+            .and_then(|v| match v {
+                Value::Str(s) => Some(s.as_str()),
+                _ => None,
+            })
+            .unwrap_or("None");
+
+        let level = character
+            .properties
+            .get("level")
+            .and_then(|v| match v {
+                Value::Int(i) => Some(*i),
+                _ => None,
+            })
+            .unwrap_or(1);
+
+        let mut md = format!("# {}\n\n", name);
+        md.push_str(&format!("**Race:** {} | **Class:** {} | **Level:** {}\n\n", race, class_name, level));
+
+        // Ability Scores
+        md.push_str("## Ability Scores\n\n");
+        md.push_str("| Ability | Score | Modifier |\n");
+        md.push_str("|---------|-------|----------|\n");
+        for ability in &["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"] {
+            let score = character
+                .properties
+                .get(&format!("abilities.{}.score", ability))
+                .and_then(|v| match v { Value::Int(i) => Some(*i as i64), _ => None })
+                .unwrap_or(10);
+            let modifier = (score - 10) / 2;
+            let mod_str = if modifier >= 0 { format!("+{}", modifier) } else { format!("{}", modifier) };
+            let ability_label = ability.chars().next().unwrap().to_uppercase().to_string()
+                + &ability.chars().skip(1).collect::<String>();
+            md.push_str(&format!("| {} | {} | {} |\n", ability_label, score, mod_str));
+        }
+
+        // Skills
+        md.push_str("\n## Skills\n\n");
+        let mut skills: Vec<(&str, i64)> = Vec::new();
+        for (key, val) in &character.properties {
+            if key.starts_with("skills.") && key.ends_with(".ranks") {
+                if let Value::Int(rank) = val {
+                    let skill_name = key.strip_prefix("skills.").unwrap().strip_suffix(".ranks").unwrap();
+                    skills.push((skill_name, *rank as i64));
+                }
+            }
+        }
+        if skills.is_empty() {
+            md.push_str("_No skills allocated._\n");
+        } else {
+            skills.sort_by(|a, b| a.0.cmp(b.0));
+            for (skill, ranks) in &skills {
+                md.push_str(&format!("- **{}**: {} ranks\n", skill, ranks));
+            }
+        }
+
+        // Feats
+        md.push_str("\n## Feats\n\n");
+        if let Some(Value::List(feats)) = character.properties.get("feats_selected") {
+            for feat in feats {
+                if let Value::Str(feat_name) = feat {
+                    md.push_str(&format!("- {}\n", feat_name));
+                }
+            }
+        } else {
+            md.push_str("_No feats selected._\n");
+        }
+
+        Ok(md)
     }
 
     pub fn load_entities(&mut self, entities: HashMap<String, Entity>) {
@@ -886,7 +1034,7 @@ mod tests {
         engine.entities.insert(fighter.id.clone(), fighter);
 
         // Setup: select class
-        engine.select_class(&char_id, "srd:class:fighter", 1).unwrap();
+        engine.select_class(&char_id, "srd:class:fighter", 1, "A").unwrap();
 
         // Set skill points remaining
         {
@@ -933,5 +1081,236 @@ mod tests {
         let state = engine.get_speculative_state(&char_id, Some(&queue_id.to_string()));
         assert!(state.is_some());
         assert_eq!(state.unwrap().get_property("test.prop"), Some(&Value::Int(42)));
+    }
+
+    #[test]
+    fn test_update_character_identity() {
+        let mut engine = Engine::new();
+        let char_id = engine.create_character("Tordek");
+
+        let mut identity = HashMap::new();
+        identity.insert("player_name".to_string(), Value::Str("Alice".to_string()));
+        identity.insert("alignment".to_string(), Value::Str("lawful-good".to_string()));
+        identity.insert("age".to_string(), Value::Int(45));
+        identity.insert("height".to_string(), Value::Int(58));
+        identity.insert("weight".to_string(), Value::Int(180));
+
+        engine.update_character_identity(&char_id, identity).unwrap();
+
+        let character = engine.entities.get(&char_id).unwrap();
+        assert_eq!(
+            character.get_property("player_name"),
+            Some(&Value::Str("Alice".to_string()))
+        );
+        assert_eq!(
+            character.get_property("alignment"),
+            Some(&Value::Str("lawful-good".to_string()))
+        );
+        assert_eq!(
+            character.get_property("age"),
+            Some(&Value::Int(45))
+        );
+        assert_eq!(
+            character.get_property("height"),
+            Some(&Value::Int(58))
+        );
+        assert_eq!(
+            character.get_property("weight"),
+            Some(&Value::Int(180))
+        );
+    }
+
+    #[test]
+    fn test_select_class_gestalt() {
+        let mut engine = Engine::new();
+
+        // Create a second class for gestalt
+        let wizard = Entity {
+            id: "srd:class:wizard".to_string(),
+            entity_type: "class".to_string(),
+            properties: {
+                let mut p = HashMap::new();
+                p.insert("name".to_string(), Value::Str("Wizard".to_string()));
+                p.insert("hd".to_string(), Value::Int(4));
+                p.insert("bab".to_string(), Value::Str("weak".to_string()));
+                p.insert("skill_points".to_string(), Value::Int(2));
+                p
+            },
+            tags: vec![],
+            mdx_body: String::new(),
+            source_pack: "srd-3.5e".to_string(),
+            subscriptions: vec![],
+            computed_views: vec![],
+            prototype: None,
+        };
+        engine.entities.insert(wizard.id.clone(), wizard);
+
+        let fighter = Entity {
+            id: "srd:class:fighter".to_string(),
+            entity_type: "class".to_string(),
+            properties: {
+                let mut p = HashMap::new();
+                p.insert("name".to_string(), Value::Str("Fighter".to_string()));
+                p.insert("hd".to_string(), Value::Int(10));
+                p.insert("bab".to_string(), Value::Str("good".to_string()));
+                p.insert("skill_points".to_string(), Value::Int(4));
+                p
+            },
+            tags: vec![],
+            mdx_body: String::new(),
+            source_pack: "srd-3.5e".to_string(),
+            subscriptions: vec![],
+            computed_views: vec![],
+            prototype: None,
+        };
+        engine.entities.insert(fighter.id.clone(), fighter);
+
+        let char_id = engine.create_character("Kira");
+
+        // Select Fighter as Class A
+        engine.select_class(&char_id, "srd:class:fighter", 1, "A").unwrap();
+
+        let character = engine.entities.get(&char_id).unwrap();
+        assert_eq!(
+            character.get_property("class.id"),
+            Some(&Value::Str("srd:class:fighter".to_string()))
+        );
+        assert_eq!(
+            character.get_property("class.name"),
+            Some(&Value::Str("Fighter".to_string()))
+        );
+        // Legacy properties still set for non-gestalt
+        assert_eq!(
+            character.get_property("class"),
+            Some(&Value::Str("srd:class:fighter".to_string()))
+        );
+
+        // Select Wizard as Class B (gestalt)
+        engine.select_class(&char_id, "srd:class:wizard", 1, "B").unwrap();
+
+        let character = engine.entities.get(&char_id).unwrap();
+        // Class B stored with prefix
+        assert_eq!(
+            character.get_property("class_b.id"),
+            Some(&Value::Str("srd:class:wizard".to_string()))
+        );
+        assert_eq!(
+            character.get_property("class_b.name"),
+            Some(&Value::Str("Wizard".to_string()))
+        );
+        // Original Class A preserved
+        assert_eq!(
+            character.get_property("class.id"),
+            Some(&Value::Str("srd:class:fighter".to_string()))
+        );
+        // Legacy properties unchanged
+        assert_eq!(
+            character.get_property("class"),
+            Some(&Value::Str("srd:class:fighter".to_string()))
+        );
+    }
+
+    #[test]
+    fn test_workflow_status_after_identity_update() {
+        let mut engine = Engine::new();
+
+        // Create a human race entity for the test
+        let human = Entity {
+            id: "srd:race:human".to_string(),
+            entity_type: "race".to_string(),
+            properties: {
+                let mut p = HashMap::new();
+                p.insert("name".to_string(), Value::Str("Human".to_string()));
+                p.insert("size".to_string(), Value::Str("Medium".to_string()));
+                p.insert("speed".to_string(), Value::Int(30));
+                p
+            },
+            tags: vec![],
+            mdx_body: String::new(),
+            source_pack: "srd-3.5e".to_string(),
+            subscriptions: vec![],
+            computed_views: vec![],
+            prototype: None,
+        };
+        engine.entities.insert(human.id.clone(), human);
+
+        let char_id = engine.create_character("Bruenor");
+
+        // Initial workflow status - select-race should be pending
+        let status = engine.get_workflow_status(&char_id, "srd:workflow:character_creation");
+        assert!(status.pending.contains(&"select-race".to_string()));
+        assert!(status.completed.is_empty());
+
+        // After race selection, select-class should be pending
+        engine.select_race(&char_id, "srd:race:human").unwrap();
+        let status = engine.get_workflow_status(&char_id, "srd:workflow:character_creation");
+        assert!(status.completed.contains(&"select-race".to_string()));
+        assert!(status.pending.contains(&"select-class".to_string()));
+    }
+
+    #[test]
+    fn test_dm_settings() {
+        let mut engine = Engine::new();
+
+        // Default settings
+        let settings = engine.get_dm_settings();
+        assert_eq!(settings.ability_method, "pointbuy");
+        assert_eq!(settings.max_ability_score, 18);
+        assert!(!settings.gestalt_required);
+        assert!(!settings.no_templates);
+
+        // Update settings
+        let new_settings = DMSettings {
+            ability_method: "roll".to_string(),
+            max_ability_score: 20,
+            gestalt_required: true,
+            no_templates: true,
+            max_ecl: 15,
+            no_racial_hd: true,
+            enforce_prerequisites: true,
+            notes: "Test campaign".to_string(),
+            restricted_entities: vec!["srd:race:drow".to_string()],
+        };
+        engine.set_dm_settings(new_settings.clone());
+
+        let settings = engine.get_dm_settings();
+        assert_eq!(settings.ability_method, "roll");
+        assert_eq!(settings.max_ability_score, 20);
+        assert!(settings.gestalt_required);
+        assert!(settings.no_templates);
+        assert_eq!(settings.max_ecl, 15);
+        assert_eq!(settings.notes, "Test campaign");
+        assert_eq!(settings.restricted_entities.len(), 1);
+        assert_eq!(settings.restricted_entities[0], "srd:race:drow");
+    }
+
+    #[test]
+    fn test_export_character_json() {
+        let mut engine = Engine::new();
+        let char_id = engine.create_character("Kira");
+
+        let json = engine.export_character_json(&char_id).unwrap();
+
+        // Verify it's valid JSON and contains expected fields
+        let value: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert!(value.is_object());
+        let obj = value.as_object().unwrap();
+        assert_eq!(obj.get("name").and_then(|v| v.as_str()), Some("Kira"));
+    }
+
+    #[test]
+    fn test_export_character_markdown() {
+        let mut engine = Engine::new();
+        let char_id = engine.create_character("Tordek");
+
+        let md = engine.export_character_markdown(&char_id).unwrap();
+
+        // Verify it contains expected sections
+        assert!(md.contains("# Tordek"));
+        assert!(md.contains("**Race:**"));
+        assert!(md.contains("## Ability Scores"));
+        assert!(md.contains("| Strength |"));
+        assert!(md.contains("## Skills"));
+        assert!(md.contains("## Feats"));
     }
 }

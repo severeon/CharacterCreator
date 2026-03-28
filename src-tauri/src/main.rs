@@ -85,6 +85,10 @@ fn main() {
             ipc::get_speculative_state,
             ipc::select_feat,
             ipc::get_available_feats,
+            ipc::get_dm_settings,
+            ipc::set_dm_settings,
+            ipc::export_character_json,
+            ipc::export_character_markdown,
         ]);
 
     #[cfg(debug_assertions)]

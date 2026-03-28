@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use tauri::State;
 
-use crate::engine::{Engine, WorkflowStatus};
+use crate::engine::{DMSettings, Engine, WorkflowStatus};
 use crate::entity::{Entity, EntitySummary, Value};
 
 #[tauri::command]
@@ -159,4 +159,38 @@ pub fn get_available_feats(
 ) -> Vec<Entity> {
     let engine = engine.lock().unwrap();
     engine.get_available_feats(&character_id)
+}
+
+#[tauri::command]
+pub fn get_dm_settings(engine: State<'_, Mutex<Engine>>) -> DMSettings {
+    let engine = engine.lock().unwrap();
+    engine.get_dm_settings()
+}
+
+#[tauri::command]
+pub fn set_dm_settings(
+    settings: DMSettings,
+    engine: State<'_, Mutex<Engine>>,
+) -> Result<(), String> {
+    let mut engine = engine.lock().unwrap();
+    engine.set_dm_settings(settings);
+    Ok(())
+}
+
+#[tauri::command]
+pub fn export_character_json(
+    character_id: String,
+    engine: State<'_, Mutex<Engine>>,
+) -> Result<String, String> {
+    let engine = engine.lock().unwrap();
+    engine.export_character_json(&character_id)
+}
+
+#[tauri::command]
+pub fn export_character_markdown(
+    character_id: String,
+    engine: State<'_, Mutex<Engine>>,
+) -> Result<String, String> {
+    let engine = engine.lock().unwrap();
+    engine.export_character_markdown(&character_id)
 }

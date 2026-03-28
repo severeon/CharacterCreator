@@ -1,11 +1,15 @@
+import { useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router'
 import Sidebar from './components/Sidebar'
 import EntityList from './routes/EntityList'
 import EntityDetail from './routes/EntityDetail'
 import CreationWizard from './routes/CreationWizard'
 import CharacterSheet from './routes/CharacterSheet'
+import DMTools from './components/DMTools'
 
 export default function App() {
+  const [dmToolsOpen, setDmToolsOpen] = useState(false)
+
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -18,6 +22,7 @@ export default function App() {
           <Route path="/:entityType/:id" element={<EntityDetail />} />
         </Routes>
       </main>
+      <DMTools isOpen={dmToolsOpen} onToggle={() => setDmToolsOpen(!dmToolsOpen)} />
     </div>
   )
 }
