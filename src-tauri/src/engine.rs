@@ -70,6 +70,40 @@ impl Engine {
         id
     }
 
+    pub fn update_character_identity(
+        &mut self,
+        character_id: &str,
+        identity: HashMap<String, Value>,
+    ) -> Result<(), String> {
+        let character = self
+            .entities
+            .get_mut(character_id)
+            .ok_or_else(|| format!("Character not found: {}", character_id))?;
+
+        for (key, value) in identity {
+            character.set_property(&key, value);
+        }
+
+        let timestamp = self.queue_manager.next_timestamp();
+        let queue_id = self.queue_manager.create_root_queue();
+
+        let event = EventBuilder::new("identity.updated", character_id, queue_id, timestamp)
+            .target(character_id)
+            .build();
+
+        let mut changeset = Changeset::new();
+        self.dispatcher.dispatch(
+            &event,
+            &mut self.entities,
+            &self.queue_manager,
+            &mut changeset,
+        );
+
+        self.queue_manager.commit_queue(&queue_id);
+
+        Ok(())
+    }
+
     pub fn select_race(&mut self, character_id: &str, race_id: &str) -> Result<(), String> {
         let race = self
             .entities
@@ -128,12 +162,15 @@ impl Engine {
         character_id: &str,
         class_id: &str,
         level: i32,
+        slot: &str,
     ) -> Result<(), String> {
         let class_entity = self
             .entities
             .get(class_id)
             .ok_or_else(|| format!("Class not found: {}", class_id))?
             .clone();
+
+        let prefix = if slot == "B" { "class_b" } else { "class" };
 
         {
             let character = self
@@ -143,9 +180,9 @@ impl Engine {
 
             character
                 .properties
-                .insert("class".to_string(), Value::Str(class_id.to_string()));
+                .insert(format!("{}.id", prefix), Value::Str(class_id.to_string()));
             character.properties.insert(
-                "class_name".to_string(),
+                format!("{}.name", prefix),
                 class_entity
                     .properties
                     .get("name")
@@ -157,17 +194,40 @@ impl Engine {
                 .insert("level".to_string(), Value::Int(level as i64));
 
             if let Some(hd) = class_entity.properties.get("hd").cloned() {
-                character.properties.insert("hit_die".to_string(), hd);
+                character.properties.insert(format!("{}.hd", prefix), hd);
             }
             if let Some(bab) = class_entity.properties.get("bab").cloned() {
                 character
                     .properties
-                    .insert("base_attack_bonus".to_string(), bab);
+                    .insert(format!("{}.bab", prefix), bab);
             }
             if let Some(sp) = class_entity.properties.get("skill_points").cloned() {
                 character
                     .properties
-                    .insert("skill_points_per_level".to_string(), sp);
+                    .insert(format!("{}.skill_points", prefix), sp);
+            }
+            // Also set legacy properties for non-gestalt compatibility
+            if slot != "B" {
+                character
+                    .properties
+                    .insert("class".to_string(), Value::Str(class_id.to_string()));
+                character.properties.insert(
+                    "class_name".to_string(),
+                    class_entity
+                        .properties
+                        .get("name")
+                        .cloned()
+                        .unwrap_or(Value::Str(class_id.to_string())),
+                );
+                if let Some(hd) = class_entity.properties.get("hd").cloned() {
+                    character.properties.insert("hit_die".to_string(), hd);
+                }
+                if let Some(bab) = class_entity.properties.get("bab").cloned() {
+                    character.properties.insert("base_attack_bonus".to_string(), bab);
+                }
+                if let Some(sp) = class_entity.properties.get("skill_points").cloned() {
+                    character.properties.insert("skill_points_per_level".to_string(), sp);
+                }
             }
         }
 
@@ -208,14 +268,205 @@ impl Engine {
             .get_mut(character_id)
             .ok_or_else(|| format!("Character not found: {}", character_id))?;
 
-        for (ability, score) in scores {
+        let mut score_values = std::collections::HashMap::new();
+        for (ability, score) in &scores {
             let path = format!("abilities.{}.score", ability);
-            character.set_property(&path, Value::Int(score));
+            character.set_property(&path, Value::Int(*score));
+            score_values.insert(ability.clone(), Value::Int(*score));
 
             let mod_path = format!("abilities.{}.modifier", ability);
-            let modifier = (score - 10) / 2;
+            let modifier = (*score - 10) / 2;
             character.set_property(&mod_path, Value::Int(modifier));
         }
+
+        let timestamp = self.queue_manager.next_timestamp();
+        let queue_id = self.queue_manager.create_root_queue();
+
+        let mut payload = std::collections::HashMap::new();
+        for (ability, value) in &score_values {
+            payload.insert(
+                ability.clone(),
+                value.clone(),
+            );
+        }
+
+        let event = EventBuilder::new("abilities.assigned", character_id, queue_id, timestamp)
+            .target(character_id)
+            .payload("scores", Value::Map(payload))
+            .build();
+
+        let mut changeset = Changeset::new();
+        self.dispatcher.dispatch(
+            &event,
+            &mut self.entities,
+            &self.queue_manager,
+            &mut changeset,
+        );
+
+        self.queue_manager.commit_queue(&queue_id);
+
+        self.completed_workflow_steps
+            .entry(character_id.to_string())
+            .or_insert_with(Vec::new)
+            .push("assign-ability-scores".to_string());
+
+        Ok(())
+    }
+
+    pub fn allocate_skill_points(
+        &mut self,
+        character_id: &str,
+        skill_allocations: HashMap<String, i64>,
+    ) -> Result<(), String> {
+        // Get class_id and level from character first (immutable reads)
+        let (class_id, remaining, level) = {
+            let character = self
+                .entities
+                .get(character_id)
+                .ok_or_else(|| "Character not found".to_string())?;
+            let remaining = character
+                .properties
+                .get("skill_points_remaining")
+                .and_then(|v| v.as_int())
+                .unwrap_or(0);
+            let class_id = character
+                .properties
+                .get("class")
+                .and_then(|v| v.as_str())
+                .ok_or_else(|| "No class selected".to_string())?;
+            let level = character
+                .properties
+                .get("level")
+                .and_then(|v| v.as_int())
+                .unwrap_or(1) as i64;
+            (class_id.to_string(), remaining, level)
+        };
+
+        let class_skills: Vec<String> = self
+            .entities
+            .get(&class_id)
+            .ok_or_else(|| format!("Class not found: {}", class_id))?
+            .properties
+            .get("classSkills")
+            .and_then(|v| v.as_list())
+            .map(|list| {
+                list.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                    .collect()
+            })
+            .unwrap_or_default();
+
+        let mut total_cost = 0i64;
+        let mut new_ranks = HashMap::new();
+
+        // Pre-compute current ranks (immutable read)
+        let current_ranks: HashMap<String, i64> = {
+            let character = self.entities.get(character_id).unwrap();
+            skill_allocations
+                .keys()
+                .filter(|k| *k != "")
+                .map(|skill| {
+                    let ranks = character
+                        .properties
+                        .get(&format!("skills.{}.ranks", skill))
+                        .and_then(|v| v.as_int())
+                        .unwrap_or(0);
+                    (skill.clone(), ranks)
+                })
+                .collect()
+        };
+
+        for (skill, ranks_delta) in &skill_allocations {
+            if *ranks_delta == 0 {
+                continue;
+            }
+
+            let current = *current_ranks.get(skill).unwrap_or(&0);
+            let is_class_skill = class_skills
+                .iter()
+                .any(|cs| cs.to_lowercase() == skill.to_lowercase());
+            let cost_per_rank = if is_class_skill { 1 } else { 2 };
+
+            let max_ranks = if is_class_skill { level } else { level / 2 };
+            if current + *ranks_delta > max_ranks {
+                return Err(format!(
+                    "Cannot add {} ranks to {} (max {} for {} skill at level {})",
+                    ranks_delta,
+                    skill,
+                    max_ranks,
+                    if is_class_skill { "class" } else { "cross-class" },
+                    level
+                ));
+            }
+            if current + *ranks_delta < 0 {
+                return Err(format!("Cannot reduce {} below 0", skill));
+            }
+
+            total_cost += ranks_delta * cost_per_rank;
+            new_ranks.insert(skill.clone(), current + *ranks_delta);
+        }
+
+        if total_cost > remaining {
+            return Err(format!(
+                "Not enough skill points (need {}, have {})",
+                total_cost, remaining
+            ));
+        }
+
+        // Now mutable borrow for writing
+        let character = self
+            .entities
+            .get_mut(character_id)
+            .ok_or_else(|| "Character not found".to_string())?;
+
+        let new_remaining = remaining - total_cost;
+        character.set_property("skill_points_remaining", Value::Int(new_remaining));
+
+        for (skill, ranks) in &new_ranks {
+            let path = format!("skills.{}.ranks", skill);
+            character.set_property(&path, Value::Int(*ranks));
+
+            let ability_key = skill_to_ability_key(skill);
+            let ability_mod = character
+                .properties
+                .get(&format!("abilities.{}.modifier", ability_key))
+                .and_then(|v| v.as_int())
+                .unwrap_or(0);
+            character.set_property(
+                &format!("skills.{}.modifier", skill),
+                Value::Int(*ranks + ability_mod),
+            );
+        }
+
+        character.set_property("skill_points_allocated", Value::Bool(true));
+
+        let timestamp = self.queue_manager.next_timestamp();
+        let queue_id = self.queue_manager.create_root_queue();
+
+        let mut allocation_values = std::collections::HashMap::new();
+        for (skill, ranks) in &new_ranks {
+            allocation_values.insert(skill.clone(), Value::Int(*ranks));
+        }
+
+        let event = EventBuilder::new("skills.allocated", character_id, queue_id, timestamp)
+            .target(character_id)
+            .payload("allocations", Value::Map(allocation_values))
+            .build();
+
+        let mut changeset = Changeset::new();
+        self.dispatcher.dispatch(
+            &event,
+            &mut self.entities,
+            &self.queue_manager,
+            &mut changeset,
+        );
+
+        self.queue_manager.commit_queue(&queue_id);
+
+        self.completed_workflow_steps
+            .entry(character_id.to_string())
+            .or_insert_with(Vec::new)
+            .push("allocate-skills".to_string());
 
         Ok(())
     }
@@ -298,6 +549,115 @@ impl Engine {
         Some(result)
     }
 
+    pub fn select_feat(&mut self, character_id: &str, feat_id: &str) -> Result<(), String> {
+        // Validate feat exists and get character state (immutable reads)
+        let (slots_available, existing_feats) = {
+            let _ = self
+                .entities
+                .get(feat_id)
+                .ok_or_else(|| format!("Feat not found: {}", feat_id))?;
+
+            let character = self
+                .entities
+                .get(character_id)
+                .ok_or_else(|| "Character not found".to_string())?;
+
+            let slots = character
+                .properties
+                .get("feat_slots_remaining")
+                .and_then(|v| v.as_int())
+                .unwrap_or(1);
+
+            let existing: Vec<String> = character
+                .properties
+                .get("feats_selected")
+                .and_then(|v| v.as_list())
+                .map(|list| {
+                    list.iter()
+                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                        .collect()
+                })
+                .unwrap_or_default();
+
+            (slots, existing)
+        };
+
+        if slots_available <= 0 {
+            return Err("No feat slots remaining".to_string());
+        }
+
+        if existing_feats.contains(&feat_id.to_string()) {
+            return Err("Feat already selected".to_string());
+        }
+
+        // Mutable borrow for writing
+        let character = self
+            .entities
+            .get_mut(character_id)
+            .ok_or_else(|| "Character not found".to_string())?;
+
+        let mut feats_list = existing_feats;
+        feats_list.push(feat_id.to_string());
+        character.set_property(
+            "feats_selected",
+            Value::List(feats_list.iter().map(|s| Value::Str(s.clone())).collect()),
+        );
+        character.set_property("feat_slots_remaining", Value::Int(slots_available - 1));
+
+        let timestamp = self.queue_manager.next_timestamp();
+        let queue_id = self.queue_manager.create_root_queue();
+
+        let event = EventBuilder::new("feat.selected", feat_id, queue_id, timestamp)
+            .target(character_id)
+            .payload("feat_id", Value::Str(feat_id.to_string()))
+            .build();
+
+        let mut changeset = Changeset::new();
+        self.dispatcher.dispatch(
+            &event,
+            &mut self.entities,
+            &self.queue_manager,
+            &mut changeset,
+        );
+
+        self.queue_manager.commit_queue(&queue_id);
+
+        // select-feats is repeatable, don't mark as completed permanently
+        // but track that a selection was made this session
+        self.completed_workflow_steps
+            .entry(character_id.to_string())
+            .or_insert_with(Vec::new)
+            .push("select-feats".to_string());
+
+        Ok(())
+    }
+
+    pub fn get_available_feats(&self, character_id: &str) -> Vec<Entity> {
+        let character = match self.entities.get(character_id) {
+            Some(c) => c,
+            None => return vec![],
+        };
+
+        let selected_ids: Vec<String> = character
+            .properties
+            .get("feats_selected")
+            .and_then(|v| v.as_list())
+            .map(|list| {
+                list.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                    .collect()
+            })
+            .unwrap_or_default();
+
+        self.entities
+            .values()
+            .filter(|e| {
+                e.entity_type == "feat" && !selected_ids.contains(&e.id)
+            })
+            .cloned()
+            .collect()
+    }
+
     pub fn get_workflow_status(&self, character_id: &str, workflow_id: &str) -> WorkflowStatus {
         let completed = self
             .completed_workflow_steps
@@ -326,6 +686,23 @@ impl Engine {
             pending,
             available: vec![],
         }
+    }
+}
+
+fn skill_to_ability_key(skill: &str) -> String {
+    match skill.to_lowercase().as_str() {
+        "climb" | "jump" | "swim" => "strength".to_string(),
+        "balance" | "escape artist" | "hide" | "move silently"
+        | "open lock" | "ride" | "sleight of hand" | "stealth" | "tumble" => {
+            "dexterity".to_string()
+        }
+        "concentration" | "spellcraft" | "knowledge" | "alchemy" => {
+            "intelligence".to_string()
+        }
+        "heal" | "listen" | "sense motive" | "survival" => "wisdom".to_string(),
+        "bluff" | "diplomacy" | "disguise" | "gather information" | "handle animal"
+        | "intimidate" | "perform" | "use magic device" => "charisma".to_string(),
+        _ => "dexterity".to_string(),
     }
 }
 
@@ -395,6 +772,143 @@ mod tests {
         let status = engine.get_workflow_status("char1", "srd:workflow:character_creation");
         assert!(status.completed.is_empty());
         assert!(!status.pending.is_empty());
+    }
+
+    #[test]
+    fn test_select_feat_consumes_slot() {
+        let mut engine = Engine::new();
+        let char_id = engine.create_character("Thorin");
+
+        // Insert a feat so the engine knows about it
+        let feat = Entity {
+            id: "srd:feat:power-attack".to_string(),
+            entity_type: "feat".to_string(),
+            properties: {
+                let mut p = HashMap::new();
+                p.insert("name".to_string(), Value::Str("Power Attack".to_string()));
+                p
+            },
+            tags: vec![],
+            mdx_body: String::new(),
+            source_pack: "srd-3.5e".to_string(),
+            subscriptions: vec![],
+            computed_views: vec![],
+            prototype: None,
+        };
+        engine.entities.insert(feat.id.clone(), feat);
+
+        {
+            let character = engine.entities.get_mut(&char_id).unwrap();
+            character.set_property("feat_slots_remaining", Value::Int(1));
+        }
+
+        engine.select_feat(&char_id, "srd:feat:power-attack").unwrap();
+
+        let character = engine.entities.get(&char_id).unwrap();
+        assert_eq!(
+            character.get_property("feat_slots_remaining"),
+            Some(&Value::Int(0))
+        );
+        assert!(character.get_property("feats_selected").is_some());
+    }
+
+    #[test]
+    fn test_get_available_feats_excludes_selected() {
+        let mut engine = Engine::new();
+        let char_id = engine.create_character("Thorin");
+
+        {
+            let character = engine.entities.get_mut(&char_id).unwrap();
+            character.set_property("feat_slots_remaining", Value::Int(1));
+        }
+
+        let available = engine.get_available_feats(&char_id);
+        let feat_ids: Vec<&str> = available.iter().map(|e| e.id.as_str()).collect();
+        assert!(!feat_ids.contains(&"srd:feat:power-attack"));
+
+        // Manually add a feat to the store first
+        let feat = Entity {
+            id: "srd:feat:power-attack".to_string(),
+            entity_type: "feat".to_string(),
+            properties: {
+                let mut p = HashMap::new();
+                p.insert("name".to_string(), Value::Str("Power Attack".to_string()));
+                p
+            },
+            tags: vec![],
+            mdx_body: String::new(),
+            source_pack: "srd-3.5e".to_string(),
+            subscriptions: vec![],
+            computed_views: vec![],
+            prototype: None,
+        };
+        engine.entities.insert(feat.id.clone(), feat);
+
+        let available = engine.get_available_feats(&char_id);
+        let feat_ids: Vec<&str> = available.iter().map(|e| e.id.as_str()).collect();
+        assert!(feat_ids.contains(&"srd:feat:power-attack"));
+    }
+
+    #[test]
+    fn test_allocate_skill_points_class_skill() {
+        let mut engine = Engine::new();
+        let char_id = engine.create_character("Thorin");
+
+        // Create a fighter class entity with classSkills
+        let fighter = Entity {
+            id: "srd:class:fighter".to_string(),
+            entity_type: "class".to_string(),
+            properties: {
+                let mut p = HashMap::new();
+                p.insert("name".to_string(), Value::Str("Fighter".to_string()));
+                p.insert(
+                    "classSkills".to_string(),
+                    Value::List(vec![
+                        Value::Str("Climb".to_string()),
+                        Value::Str("Craft".to_string()),
+                        Value::Str("Handle Animal".to_string()),
+                        Value::Str("Intimidate".to_string()),
+                        Value::Str("Jump".to_string()),
+                        Value::Str("Knowledge(Dungeoneering)".to_string()),
+                        Value::Str("Ride".to_string()),
+                        Value::Str("Swim".to_string()),
+                    ]),
+                );
+                p
+            },
+            tags: vec![],
+            mdx_body: String::new(),
+            source_pack: "srd-3.5e".to_string(),
+            subscriptions: vec![],
+            computed_views: vec![],
+            prototype: None,
+        };
+        engine.entities.insert(fighter.id.clone(), fighter);
+
+        // Setup: select class
+        engine.select_class(&char_id, "srd:class:fighter", 1).unwrap();
+
+        // Set skill points remaining
+        {
+            let char = engine.entities.get_mut(&char_id).unwrap();
+            char.set_property("skill_points_remaining", Value::Int(4));
+        }
+
+        // Allocate 1 rank to Climb (Fighter class skill, max rank at level 1 = 1)
+        let mut allocations = HashMap::new();
+        allocations.insert("Climb".to_string(), 1);
+
+        engine.allocate_skill_points(&char_id, allocations).unwrap();
+
+        let character = engine.entities.get(&char_id).unwrap();
+        assert_eq!(
+            character.get_property("skills.Climb.ranks"),
+            Some(&Value::Int(1))
+        );
+        assert_eq!(
+            character.get_property("skill_points_remaining"),
+            Some(&Value::Int(3))
+        ); // 4 - 1 = 3
     }
 
     #[test]
