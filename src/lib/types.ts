@@ -21,3 +21,9 @@ export interface EntitySummary {
   name: string
   tags: string[]
 }
+
+export interface WorkflowStatus {
+  completed: string[]
+  pending: string[]
+  available: string[]
+}

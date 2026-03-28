@@ -17,12 +17,19 @@ export async function createCharacter(name: string): Promise<string> {
   return invoke('create_character', { name })
 }
 
+export async function updateCharacterIdentity(
+  characterId: string,
+  identity: Record<string, unknown>
+): Promise<void> {
+  return invoke('update_character_identity', { characterId, identity })
+}
+
 export async function selectRace(characterId: string, raceId: string): Promise<void> {
   return invoke('select_race', { characterId, raceId })
 }
 
-export async function selectClass(characterId: string, classId: string, level: number): Promise<void> {
-  return invoke('select_class', { characterId, classId, level })
+export async function selectClass(characterId: string, classId: string, level: number, slot?: string): Promise<void> {
+  return invoke('select_class', { characterId, classId, level, slot })
 }
 
 export async function assignAbilityScores(
@@ -30,6 +37,13 @@ export async function assignAbilityScores(
   scores: Record<string, number>
 ): Promise<void> {
   return invoke('assign_ability_scores', { characterId, scores })
+}
+
+export async function allocateSkillPoints(
+  characterId: string,
+  allocations: Record<string, number>
+): Promise<void> {
+  return invoke('allocate_skill_points', { characterId, allocations })
 }
 
 export async function getWorkflowStatus(
@@ -48,6 +62,14 @@ export async function getAvailableChoices(
 
 export async function getSpeculativeState(characterId: string, queueId?: string): Promise<Entity | null> {
   return invoke('get_speculative_state', { characterId, queueId })
+}
+
+export async function selectFeat(characterId: string, featId: string): Promise<void> {
+  return invoke('select_feat', { characterId, featId })
+}
+
+export async function getAvailableFeats(characterId: string): Promise<Entity[]> {
+  return invoke('get_available_feats', { characterId })
 }
 
 export interface WorkflowStatus {

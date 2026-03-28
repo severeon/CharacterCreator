@@ -325,6 +325,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-mcp-bridge",
+ "uuid",
  "walkdir",
 ]
 
