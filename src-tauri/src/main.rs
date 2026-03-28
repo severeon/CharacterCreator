@@ -10,7 +10,6 @@ mod ipc;
 mod operation;
 mod pack_loader;
 mod queue;
-mod store;
 mod subscription;
 mod workflow;
 

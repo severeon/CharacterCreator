@@ -2,7 +2,16 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use tauri::State;
 
-use crate::engine::{DMSettings, Engine, WorkflowStatus};
+use crate::engine::abilities::AssignAbilityScores;
+use crate::engine::character::{CreateCharacter, UpdateCharacterIdentity};
+use crate::engine::export::{ExportCharacterJson, ExportCharacterMarkdown};
+use crate::engine::feats::{GetAvailableFeats, SelectFeat};
+use crate::engine::query::{
+    GetAvailableChoices, GetEntitiesByType, GetSpeculativeState, GetWorkflowStatus, SearchEntities,
+};
+use crate::engine::selection::{SelectClass, SelectRace};
+use crate::engine::skills::AllocateSkillPoints;
+use crate::engine::{DmSettings, Engine, WorkflowStatus};
 use crate::entity::{Entity, EntitySummary, Value};
 
 #[tauri::command]
@@ -11,7 +20,7 @@ pub fn get_entities_by_type(
     engine: State<'_, Mutex<Engine>>,
 ) -> Vec<EntitySummary> {
     let engine = engine.lock().unwrap();
-    engine.get_entities_by_type(&entity_type)
+    GetEntitiesByType::execute(&engine, &entity_type)
 }
 
 #[tauri::command]
@@ -23,13 +32,13 @@ pub fn get_entity_by_id(id: String, engine: State<'_, Mutex<Engine>>) -> Option<
 #[tauri::command]
 pub fn search_entities(query: String, engine: State<'_, Mutex<Engine>>) -> Vec<EntitySummary> {
     let engine = engine.lock().unwrap();
-    engine.search_entities(&query)
+    SearchEntities::execute(&engine, &query)
 }
 
 #[tauri::command]
 pub fn create_character(name: String, engine: State<'_, Mutex<Engine>>) -> Result<String, String> {
     let mut engine = engine.lock().unwrap();
-    Ok(engine.create_character(&name))
+    Ok(CreateCharacter::execute(&mut *engine, &name))
 }
 
 #[tauri::command]
@@ -38,13 +47,12 @@ pub fn update_character_identity(
     identity: HashMap<String, serde_json::Value>,
     engine: State<'_, Mutex<Engine>>,
 ) -> Result<(), String> {
-    use crate::entity::Value;
     let mut engine = engine.lock().unwrap();
     let identity_value: HashMap<String, Value> = identity
         .into_iter()
         .map(|(k, v)| (k, serde_json_from_value(v)))
         .collect();
-    engine.update_character_identity(&character_id, identity_value)
+    UpdateCharacterIdentity::execute(&mut *engine, &character_id, identity_value).map_err(|e| e.to_string())
 }
 
 fn serde_json_from_value(v: serde_json::Value) -> Value {
@@ -77,7 +85,7 @@ pub fn select_race(
     engine: State<'_, Mutex<Engine>>,
 ) -> Result<(), String> {
     let mut engine = engine.lock().unwrap();
-    engine.select_race(&character_id, &race_id)
+    SelectRace::execute(&mut *engine, &character_id, &race_id).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -89,7 +97,8 @@ pub fn select_class(
     engine: State<'_, Mutex<Engine>>,
 ) -> Result<(), String> {
     let mut engine = engine.lock().unwrap();
-    engine.select_class(&character_id, &class_id, level, slot.as_deref().unwrap_or("A"))
+    SelectClass::execute(&mut *engine, &character_id, &class_id, level, slot.as_deref().unwrap_or("A"))
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -99,7 +108,7 @@ pub fn assign_ability_scores(
     engine: State<'_, Mutex<Engine>>,
 ) -> Result<(), String> {
     let mut engine = engine.lock().unwrap();
-    engine.assign_ability_scores(&character_id, scores)
+    AssignAbilityScores::execute(&mut *engine, &character_id, scores).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -109,7 +118,7 @@ pub fn allocate_skill_points(
     engine: State<'_, Mutex<Engine>>,
 ) -> Result<(), String> {
     let mut engine = engine.lock().unwrap();
-    engine.allocate_skill_points(&character_id, allocations)
+    AllocateSkillPoints::execute(&mut *engine, &character_id, allocations).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -119,7 +128,7 @@ pub fn get_workflow_status(
     engine: State<'_, Mutex<Engine>>,
 ) -> WorkflowStatus {
     let engine = engine.lock().unwrap();
-    engine.get_workflow_status(&character_id, &workflow_id)
+    GetWorkflowStatus::execute(&engine, &character_id, &workflow_id)
 }
 
 #[tauri::command]
@@ -129,7 +138,7 @@ pub fn get_available_choices(
     engine: State<'_, Mutex<Engine>>,
 ) -> Vec<Entity> {
     let engine = engine.lock().unwrap();
-    engine.get_available_choices(&character_id, &slot_type)
+    GetAvailableChoices::execute(&engine, &character_id, &slot_type)
 }
 
 #[tauri::command]
@@ -139,7 +148,7 @@ pub fn get_speculative_state(
     engine: State<'_, Mutex<Engine>>,
 ) -> Option<Entity> {
     let engine = engine.lock().unwrap();
-    engine.get_speculative_state(&character_id, queue_id.as_deref())
+    GetSpeculativeState::execute(&engine, &character_id, queue_id.as_deref())
 }
 
 #[tauri::command]
@@ -149,7 +158,7 @@ pub fn select_feat(
     engine: State<'_, Mutex<Engine>>,
 ) -> Result<(), String> {
     let mut engine = engine.lock().unwrap();
-    engine.select_feat(&character_id, &feat_id)
+    SelectFeat::execute(&mut *engine, &character_id, &feat_id).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -158,18 +167,18 @@ pub fn get_available_feats(
     engine: State<'_, Mutex<Engine>>,
 ) -> Vec<Entity> {
     let engine = engine.lock().unwrap();
-    engine.get_available_feats(&character_id)
+    GetAvailableFeats::execute(&engine, &character_id)
 }
 
 #[tauri::command]
-pub fn get_dm_settings(engine: State<'_, Mutex<Engine>>) -> DMSettings {
+pub fn get_dm_settings(engine: State<'_, Mutex<Engine>>) -> DmSettings {
     let engine = engine.lock().unwrap();
     engine.get_dm_settings()
 }
 
 #[tauri::command]
 pub fn set_dm_settings(
-    settings: DMSettings,
+    settings: DmSettings,
     engine: State<'_, Mutex<Engine>>,
 ) -> Result<(), String> {
     let mut engine = engine.lock().unwrap();
@@ -183,7 +192,7 @@ pub fn export_character_json(
     engine: State<'_, Mutex<Engine>>,
 ) -> Result<String, String> {
     let engine = engine.lock().unwrap();
-    engine.export_character_json(&character_id)
+    ExportCharacterJson::execute(&engine, &character_id).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -192,5 +201,5 @@ pub fn export_character_markdown(
     engine: State<'_, Mutex<Engine>>,
 ) -> Result<String, String> {
     let engine = engine.lock().unwrap();
-    engine.export_character_markdown(&character_id)
+    ExportCharacterMarkdown::execute(&engine, &character_id).map_err(|e| e.to_string())
 }

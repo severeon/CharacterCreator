@@ -64,6 +64,7 @@ impl Predicate {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Subscription {
+    #[serde(default)]
     pub id: Uuid,
     pub trigger: String,
     #[serde(default)]
