@@ -1,5 +1,5 @@
 import type { Entity } from '../../lib/types'
-import { getPropertyString } from '../../lib/properties'
+import { FeatWizardCard } from '../entities/feat'
 
 interface FeatsStepProps {
   availableFeats: Entity[]
@@ -40,20 +40,12 @@ export function FeatsStep({
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
             {availableFeats.map((feat) => (
-              <button
+              <FeatWizardCard
                 key={feat.id}
-                onClick={() => onSelectFeat(feat)}
-                className="p-3 border rounded-lg hover:border-blue-500 hover:bg-blue-50 text-left"
-              >
-                <h3 className="font-bold">
-                  {getPropertyString(feat.properties, 'name', feat.id)}
-                </h3>
-                {getPropertyString(feat.properties, 'benefit', '') && (
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {getPropertyString(feat.properties, 'benefit', '')}
-                  </p>
-                )}
-              </button>
+                entity={feat}
+                selected={selectedFeats.includes(feat.id)}
+                onSelect={() => onSelectFeat(feat)}
+              />
             ))}
           </div>
           {availableFeats.length === 0 && (

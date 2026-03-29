@@ -1,5 +1,6 @@
 import type { Entity } from '../../lib/types'
 import { getPropertyString, getPropertyNumber } from '../../lib/properties'
+import { ClassWizardCard } from '../entities/class'
 
 interface ClassStepProps {
   classes: Entity[]
@@ -61,21 +62,12 @@ export function ClassStep({
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {classes.map((cls) => (
-            <button
+            <ClassWizardCard
               key={cls.id}
-              onClick={() => onSelectClass(cls, 'A')}
-              className={`p-3 border rounded-lg hover:border-blue-500 hover:bg-blue-50 text-left ${
-                selectedClass?.id === cls.id ? 'border-blue-500 bg-blue-50' : ''
-              }`}
-            >
-              <h4 className="font-bold text-sm">
-                {getPropertyString(cls.properties, 'name', cls.id)}
-              </h4>
-              <p className="text-xs text-gray-600">
-                HD: d{getPropertyNumber(cls.properties, 'hd', 8)} | BAB:{' '}
-                {getPropertyString(cls.properties, 'bab', 'med')}
-              </p>
-            </button>
+              entity={cls}
+              selected={selectedClass?.id === cls.id}
+              onSelect={(id) => onSelectClass(classes.find((c) => c.id === id) ?? cls, 'A')}
+            />
           ))}
         </div>
       </div>
@@ -93,21 +85,12 @@ export function ClassStep({
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {classes.map((cls) => (
-              <button
+              <ClassWizardCard
                 key={cls.id}
-                onClick={() => onSelectClass(cls, 'B')}
-                className={`p-3 border rounded-lg hover:border-blue-500 hover:bg-blue-50 text-left ${
-                  selectedClassB?.id === cls.id ? 'border-blue-500 bg-blue-50' : ''
-                }`}
-              >
-                <h4 className="font-bold text-sm">
-                  {getPropertyString(cls.properties, 'name', cls.id)}
-                </h4>
-                <p className="text-xs text-gray-600">
-                  HD: d{getPropertyNumber(cls.properties, 'hd', 8)} | BAB:{' '}
-                  {getPropertyString(cls.properties, 'bab', 'med')}
-                </p>
-              </button>
+                entity={cls}
+                selected={selectedClassB?.id === cls.id}
+                onSelect={(id) => onSelectClass(classes.find((c) => c.id === id) ?? cls, 'B')}
+              />
             ))}
           </div>
         </div>

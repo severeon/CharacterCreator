@@ -56,6 +56,7 @@ export default function EntityList() {
       ) : entities.length === 0 ? (
         <div className="text-gray-500">No entities found.</div>
       ) : (
+        // TODO: use type-specific Card components when list loads full Entity objects
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {entities.map((entity) => (
             <Link
@@ -69,7 +70,7 @@ export default function EntityList() {
                   {entity.tags.slice(0, 3).map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full"
+                      className="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full"
                     >
                       {tag}
                     </span>

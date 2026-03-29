@@ -2,8 +2,12 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router'
 import { getEntityById } from '../lib/engine'
 import type { Entity } from '../lib/types'
-import PropertyTable from '../components/PropertyTable'
 import MdxRenderer from '../components/MdxRenderer'
+import { RaceDetail } from '../components/entities/race'
+import { ClassDetail } from '../components/entities/class'
+import { FeatDetail } from '../components/entities/feat'
+import { SpellDetail } from '../components/entities/spell'
+import { SkillDetail } from '../components/entities/skill'
 
 export default function EntityDetail() {
   const { entityType, id } = useParams<{ entityType: string; id: string }>()
@@ -45,6 +49,19 @@ export default function EntityDetail() {
 
   const name = typeof entity.properties.name === 'string' ? entity.properties.name : entity.id
 
+  const singularType = { races: 'race', classes: 'class', feats: 'feat', spells: 'spell', skills: 'skill' }[entityType ?? ''] ?? entityType ?? ''
+
+  function renderDetail(singularType: string, entity: Entity) {
+    switch (singularType) {
+      case 'race': return <RaceDetail entity={entity} />
+      case 'class': return <ClassDetail entity={entity} />
+      case 'feat': return <FeatDetail entity={entity} />
+      case 'spell': return <SpellDetail entity={entity} />
+      case 'skill': return <SkillDetail entity={entity} />
+      default: return null
+    }
+  }
+
   return (
     <div className="p-6 max-w-3xl">
       <Link to={`/${entityType}`} className="text-amber-600 hover:underline">
@@ -66,7 +83,7 @@ export default function EntityDetail() {
       )}
 
       <div className="mb-6">
-        <PropertyTable properties={entity.properties} />
+        {renderDetail(singularType, entity)}
       </div>
 
       {entity.mdx_body && (
