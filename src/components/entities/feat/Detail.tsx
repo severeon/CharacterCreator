@@ -1,13 +1,8 @@
-import type { Entity, Value } from '../../../lib/types'
-
-const ABILITY_KEYS = ['str', 'dex', 'con', 'int', 'wis', 'cha'] as const
+import type { Entity } from '../../../lib/types'
+import { isObject, ABILITY_KEYS } from '../shared'
 
 interface Props {
   entity: Entity
-}
-
-function isObject(v: Value): v is { [key: string]: Value } {
-  return v !== null && typeof v === 'object' && !Array.isArray(v)
 }
 
 export default function FeatDetail({ entity }: Props) {

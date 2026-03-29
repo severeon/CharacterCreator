@@ -1,16 +1,11 @@
 import type { Entity, Value } from '../../../lib/types'
 import { getPropertyString, getPropertyNumber } from '../../../lib/properties'
+import { isObject, ABILITY_KEYS } from '../shared'
 
 interface Props {
   entity: Entity
   selected?: boolean
   onSelect?: (id: string) => void
-}
-
-const ABILITY_KEYS = ['str', 'dex', 'con', 'int', 'wis', 'cha'] as const
-
-function isObject(v: Value): v is { [key: string]: Value } {
-  return v !== null && typeof v === 'object' && !Array.isArray(v)
 }
 
 export default function RaceWizardCard({ entity, selected = false, onSelect }: Props) {

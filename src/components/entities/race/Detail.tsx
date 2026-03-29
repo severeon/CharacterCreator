@@ -1,14 +1,9 @@
 import type { Entity, Value } from '../../../lib/types'
 import { getPropertyString } from '../../../lib/properties'
+import { isObject, ABILITY_KEYS } from '../shared'
 
 interface Props {
   entity: Entity
-}
-
-const ABILITY_KEYS = ['str', 'dex', 'con', 'int', 'wis', 'cha'] as const
-
-function isObject(v: Value): v is { [key: string]: Value } {
-  return v !== null && typeof v === 'object' && !Array.isArray(v)
 }
 
 export default function RaceDetail({ entity }: Props) {
@@ -34,6 +29,8 @@ export default function RaceDetail({ entity }: Props) {
   const physical = isObject(physicalRaw) ? physicalRaw : null
   const size = physical !== null ? getPropertyString(physical as Record<string, Value>, 'size', '') : ''
 
+  // height: [minFt, minIn, maxFt, maxIn] — 4-element array from codegen
+  // weight: [minLbs, maxLbs] — 2-element array from codegen
   const heightRaw = physical !== null ? physical.height : null
   const height = Array.isArray(heightRaw) ? heightRaw.filter((v): v is number => typeof v === 'number') : null
 
