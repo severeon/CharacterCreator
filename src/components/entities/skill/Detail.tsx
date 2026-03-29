@@ -37,7 +37,7 @@ export default function SkillDetail({ entity }: Props) {
       )}
       {synergies.length > 0 && (
         <section>
-          <h3 className="font-semibold text-gray-700 mb-2">Synergies</h3>
+          <p className="font-semibold text-gray-700 mb-2">Synergies</p>
           <ul className="list-disc list-inside text-sm text-gray-800">
             {synergies.map((skill) => (
               <li key={skill}>{skill}</li>
