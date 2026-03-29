@@ -1,4 +1,31 @@
-type WizardStep = 'name' | 'race' | 'class' | 'abilities' | 'skills' | 'feats' | 'review'
+type WizardStep =
+  | 'roll-abilities'
+  | 'race'
+  | 'class'
+  | 'assign-abilities'
+  | 'starting-package'
+  | 'racial-class-features'
+  | 'skills'
+  | 'feat'
+  | 'description'
+  | 'equipment'
+  | 'combat-numbers'
+  | 'details'
+
+export const STEP_LABELS: Record<WizardStep, string> = {
+  'roll-abilities': 'Roll',
+  race: 'Race',
+  class: 'Class',
+  'assign-abilities': 'Abilities',
+  'starting-package': 'Package',
+  'racial-class-features': 'Features',
+  skills: 'Skills',
+  feat: 'Feat',
+  description: 'Description',
+  equipment: 'Equipment',
+  'combat-numbers': 'Combat',
+  details: 'Details',
+}
 
 interface WizardProgressProps {
   currentStep: WizardStep
@@ -46,7 +73,7 @@ export function WizardProgress({ currentStep, completedSteps, stepOrder }: Wizar
                 currentStep === s ? 'font-bold text-blue-600' : 'text-gray-400'
               }`}
             >
-              {s}
+              {STEP_LABELS[s]}
             </span>
             {/* Spacer to match connector width */}
             {i < stepOrder.length - 1 && <div className="w-8 mx-1" />}

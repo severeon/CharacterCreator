@@ -34,6 +34,31 @@ impl AssignAbilityScores {
             character.set_property(&mod_path, Value::Int(modifier));
         }
 
+        // Compute skill points remaining: (base_sp + INT mod) × 4 at level 1
+        let int_mod = scores
+            .get("intelligence")
+            .map(|s| (s - 10) / 2)
+            .unwrap_or_else(|| {
+                character
+                    .properties
+                    .get("abilities.intelligence.modifier")
+                    .and_then(|v| v.as_int())
+                    .unwrap_or(0)
+            });
+        let base_sp = character
+            .properties
+            .get("skill_points_per_level")
+            .and_then(|v| v.as_int())
+            .unwrap_or(2);
+        let level = character
+            .properties
+            .get("level")
+            .and_then(|v| v.as_int())
+            .unwrap_or(1);
+        let sp_per_level = std::cmp::max(1, base_sp + int_mod);
+        let sp_remaining = if level == 1 { sp_per_level * 4 } else { sp_per_level };
+        character.set_property("skill_points_remaining", Value::Int(sp_remaining));
+
         let mut payload = std::collections::HashMap::new();
         for (ability, value) in &score_values {
             payload.insert(ability.clone(), value.clone());

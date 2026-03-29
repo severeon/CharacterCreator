@@ -48,7 +48,7 @@ export function SkillsStep({
                 (cs) => cs.toLowerCase() === skill.name.toLowerCase()
               )
               const cost = isClassSkill ? 1 : 2
-              const maxRanks = isClassSkill ? level : Math.floor(level / 2)
+              const maxRanks = isClassSkill ? level + 3 : Math.floor((level + 3) / 2)
               const currentRanks = skillAllocations[skill.name] || 0
               const abilityKey = skill.ability.toLowerCase()
               const abilityMod = abilities[abilityKey] ?? 10
@@ -104,17 +104,6 @@ export function SkillsStep({
             })}
           </tbody>
         </table>
-      </div>
-      <div className="flex gap-4">
-        <button onClick={onBack} className="px-6 py-2 border rounded-lg">
-          Back
-        </button>
-        <button
-          onClick={onContinue}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg"
-        >
-          Continue
-        </button>
       </div>
     </div>
   )

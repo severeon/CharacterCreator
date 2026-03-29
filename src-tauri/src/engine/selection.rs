@@ -110,7 +110,7 @@ impl SelectClass {
                     .properties
                     .insert(format!("{}.bab", prefix), bab);
             }
-            if let Some(sp) = class_entity.properties.get("skill_points").cloned() {
+            if let Some(sp) = class_entity.properties.get("skillPoints").cloned() {
                 character
                     .properties
                     .insert(format!("{}.skill_points", prefix), sp);
@@ -137,7 +137,7 @@ impl SelectClass {
                         .properties
                         .insert("base_attack_bonus".to_string(), bab);
                 }
-                if let Some(sp) = class_entity.properties.get("skill_points").cloned() {
+                if let Some(sp) = class_entity.properties.get("skillPoints").cloned() {
                     character
                         .properties
                         .insert("skill_points_per_level".to_string(), sp);
@@ -172,7 +172,7 @@ mod tests {
                 p.insert("name".to_string(), Value::Str("Wizard".to_string()));
                 p.insert("hd".to_string(), Value::Int(4));
                 p.insert("bab".to_string(), Value::Str("weak".to_string()));
-                p.insert("skill_points".to_string(), Value::Int(2));
+                p.insert("skillPoints".to_string(), Value::Int(2));
                 p
             },
             tags: vec![],
@@ -192,7 +192,7 @@ mod tests {
                 p.insert("name".to_string(), Value::Str("Fighter".to_string()));
                 p.insert("hd".to_string(), Value::Int(10));
                 p.insert("bab".to_string(), Value::Str("good".to_string()));
-                p.insert("skill_points".to_string(), Value::Int(4));
+                p.insert("skillPoints".to_string(), Value::Int(4));
                 p
             },
             tags: vec![],

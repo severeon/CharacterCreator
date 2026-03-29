@@ -90,7 +90,7 @@ impl AllocateSkillPoints {
                 .iter()
                 .any(|cs| cs.to_lowercase() == skill.to_lowercase());
             let cost_per_rank = if is_class_skill { 1 } else { 2 };
-            let max_ranks = if is_class_skill { level } else { level / 2 };
+            let max_ranks = if is_class_skill { level + 3 } else { (level + 3) / 2 };
 
             if current + *ranks_delta > max_ranks {
                 return Err(EngineError::ValidationError(format!(

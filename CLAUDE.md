@@ -37,10 +37,11 @@ python -m http.server 8080
 
 ## Architecture
 
-### Tauri App (Milestone 1: Content Browser)
+### Tauri App (Milestone 1: Content Browser + Milestone 2: Character Creation)
 
-- **Rust backend** (`src-tauri/src/`): `pack_loader` parses manifest.yaml and MDX files with YAML frontmatter into entities. `store` holds all entities in memory with search/filter by type, name, and tags. `ipc.rs` exposes Tauri IPC commands (`get_entities_by_type`, `get_entity_by_id`, `search_entities`).
-- **React frontend** (`src/`): Vite + React + TypeScript + TailwindCSS. Routes: `/` redirects to `/races`, `/:entityType` (entity list), `/:entityType/:id` (detail view). Sidebar with type filters and search. MDX body rendered from entity content.
+- **Rust backend** (`src-tauri/src/`): Event-sourced engine. `pack_loader` parses manifest.yaml + MDX entities into memory. `engine/` holds the Engine struct with modules for abilities, character, feats, skills, selection, export. `dispatch/` is the command dispatcher (Dispatcher, predicate, stack). `computed_view.rs`, `workflow.rs`, `queue.rs`, `subscription.rs` support character creation workflow. `ipc.rs` exposes 18 Tauri IPC commands (entity browser + full character creation: `create_character`, `select_race`, `select_class`, `assign_ability_scores`, `allocate_skill_points`, `select_feat`, `get_workflow_status`, `get_available_choices`, `get_speculative_state`, DM settings, JSON/markdown export).
+- **React frontend** (`src/`): Vite + React + TypeScript + TailwindCSS. Routes: `/` → `/races`, `/:entityType` (entity list), `/:entityType/:id` (entity detail), `/creation` (character creation wizard), `/character/:id` (character sheet). Sidebar with type filters and search. MDX body rendered from entity content.
+- **Character Creation Wizard** (`src/routes/CreationWizard.tsx`): Multi-step wizard with components in `src/components/wizard/`. Steps: roll abilities → name/details → race → class → assign abilities → skills → feats → starting package → racial/class features → description → equipment → combat numbers.
 - **Content packs** (`content/packs/`): Each pack has a `manifest.yaml` and an `entities/` directory of `.mdx` files organized by type (classes/, races/, feats/, spells/).
 
 ### Legacy Character Creator
@@ -56,10 +57,10 @@ Everything lives in `dnd35_gestalt_v4.html`. Key structural regions (searchable 
 ## Running Tests
 
 ```sh
-# Rust tests (18 tests)
+# Rust tests (59 tests)
 cd src-tauri && cargo test
 
-# Frontend tests (3 tests, via Vitest)
+# Frontend tests (48 tests across 17 files, via Vitest — 3 files currently failing)
 npx vitest run
 
 # Codegen tests (2 tests, Node native test runner)
