@@ -22,10 +22,11 @@ export default function SpellCard({ entity }: Props) {
   return (
     <div className="border border-gray-200 rounded-lg p-4 hover:border-amber-500">
       <p className="font-bold">{name}</p>
-      {(school || level !== undefined) && (
+      {(school || level > 0) && (
         <p className="text-sm text-gray-500 mt-1">
           {school}
-          {school ? ' • ' : ''}Level {level}
+          {school && level > 0 ? ' • ' : ''}
+          {level > 0 ? `Level ${level}` : ''}
         </p>
       )}
       {displayClasses && (

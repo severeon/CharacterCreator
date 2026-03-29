@@ -27,10 +27,10 @@ export default function SpellDetail({ entity }: Props) {
         <span className="text-sm text-gray-800">{level}</span>
       </div>
       {castingClasses.length > 0 && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-2">Casting Classes</h3>
-          <p className="text-sm text-gray-800">{castingClasses.join(', ')}</p>
-        </section>
+        <div>
+          <span className="font-semibold text-gray-700">Casting Classes: </span>
+          <span className="text-sm text-gray-800">{castingClasses.join(', ')}</span>
+        </div>
       )}
     </div>
   )
