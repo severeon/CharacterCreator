@@ -2,13 +2,16 @@ import { useState, useEffect, useCallback, type MouseEvent } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import * as runtime from 'react/jsx-runtime'
 import { evaluate } from '@mdx-js/mdx'
+import { entityComponents } from './entities/registry'
 
 interface Props {
   source: string
 }
 
+type MdxComponent = React.ComponentType<{ components?: Record<string, unknown> }>
+
 export default function MdxRenderer({ source }: Props) {
-  const [Content, setContent] = useState<React.ComponentType | null>(null)
+  const [Content, setContent] = useState<MdxComponent | null>(null)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
   const { entityType } = useParams<{ entityType: string }>()
@@ -17,7 +20,7 @@ export default function MdxRenderer({ source }: Props) {
     let cancelled = false
     evaluate(source, { ...(runtime as Record<string, unknown>), development: false } as Parameters<typeof evaluate>[1])
       .then(({ default: MDXContent }) => {
-        if (!cancelled) setContent(() => MDXContent)
+        if (!cancelled) setContent(() => MDXContent as unknown as MdxComponent)
       })
       .catch((err: unknown) => {
         if (!cancelled) setError(String(err))
@@ -44,7 +47,7 @@ export default function MdxRenderer({ source }: Props) {
   if (!Content) return <div className="text-gray-400">Loading...</div>
   return (
     <div className="prose prose-sm max-w-none" onClick={handleClick}>
-      <Content />
+      <Content components={entityComponents as Record<string, unknown>} />
     </div>
   )
 }
