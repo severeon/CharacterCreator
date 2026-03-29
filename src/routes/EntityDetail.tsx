@@ -9,6 +9,17 @@ import { FeatDetail } from '../components/entities/feat'
 import { SpellDetail } from '../components/entities/spell'
 import { SkillDetail } from '../components/entities/skill'
 
+function renderDetail(singularType: string, entity: Entity) {
+  switch (singularType) {
+    case 'race': return <RaceDetail entity={entity} />
+    case 'class': return <ClassDetail entity={entity} />
+    case 'feat': return <FeatDetail entity={entity} />
+    case 'spell': return <SpellDetail entity={entity} />
+    case 'skill': return <SkillDetail entity={entity} />
+    default: return null
+  }
+}
+
 export default function EntityDetail() {
   const { entityType, id } = useParams<{ entityType: string; id: string }>()
   const [entity, setEntity] = useState<Entity | null>(null)
@@ -50,17 +61,6 @@ export default function EntityDetail() {
   const name = typeof entity.properties.name === 'string' ? entity.properties.name : entity.id
 
   const singularType = { races: 'race', classes: 'class', feats: 'feat', spells: 'spell', skills: 'skill' }[entityType ?? ''] ?? entityType ?? ''
-
-  function renderDetail(singularType: string, entity: Entity) {
-    switch (singularType) {
-      case 'race': return <RaceDetail entity={entity} />
-      case 'class': return <ClassDetail entity={entity} />
-      case 'feat': return <FeatDetail entity={entity} />
-      case 'spell': return <SpellDetail entity={entity} />
-      case 'skill': return <SkillDetail entity={entity} />
-      default: return null
-    }
-  }
 
   return (
     <div className="p-6 max-w-3xl">

@@ -103,6 +103,7 @@ export function ClassStep({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
               <span className="text-purple-600 block">ECL</span>
+              {/* TODO: derive from character level + race LA */}
               <span className="text-xl font-bold">2</span>
               <span className="text-xs text-purple-500">(1 character + 1 class level)</span>
             </div>
