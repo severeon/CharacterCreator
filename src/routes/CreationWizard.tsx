@@ -452,7 +452,6 @@ export default function CreationWizard() {
             onStandardArray={handleStandardArray}
             onPointBuy={handlePointBuy}
             onManualEntry={handleManualEntry}
-            onContinue={() => setStep('race')}
           />
         )
 

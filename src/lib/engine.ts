@@ -1,15 +1,27 @@
 import { invoke } from '@tauri-apps/api/core'
 import type { Entity, EntitySummary } from './types'
 
+function isTauri(): boolean {
+  return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
+}
+
+async function fetchJson<T>(path: string): Promise<T> {
+  const res = await fetch(path)
+  return res.json() as Promise<T>
+}
+
 export async function getEntitiesByType(entityType: string): Promise<EntitySummary[]> {
+  if (!isTauri()) return fetchJson(`/_entities/by-type/${encodeURIComponent(entityType)}`)
   return invoke('get_entities_by_type', { entityType })
 }
 
 export async function getEntityById(id: string): Promise<Entity | null> {
+  if (!isTauri()) return fetchJson(`/_entities/by-id/${encodeURIComponent(id)}`)
   return invoke('get_entity_by_id', { id })
 }
 
 export async function searchEntities(query: string): Promise<EntitySummary[]> {
+  if (!isTauri()) return fetchJson(`/_entities/search?q=${encodeURIComponent(query)}`)
   return invoke('search_entities', { query })
 }
 
@@ -57,6 +69,7 @@ export async function getAvailableChoices(
   characterId: string,
   slotType: string
 ): Promise<Entity[]> {
+  if (!isTauri()) return fetchJson(`/_entities/by-type-full/${encodeURIComponent(slotType)}`)
   return invoke('get_available_choices', { characterId, slotType })
 }
 

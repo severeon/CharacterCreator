@@ -1,4 +1,5 @@
 import type { Entity } from '../../lib/types'
+import { babTable } from '../reference/babTable'
 
 interface AssignAbilitiesStepProps {
   abilities: Record<string, number>
@@ -43,11 +44,6 @@ export function AssignAbilitiesStep({
   const refBase = classData ? ((classData['ref'] as number) ?? 0) : 0
   const willBase = classData ? ((classData['will'] as number) ?? 0) : 0
 
-  const babTable: Record<string, number[]> = {
-    good: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-    medium: [0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 12, 13, 14, 15],
-    bad: [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9],
-  }
   const babProgression = babTable[bab] || babTable['medium']
   const currentBAB = babProgression[0]
 

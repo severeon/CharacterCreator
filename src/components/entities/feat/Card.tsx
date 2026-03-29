@@ -1,5 +1,6 @@
 import type { Entity } from '../../../lib/types'
 import { getPropertyString } from '../../../lib/properties'
+import { Badge } from '../../ui'
 
 interface Props {
   entity: Entity
@@ -15,12 +16,7 @@ export default function FeatCard({ entity }: Props) {
       {visibleTags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
           {visibleTags.map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full"
-            >
-              {tag}
-            </span>
+            <Badge key={tag} variant="amber">{tag}</Badge>
           ))}
         </div>
       )}

@@ -1,6 +1,7 @@
 import type { Entity, Value } from '../../../lib/types'
 import { getPropertyString } from '../../../lib/properties'
 import { isObject, ABILITY_KEYS } from '../shared'
+import { DetailSection, Badge, BulletList } from '../../ui'
 
 interface Props {
   entity: Entity
@@ -47,36 +48,28 @@ export default function RaceDetail({ entity }: Props) {
   return (
     <div className="space-y-4">
       {bonusEntries.length > 0 && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-2">Ability Score Adjustments</h3>
+        <DetailSection title="Ability Score Adjustments">
           <div className="flex flex-wrap gap-1">
             {bonusEntries.map(({ key, val }) => {
               const sign = val > 0 ? '+' : ''
               return (
-                <span
-                  key={key}
-                  className="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full"
-                >
+                <Badge key={key} variant="amber">
                   {sign}{val} {key.toUpperCase()}
-                </span>
+                </Badge>
               )
             })}
           </div>
-        </section>
+        </DetailSection>
       )}
       {traits.length > 0 && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-2">Racial Traits</h3>
-          <ul className="list-disc list-inside text-sm text-gray-800 space-y-1">
-            {traits.map((trait) => (
-              <li key={trait}>{trait}</li>
-            ))}
-          </ul>
-        </section>
+        <DetailSection title="Racial Traits">
+          <BulletList items={traits} />
+        </DetailSection>
       )}
       {hasPhysical && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-2">Physical Characteristics</h3>
+        <DetailSection title="Physical Characteristics">
+          {/* DISPLAY-PRIMITIVE-MISSING: unstyled list with inline font-medium labels (Size, Height, Weight).
+              BulletList forces list-disc list-inside which is wrong here. */}
           <ul className="text-sm text-gray-800 space-y-1">
             {size && (
               <li>
@@ -96,13 +89,12 @@ export default function RaceDetail({ entity }: Props) {
               </li>
             )}
           </ul>
-        </section>
+        </DetailSection>
       )}
       {proficiencies.length > 0 && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-2">Proficiencies</h3>
+        <DetailSection title="Proficiencies">
           <p className="text-sm text-gray-800">{proficiencies.join(', ')}</p>
-        </section>
+        </DetailSection>
       )}
     </div>
   )

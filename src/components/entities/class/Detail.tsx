@@ -1,6 +1,7 @@
 import type { Entity } from '../../../lib/types'
 import { getPropertyString, getPropertyNumber } from '../../../lib/properties'
 import { isObject } from '../shared'
+import { DetailSection, KeyValue, BulletList } from '../../ui'
 
 interface Props {
   entity: Entity
@@ -49,90 +50,53 @@ export default function ClassDetail({ entity }: Props) {
   return (
     <div className="space-y-4">
       {hasStats && (
-        <section>
-          <div className="flex gap-6 text-sm text-gray-800">
-            {hd > 0 && (
-              <div>
-                <span className="font-semibold text-gray-600">HD</span>{' '}
-                <span>d{hd}</span>
-              </div>
-            )}
-            {bab !== '' && (
-              <div>
-                <span className="font-semibold text-gray-600">BAB</span>{' '}
-                <span className="capitalize">{bab}</span>
-              </div>
-            )}
-            {skillPoints > 0 && (
-              <div>
-                <span className="font-semibold text-gray-600">Skill Points/Level</span>{' '}
-                <span>{skillPoints}</span>
-              </div>
-            )}
-          </div>
-        </section>
+        <div className="flex gap-6 text-sm">
+          {hd > 0 && <KeyValue label="HD" value={`d${hd}`} layout="inline" />}
+          {bab !== '' && (
+            <KeyValue label="BAB" value={<span className="capitalize">{bab}</span>} layout="inline" />
+          )}
+          {skillPoints > 0 && (
+            <KeyValue label="Skill Points/Level" value={skillPoints} layout="inline" />
+          )}
+        </div>
       )}
 
       {hasSaves && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-1">Saves</h3>
-          <div className="flex gap-4 text-sm text-gray-800">
-            {fort !== '' && (
-              <span><span className="font-medium">Fort:</span> {fmtSave(fort)}</span>
-            )}
-            {ref !== '' && (
-              <span><span className="font-medium">Ref:</span> {fmtSave(ref)}</span>
-            )}
-            {will !== '' && (
-              <span><span className="font-medium">Will:</span> {fmtSave(will)}</span>
-            )}
+        <DetailSection title="Saves" spacing="tight">
+          <div className="flex gap-4">
+            {fort !== '' && <KeyValue label="Fort" value={fmtSave(fort)} layout="inline" />}
+            {ref !== '' && <KeyValue label="Ref" value={fmtSave(ref)} layout="inline" />}
+            {will !== '' && <KeyValue label="Will" value={fmtSave(will)} layout="inline" />}
           </div>
-        </section>
+        </DetailSection>
       )}
 
       {classSkills.length > 0 && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-1">Class Skills</h3>
+        <DetailSection title="Class Skills" spacing="tight">
           <p className="text-sm text-gray-800">{classSkills.join(', ')}</p>
-        </section>
+        </DetailSection>
       )}
 
       {specialAbilities.length > 0 && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-1">Special Abilities</h3>
-          <ul className="list-disc list-inside text-sm text-gray-800 space-y-0.5">
-            {specialAbilities.map((ability) => (
-              <li key={ability}>{ability}</li>
-            ))}
-          </ul>
-        </section>
+        <DetailSection title="Special Abilities" spacing="tight">
+          <BulletList items={specialAbilities} spacing="tight" />
+        </DetailSection>
       )}
 
       {bonusFeats.length > 0 && (
-        <section>
-          <p className="text-sm text-gray-800">
-            <span className="font-semibold text-gray-700">Bonus feats at levels:</span>{' '}
-            {bonusFeats.join(', ')}
-          </p>
-        </section>
+        <KeyValue label="Bonus feats at levels" value={bonusFeats.join(', ')} layout="inline" />
       )}
 
       {variants.length > 0 && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-1">Variants</h3>
-          <ul className="list-disc list-inside text-sm text-gray-800 space-y-0.5">
-            {variants.map((v) => (
-              <li key={v}>{v}</li>
-            ))}
-          </ul>
-        </section>
+        <DetailSection title="Variants" spacing="tight">
+          <BulletList items={variants} spacing="tight" />
+        </DetailSection>
       )}
 
       {subtype === 'prestige' && entryRequirements !== '' && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-1">Entry Requirements</h3>
+        <DetailSection title="Entry Requirements" spacing="tight">
           <p className="text-sm text-gray-800">{entryRequirements}</p>
-        </section>
+        </DetailSection>
       )}
     </div>
   )

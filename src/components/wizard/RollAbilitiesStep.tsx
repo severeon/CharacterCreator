@@ -5,7 +5,6 @@ interface RollAbilitiesStepProps {
   onStandardArray: () => void
   onPointBuy: () => void
   onManualEntry: () => void
-  onContinue: () => void
 }
 
 export function RollAbilitiesStep({
@@ -15,7 +14,6 @@ export function RollAbilitiesStep({
   onStandardArray,
   onPointBuy,
   onManualEntry,
-  onContinue,
 }: RollAbilitiesStepProps) {
   return (
     <div className="space-y-6">
@@ -120,14 +118,6 @@ export function RollAbilitiesStep({
         </div>
       )}
 
-      <div className="flex gap-4">
-        <button
-          onClick={onContinue}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg"
-        >
-          Continue to Race Selection
-        </button>
-      </div>
     </div>
   )
 }

@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { POINT_BUY_COST } from '../../../lib/dnd35/constants'
 
+import { babTable } from '../../reference/babTable'
+
 describe('AbilitiesStep pure logic', () => {
   function abilityModifier(score: number): number {
     return Math.floor((score - 10) / 2)
@@ -31,11 +33,6 @@ describe('AbilitiesStep pure logic', () => {
   })
 
   it('BAB table has correct level 1 values', () => {
-    const babTable: Record<string, number[]> = {
-      good: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-      medium: [0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 12, 13, 14, 15],
-      bad: [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9],
-    }
     expect(babTable['good'][0]).toBe(1)
     expect(babTable['medium'][0]).toBe(0)
     expect(babTable['bad'][0]).toBe(0)

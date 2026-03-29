@@ -1,6 +1,7 @@
 import type { Entity, Value } from '../../../lib/types'
 import { getPropertyString, getPropertyNumber } from '../../../lib/properties'
 import { isObject, ABILITY_KEYS } from '../shared'
+import { Badge } from '../../ui'
 
 interface Props {
   entity: Entity
@@ -41,12 +42,7 @@ export default function RaceCard({ entity }: Props) {
       {bonusChips.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
           {bonusChips.map((chip) => (
-            <span
-              key={chip}
-              className="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full"
-            >
-              {chip}
-            </span>
+            <Badge key={chip} variant="amber">{chip}</Badge>
           ))}
         </div>
       )}

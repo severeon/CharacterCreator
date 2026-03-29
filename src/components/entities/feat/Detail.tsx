@@ -1,5 +1,6 @@
 import type { Entity } from '../../../lib/types'
 import { isObject, ABILITY_KEYS } from '../shared'
+import { DetailSection, BulletList } from '../../ui'
 
 interface Props {
   entity: Entity
@@ -27,8 +28,9 @@ export default function FeatDetail({ entity }: Props) {
   return (
     <div className="space-y-4">
       {hasPrereqs && prereqs && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-2">Prerequisites</h3>
+        <DetailSection title="Prerequisites">
+          {/* Mixed-content prereq list: ability scores, BAB, feat names, special text.
+              BulletList cannot express this structure — keeping custom list. */}
           <ul className="space-y-1 text-sm text-gray-800">
             {ABILITY_KEYS.map((key) => {
               const val = prereqs[key]
@@ -56,17 +58,12 @@ export default function FeatDetail({ entity }: Props) {
               </li>
             )}
           </ul>
-        </section>
+        </DetailSection>
       )}
       {hasBonusFeatFor && bonusFeatFor && (
-        <section>
-          <h3 className="font-semibold text-gray-700 mb-2">Bonus Feat For</h3>
-          <ul className="list-disc list-inside text-sm text-gray-800">
-            {bonusFeatFor.map((cls) => (
-              <li key={cls}>{cls}</li>
-            ))}
-          </ul>
-        </section>
+        <DetailSection title="Bonus Feat For">
+          <BulletList items={bonusFeatFor} />
+        </DetailSection>
       )}
     </div>
   )

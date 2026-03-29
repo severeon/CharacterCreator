@@ -1,5 +1,6 @@
 import type { Entity } from '../../../lib/types'
 import { getPropertyString } from '../../../lib/properties'
+import { DetailSection, KeyValue, BulletList } from '../../ui'
 
 interface Props {
   entity: Entity
@@ -17,33 +18,17 @@ export default function SkillDetail({ entity }: Props) {
 
   return (
     <div className="space-y-3">
-      {ability && (
-        <div className="flex gap-2 text-sm">
-          <span className="font-semibold text-gray-700 w-40">Key Ability</span>
-          <span className="text-gray-800">{ability}</span>
-        </div>
-      )}
+      {ability && <KeyValue label="Key Ability" value={ability} />}
       {typeof trainedOnlyRaw === 'boolean' && (
-        <div className="flex gap-2 text-sm">
-          <span className="font-semibold text-gray-700 w-40">Trained Only</span>
-          <span className="text-gray-800">{trainedOnlyRaw ? 'Yes' : 'No'}</span>
-        </div>
+        <KeyValue label="Trained Only" value={trainedOnlyRaw ? 'Yes' : 'No'} />
       )}
       {typeof armorCheckPenaltyRaw === 'boolean' && (
-        <div className="flex gap-2 text-sm">
-          <span className="font-semibold text-gray-700 w-40">Armor Check Penalty</span>
-          <span className="text-gray-800">{armorCheckPenaltyRaw ? 'Yes' : 'No'}</span>
-        </div>
+        <KeyValue label="Armor Check Penalty" value={armorCheckPenaltyRaw ? 'Yes' : 'No'} />
       )}
       {synergies.length > 0 && (
-        <section>
-          <p className="font-semibold text-gray-700 mb-2">Synergies</p>
-          <ul className="list-disc list-inside text-sm text-gray-800">
-            {synergies.map((skill) => (
-              <li key={skill}>{skill}</li>
-            ))}
-          </ul>
-        </section>
+        <DetailSection title="Synergies">
+          <BulletList items={synergies} />
+        </DetailSection>
       )}
     </div>
   )

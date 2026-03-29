@@ -1,5 +1,6 @@
 import type { Entity } from '../../../lib/types'
 import { getPropertyString, getPropertyNumber } from '../../../lib/properties'
+import { KeyValue } from '../../ui'
 
 interface Props {
   entity: Entity
@@ -16,21 +17,10 @@ export default function SpellDetail({ entity }: Props) {
 
   return (
     <div className="space-y-4">
-      {school && (
-        <div>
-          <span className="font-semibold text-gray-700">School: </span>
-          <span className="text-sm text-gray-800">{school}</span>
-        </div>
-      )}
-      <div>
-        <span className="font-semibold text-gray-700">Level: </span>
-        <span className="text-sm text-gray-800">{level}</span>
-      </div>
+      {school && <KeyValue label="School" value={school} />}
+      <KeyValue label="Level" value={String(level)} />
       {castingClasses.length > 0 && (
-        <div>
-          <span className="font-semibold text-gray-700">Casting Classes: </span>
-          <span className="text-sm text-gray-800">{castingClasses.join(', ')}</span>
-        </div>
+        <KeyValue label="Casting Classes" value={castingClasses.join(', ')} />
       )}
     </div>
   )

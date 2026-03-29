@@ -1,4 +1,5 @@
 import type { Entity } from '../../lib/types'
+import { babTable } from '../reference/babTable'
 
 interface AbilitiesStepProps {
   abilities: Record<string, number>
@@ -43,11 +44,6 @@ export function AbilitiesStep({
   const refBase = classData ? ((classData['ref'] as number) ?? 0) : 0
   const willBase = classData ? ((classData['will'] as number) ?? 0) : 0
 
-  const babTable: Record<string, number[]> = {
-    good: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-    medium: [0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 12, 13, 14, 15],
-    bad: [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9],
-  }
   const babProgression = babTable[bab] || babTable['medium']
   const currentBAB = babProgression[0]
 
@@ -57,6 +53,8 @@ export function AbilitiesStep({
   const flatFooted = 10 + dexMod
   const touch = 10 + dexMod
 
+  const getClasslist = (am: string) => abilityMethod === am ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Assign Ability Scores</h2>
@@ -65,33 +63,25 @@ export function AbilitiesStep({
       <div className="flex flex-wrap gap-3">
         <button
           onClick={onRollAbilities}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'roll' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
+          className={`px-4 py-2 rounded-lg border ${getClasslist("roll")}`}
         >
           Roll 4d6 (×6)
         </button>
         <button
           onClick={onStandardArray}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'array' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
+          className={`px-4 py-2 rounded-lg border ${getClasslist("array")}`}
         >
           Standard Array
         </button>
         <button
           onClick={onPointBuy}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'pointbuy' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
+          className={`px-4 py-2 rounded-lg border ${getClasslist("pointbuy")}`}
         >
           Point Buy ({pointBuyRemaining} pts)
         </button>
         <button
           onClick={onManualEntry}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'manual' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
+          className={`px-4 py-2 rounded-lg border ${getClasslist("manual")}`}
         >
           Manual
         </button>

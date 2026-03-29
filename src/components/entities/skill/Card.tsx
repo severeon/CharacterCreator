@@ -1,5 +1,6 @@
 import type { Entity } from '../../../lib/types'
 import { getPropertyString } from '../../../lib/properties'
+import { Badge } from '../../ui'
 
 interface Props {
   entity: Entity
@@ -17,9 +18,9 @@ export default function SkillCard({ entity }: Props) {
         <p className="text-sm text-gray-500 mt-1">Key Ability: {ability}</p>
       )}
       {typeof trainedOnly === 'boolean' && trainedOnly && (
-        <span className="inline-block mt-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full">
-          Trained Only
-        </span>
+        <div className="mt-2">
+          <Badge variant="blue">Trained Only</Badge>
+        </div>
       )}
     </div>
   )
