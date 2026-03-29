@@ -16,7 +16,11 @@ export default function FeatDetail({ entity }: Props) {
 
   const bonusFeatForRaw = entity.properties.bonusFeatFor
   const bonusFeatFor = Array.isArray(bonusFeatForRaw)
-    ? (bonusFeatForRaw as string[])
+    ? bonusFeatForRaw.filter((v): v is string => typeof v === 'string')
+    : null
+
+  const prereqFeats = prereqs !== null && Array.isArray(prereqs.feats)
+    ? prereqs.feats.filter((v): v is string => typeof v === 'string')
     : null
 
   const hasPrereqs =
@@ -45,10 +49,10 @@ export default function FeatDetail({ entity }: Props) {
                 <span className="font-medium">Base Attack Bonus</span> +{prereqs.bab}
               </li>
             )}
-            {Array.isArray(prereqs.feats) && (prereqs.feats as string[]).length > 0 && (
+            {prereqFeats && prereqFeats.length > 0 && (
               <li>
                 <span className="font-medium">Feats:</span>{' '}
-                {(prereqs.feats as string[]).join(', ')}
+                {prereqFeats.join(', ')}
               </li>
             )}
             {typeof prereqs.special === 'string' && prereqs.special && (
