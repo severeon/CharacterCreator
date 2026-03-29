@@ -1,4 +1,4 @@
-import type { Entity } from '../../../lib/types'
+import type { Entity, Value } from '../../../lib/types'
 import { getPropertyString, getPropertyNumber } from '../../../lib/properties'
 import { isObject } from '../shared'
 
@@ -6,8 +6,8 @@ interface Props {
   entity: Entity
 }
 
-function saveSummary(saves: Record<string, import('../../../lib/types').Value>): string {
-  const fmt = (v: import('../../../lib/types').Value) => (v === 'good' ? 'G' : 'P')
+function saveSummary(saves: Record<string, Value>): string {
+  const fmt = (v: Value) => (v === 'good' ? 'G' : 'P')
   return `F:${fmt(saves.fort)} R:${fmt(saves.ref)} W:${fmt(saves.will)}`
 }
 
