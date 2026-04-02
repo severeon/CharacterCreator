@@ -205,3 +205,132 @@ mod tests {
         assert_eq!(view.inputs[0], "abilities.strength.score");
     }
 }
+
+/// Sort computed views topologically by their input dependencies.
+/// Returns views in evaluation order (dependencies first).
+/// Returns Err with cycle description if views have circular dependencies.
+pub fn sort_computed_views(views: &[ComputedView]) -> Result<Vec<ComputedView>, String> {
+    // Build adjacency: view index -> indices of views that depend on it
+    let n = views.len();
+    let mut in_degree: Vec<usize> = vec![0; n];
+    let mut dependents: std::collections::HashMap<usize, Vec<usize>> = std::collections::HashMap::new();
+
+    // For each view, find which other views it depends on
+    for (i, view) in views.iter().enumerate() {
+        for (j, other) in views.iter().enumerate() {
+            if i == j {
+                continue;
+            }
+            // If view.inputs contains other's path, view depends on other
+            if view.inputs.iter().any(|input| other.path == *input) {
+                // view depends on other (j)
+                in_degree[i] += 1;
+                dependents.entry(j).or_default().push(i);
+            }
+        }
+    }
+
+    // Kahn's algorithm
+    let mut queue: Vec<usize> = in_degree
+        .iter()
+        .enumerate()
+        .filter(|(_, &deg)| deg == 0)
+        .map(|(i, _)| i)
+        .collect();
+    let mut sorted = Vec::new();
+
+    while let Some(idx) = queue.pop() {
+        sorted.push(idx);
+        if let Some(deps) = dependents.get(&idx) {
+            for &dep in deps {
+                in_degree[dep] -= 1;
+                if in_degree[dep] == 0 {
+                    queue.push(dep);
+                }
+            }
+        }
+    }
+
+    if sorted.len() != n {
+        Err("Cycle detected in computed view dependencies".to_string())
+    } else {
+        Ok(sorted.iter().map(|&i| views[i].clone()).collect())
+    }
+}
+
+#[cfg(test)]
+mod dependency_tests {
+    use super::*;
+
+    #[test]
+    fn test_topo_sort_no_deps() {
+        let views = vec![
+            ComputedView::new(
+                "c1",
+                "a",
+                vec![],
+                Computation::literal(Value::Int(1)),
+                "src",
+            ),
+            ComputedView::new(
+                "c2",
+                "b",
+                vec![],
+                Computation::literal(Value::Int(2)),
+                "src",
+            ),
+        ];
+        let result = sort_computed_views(&views).unwrap();
+        assert_eq!(result.len(), 2);
+    }
+
+    #[test]
+    fn test_topo_sort_with_deps() {
+        // view_a depends on nothing, view_b depends on view_a's path
+        let views = vec![
+            ComputedView::new(
+                "c1",
+                "base",
+                vec![],
+                Computation::literal(Value::Int(1)),
+                "src",
+            ),
+            ComputedView::new(
+                "c2",
+                "derived",
+                vec!["base".to_string()],
+                Computation::literal(Value::Int(2)),
+                "src",
+            ),
+        ];
+        let result = sort_computed_views(&views).unwrap();
+        // base should come before derived
+        let base_idx = result.iter().position(|v| v.path == "base").unwrap();
+        let derived_idx = result.iter().position(|v| v.path == "derived").unwrap();
+        assert!(base_idx < derived_idx);
+    }
+
+    #[test]
+    fn test_cycle_detection() {
+        // A depends on B, B depends on A — cycle
+        let views = vec![
+            ComputedView::new(
+                "c1",
+                "a",
+                vec!["b".to_string()],
+                Computation::literal(Value::Int(1)),
+                "src",
+            ),
+            ComputedView::new(
+                "c2",
+                "b",
+                vec!["a".to_string()],
+                Computation::literal(Value::Int(2)),
+                "src",
+            ),
+        ];
+        let result = sort_computed_views(&views);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Cycle"));
+    }
+}
