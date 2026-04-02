@@ -32,7 +32,16 @@ pub fn evaluate(formula: &str, context: &Value) -> Result<Value, String> {
 
     // Step 6: convert evalexpr::Value → serde_json::Value
     match result {
-        evalexpr::Value::Float(f) => Ok(serde_json::json!(f)),
+        evalexpr::Value::Float(f) => {
+            if f.is_infinite() || f.is_nan() {
+                Err(format!("Expression '{}' produced non-finite result: {}", formula, f))
+            } else {
+                Ok(serde_json::json!(f))
+            }
+        }
+        // Cast to f64 for consistency with the engine's numeric model — all numbers flow as
+        // floats through the evaluation pipeline so downstream consumers don't need to
+        // special-case integer vs float results.
         evalexpr::Value::Int(i) => Ok(serde_json::json!(i as f64)),
         evalexpr::Value::Boolean(b) => Ok(serde_json::json!(b)),
         evalexpr::Value::String(s) => Ok(serde_json::json!(s)),
@@ -78,9 +87,9 @@ fn find_keyword(s: &str, keyword: &str) -> Option<usize> {
     let mut i = 0;
     while i + klen <= s.len() {
         if s[i..].starts_with(keyword) {
-            let before_ok = i == 0 || !bytes[i - 1].is_ascii_alphanumeric() && bytes[i - 1] != b'_';
+            let before_ok = i == 0 || (!bytes[i - 1].is_ascii_alphanumeric() && bytes[i - 1] != b'_');
             let after_ok = i + klen == s.len()
-                || !bytes[i + klen].is_ascii_alphanumeric() && bytes[i + klen] != b'_';
+                || (!bytes[i + klen].is_ascii_alphanumeric() && bytes[i + klen] != b'_');
             if before_ok && after_ok {
                 found = Some(i);
             }
@@ -91,24 +100,49 @@ fn find_keyword(s: &str, keyword: &str) -> Option<usize> {
     found
 }
 
+/// Recursively search `context` and its nested objects for a key whose value is an array.
+/// Returns the first match found (depth-first, top-level checked first).
+fn find_nested_array<'a>(context: &'a Value, key: &str) -> Option<&'a Value> {
+    // First try top-level
+    if let Some(v) = context.get(key) {
+        if v.is_array() {
+            return Some(v);
+        }
+    }
+    // Then search recursively in nested objects
+    if let Value::Object(map) = context {
+        for (_, v) in map {
+            if let Some(found) = find_nested_array(v, key) {
+                return Some(found);
+            }
+        }
+    }
+    None
+}
+
 /// Handle `lookup(table_key_expr, index_expr)` calls by resolving them against
 /// the context before handing off to evalexpr.
 ///
+/// Supports multiple `lookup()` calls in a single formula by looping until none remain.
+///
 /// Semantics:
 /// 1. Evaluate `table_key_expr` as a string to get the array name (e.g. `"full"`).
-/// 2. Look up that name in the context to get an array.
+/// 2. Look up that name in the context (including nested objects) to get an array.
 /// 3. Evaluate `index_expr` as an integer (0-based) OR as a string key.
 ///    - If integer: return `array[index]` as a number.
 ///    - If string: treat array items as objects and return the value at that key from item 0.
 ///
 /// The result is substituted back into the formula as a numeric literal.
-fn preprocess_lookup(formula: &str, context: &Value) -> Result<String, String> {
-    let trimmed = formula.trim();
-
-    // Simple detection: does the formula contain `lookup(`?
-    if !trimmed.contains("lookup(") {
-        return Ok(formula.to_string());
+pub fn preprocess_lookup(formula: &str, context: &Value) -> Result<String, String> {
+    let mut result = formula.to_string();
+    while result.contains("lookup(") {
+        result = preprocess_single_lookup(&result, context)?;
     }
+    Ok(result)
+}
+
+fn preprocess_single_lookup(formula: &str, context: &Value) -> Result<String, String> {
+    let trimmed = formula.trim();
 
     // Find the lookup( call
     let start = trimmed.find("lookup(").ok_or("malformed lookup")?;
@@ -130,9 +164,8 @@ fn preprocess_lookup(formula: &str, context: &Value) -> Result<String, String> {
     // Resolve the table key: look it up in context directly (it should be a var name or string literal)
     let table_name = resolve_string_from_context(table_key_expr, context)?;
 
-    // Get the array from context
-    let array = context
-        .get(&table_name)
+    // Get the array from context, searching nested objects if not found at top level
+    let array = find_nested_array(context, &table_name)
         .ok_or_else(|| format!("lookup: no context key `{}`", table_name))?;
     let arr = array
         .as_array()
@@ -313,15 +346,37 @@ mod tests {
 
     #[test]
     fn test_lookup_level_based() {
-        // Typical BAB lookup: lookup(bab_progression, level) where level is a numeric index
+        // Typical BAB lookup: lookup(bab_progression, level) where level is a numeric index.
+        // Context: only nested path (no top-level alias) — proves recursive search works.
         let ctx = serde_json::json!({
             "bab_progression": "full",
-            "progressions": {"full": [1, 2, 3, 4, 5]},
-            "full": [1, 2, 3, 4, 5],
-            "level": 1
+            "progressions": { "full": [1, 2, 3, 4, 5] },
+            "level": 2
         });
         let result = evaluate("lookup(bab_progression, level)", &ctx).unwrap();
-        assert_eq!(result.as_f64().unwrap(), 1.0);
+        assert_eq!(result.as_f64().unwrap(), 2.0);
+    }
+
+    #[test]
+    fn test_multi_lookup_formula() {
+        // Two lookup() calls in one formula — e.g. total attack bonus combining BAB and melee bonus.
+        let ctx = serde_json::json!({
+            "bab_prog": "full",
+            "save_prog": "good",
+            "full": [1, 2, 3, 4, 5],
+            "good": [2, 3, 3, 4, 4],
+            "level": 3
+        });
+        let result = evaluate("lookup(bab_prog, level) + lookup(save_prog, level)", &ctx).unwrap();
+        // level 3 → full[2] = 3, good[2] = 3 → 6
+        assert_eq!(result.as_f64().unwrap(), 6.0);
+    }
+
+    #[test]
+    fn test_division_by_zero_returns_error() {
+        let ctx = serde_json::json!({"a": 1, "b": 0});
+        let result = evaluate("a / b", &ctx);
+        assert!(result.is_err(), "expected error for division by zero");
     }
 
     #[test]
