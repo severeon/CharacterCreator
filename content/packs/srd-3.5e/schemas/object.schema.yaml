@@ -1,25 +1,134 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 
 title: Object Entity Schema
-description: Schema for object entities (weapons, armor, gear) in content packs
+description: Schema for object entities (weapons, armor, items, equipment)
 
 type: object
+required: [id, entity_type, properties]
 properties:
-  entity_header:
-    $ref: _base.schema.yaml#/types/entity_header
+  id:
+    type: string
+    description: Unique identifier for the object
   entity_type:
     type: string
-    pattern: "^object(\\.[a-z_]+)?$"
-  name:
-    type: string
-    description: Display name of the object
-  weight:
-    type: number
-    description: Weight of the object in pounds
-  cost:
-    type: string
-    description: Cost of the object (e.g., "5 gp", "10 sp")
+    const: "object"
+  tags:
+    type: array
+    items:
+      type: string
+  properties:
+    type: object
+    required: [name]
+    properties:
+      name:
+        type: string
+        description: Display name
+      description:
+        type: string
+        description: Human-readable description
+      source:
+        type: string
+        description: Rule source (e.g., PHB, DMG)
+      category:
+        type: string
+        enum: [weapon, armor, shield, item, wondrous_item, gear]
+        description: Item category
+      subtype:
+        type: string
+        description: Item subtype (e.g., martial, simple, light)
+      cost:
+        type: object
+        properties:
+          quantity:
+            type: number
+          unit:
+            type: string
+            enum: [gp, sp, cp]
+        description: Monetary cost
+      weight:
+        type: number
+        description: Weight in pounds
+      damage:
+        type: string
+        description: Damage dice (e.g., "1d8")
+      damage_type:
+        type: string
+        description: Damage type (e.g., slashing, piercing)
+      critical:
+        type: string
+        description: Critical threat/range (e.g., "19-20/x2")
+      range_increment:
+        type: integer
+        description: Range increment in feet for ranged weapons
+      ammunition:
+        type: string
+        description: Ammunition type
+      armor_class:
+        type: integer
+        description: AC bonus from armor
+      armor_check_penalty:
+        type: integer
+        description: AC check penalty
+      max_dex_bonus:
+        type: integer
+        description: Maximum Dexterity bonus
+      arcane_spell_failure:
+        type: integer
+        description: Arcane spell failure chance (%)
+      speed:
+        type: integer
+        description: Speed penalty in feet
+      properties:
+        type: array
+        items:
+          type: string
+        description: Special properties (e.g., melee, thrown)
+      equipped_slot:
+        type: string
+        description: Which slot this occupies when equipped
+      magical_bonus:
+        type: integer
+        description: Enhancement bonus if magical
+      requires_attunement:
+        type: boolean
+        description: Whether item requires attunement
+  subscriptions:
+    type: array
+    items:
+      $ref: "#/types/subscription"
+  computed_views:
+    type: array
+    items:
+      $ref: "#/types/computed_view"
 
-required:
-  - entity_header
-  - name
+types:
+  subscription:
+    type: object
+    required: [trigger, effects]
+    properties:
+      trigger:
+        type: string
+      predicate:
+        type: object
+      effects:
+        type: array
+        items:
+          type: object
+      plugin:
+        type: string
+      config:
+        type: object
+  computed_view:
+    type: object
+    required: [path, inputs, formula]
+    properties:
+      path:
+        type: string
+      inputs:
+        type: array
+        items:
+          type: string
+      formula:
+        type: string
+      source:
+        type: string

@@ -1,45 +1,111 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 
 title: Actionable Entity Schema
-description: Schema for actionable entities (spells, powers) in content packs
+description: Schema for actionable entities (feats, special abilities, class features)
 
 type: object
+required: [id, entity_type, properties]
 properties:
-  entity_header:
-    $ref: _base.schema.yaml#/types/entity_header
+  id:
+    type: string
+    description: Unique identifier for the actionable
   entity_type:
     type: string
-    pattern: "^actionable(\\.[a-z_]+)?$"
-  name:
-    type: string
-    description: Display name of the spell or power
-  level:
-    type: integer
-    description: Spell or power level
-  school:
-    type: string
-    description: School of magic or power type
-  casting_time:
-    type: string
-    description: Time required to cast
-  range:
-    type: string
-    description: Range of the spell or power
-  duration:
-    type: string
-    description: Duration of the effect
-  saving_throw:
-    type: string
-    description: Saving throw information
-  spell_resistance:
-    type: string
-    description: Spell resistance information
-  components:
+    const: "actionable"
+  tags:
     type: array
     items:
       type: string
-    description: Components required to cast
+  properties:
+    type: object
+    required: [name]
+    properties:
+      name:
+        type: string
+        description: Display name
+      description:
+        type: string
+        description: Human-readable description
+      source:
+        type: string
+        description: Rule source (e.g., PHB)
+      type:
+        type: string
+        enum: [feat, ability, feature, special_ability]
+        description: Type of actionable
+      prerequisite:
+        type: array
+        items:
+          type: string
+        description: Prerequisites to acquire this
+      prerequisite_for:
+        type: array
+        items:
+          type: string
+        description: What this is a prerequisite for
+      benefit:
+        type: string
+        description: What benefit the actionable provides
+      normal:
+        type: string
+        description: Normal behavior without this actionable
+      special:
+        type: string
+        description: Special notes about this actionable
+      bonus_feat_for:
+        type: array
+        items:
+          type: string
+        description: Classes that can take this as a bonus feat
+      attack_bonus:
+        type: integer
+        description: Attack bonus granted
+      damage_bonus:
+        type: integer
+        description: Damage bonus granted
+      save_bonus:
+        type: integer
+        description: Saving throw bonus granted
+      extra:
+        type: object
+        description: Extra data specific to this actionable type
+  subscriptions:
+    type: array
+    items:
+      $ref: "#/types/subscription"
+  computed_views:
+    type: array
+    items:
+      $ref: "#/types/computed_view"
 
-required:
-  - entity_header
-  - name
+types:
+  subscription:
+    type: object
+    required: [trigger, effects]
+    properties:
+      trigger:
+        type: string
+      predicate:
+        type: object
+      effects:
+        type: array
+        items:
+          type: object
+      plugin:
+        type: string
+      config:
+        type: object
+  computed_view:
+    type: object
+    required: [path, inputs, formula]
+    properties:
+      path:
+        type: string
+      inputs:
+        type: array
+        items:
+          type: string
+      formula:
+        type: string
+      source:
+        type: string

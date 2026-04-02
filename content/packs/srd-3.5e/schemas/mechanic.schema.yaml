@@ -1,32 +1,136 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 
 title: Mechanic Entity Schema
-description: Schema for mechanic entities in content packs
-$ref: _base.schema.yaml#/types/entity_header
+description: Schema for game mechanic entities (ability scores, skills, saving throws, proficiency systems)
 
 type: object
+required: [id, entity_type, properties]
 properties:
-  entity_header:
-    $ref: _base.schema.yaml#/types/entity_header
-  name:
+  id:
     type: string
-    description: Display name of the mechanic
+    description: Unique identifier for the mechanic
+  entity_type:
+    type: string
+    const: "mechanic"
+  properties:
+    type: object
+    required: [name]
+    properties:
+      name:
+        type: string
+        description: Display name of the mechanic
+      description:
+        type: string
+        description: Human-readable description
+      formula:
+        type: string
+        description: Calculation formula for this mechanic
+      modifier_formula:
+        type: string
+        description: Formula for computing modifiers from raw values
+      generation_methods:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            dice:
+              type: string
+            budget:
+              type: integer
+            cost_table:
+              type: object
+              additionalProperties:
+                type: integer
+            values:
+              type: array
+              items:
+                type: integer
+      abilities:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            abbreviation:
+              type: string
+      skills:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            ability:
+              type: string
+      saves:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            ability:
+              type: string
+      proficiency_model:
+        type: string
+        enum: [binary, bonus, hybrid]
+        description: How proficiency is calculated
+      proficiency_bonus_formula:
+        type: string
+      expertise_multiplier:
+        type: integer
+      applies_to:
+        type: array
+        items:
+          type: string
   subscriptions:
     type: array
     items:
-      $ref: _base.schema.yaml#/types/subscription
-    description: Subscriptions that attach behaviors to game events
+      $ref: "#/types/subscription"
   computed_views:
     type: array
     items:
-      $ref: _base.schema.yaml#/types/computed_view
-    description: Computed views that derive values from other state
-additionalProperties: true
+      $ref: "#/types/computed_view"
 
-required:
-  - entity_header
-  - name
-
-patternProperties:
-  "^.*$":
-    description: Arbitrary additional properties
+types:
+  subscription:
+    type: object
+    required: [trigger, effects]
+    properties:
+      trigger:
+        type: string
+      predicate:
+        type: object
+      effects:
+        type: array
+        items:
+          type: object
+      plugin:
+        type: string
+      config:
+        type: object
+  computed_view:
+    type: object
+    required: [path, inputs, formula]
+    properties:
+      path:
+        type: string
+      inputs:
+        type: array
+        items:
+          type: string
+      formula:
+        type: string
+      source:
+        type: string

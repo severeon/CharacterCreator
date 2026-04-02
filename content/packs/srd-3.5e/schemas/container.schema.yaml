@@ -1,24 +1,94 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 
 title: Container Entity Schema
-description: Schema for container entities in content packs
+description: Schema for container entities (packs, lists, collections of other entities)
 
 type: object
+required: [id, entity_type, properties]
 properties:
-  entity_header:
-    $ref: _base.schema.yaml#/types/entity_header
+  id:
+    type: string
+    description: Unique identifier for the container
   entity_type:
     type: string
-    pattern: "^container(\\.[a-z_]+)?$"
-  name:
-    type: string
-    description: Display name of the container
-  items:
+    const: "container"
+  tags:
     type: array
     items:
       type: string
-    description: Entity IDs of items contained within
+  properties:
+    type: object
+    required: [name]
+    properties:
+      name:
+        type: string
+        description: Display name
+      description:
+        type: string
+        description: Human-readable description
+      source:
+        type: string
+        description: Rule source
+      contains:
+        type: array
+        items:
+          type: string
+        description: Entity IDs contained within
+      contains_types:
+        type: array
+        items:
+          type: string
+        description: Entity types this container holds
+      filter:
+        type: object
+        description: Filter criteria for contained entities
+      sort_by:
+        type: string
+        description: Default sort field
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction
+      max_items:
+        type: integer
+        description: Maximum number of items (0 = unlimited)
+  subscriptions:
+    type: array
+    items:
+      $ref: "#/types/subscription"
+  computed_views:
+    type: array
+    items:
+      $ref: "#/types/computed_view"
 
-required:
-  - entity_header
-  - name
+types:
+  subscription:
+    type: object
+    required: [trigger, effects]
+    properties:
+      trigger:
+        type: string
+      predicate:
+        type: object
+      effects:
+        type: array
+        items:
+          type: object
+      plugin:
+        type: string
+      config:
+        type: object
+  computed_view:
+    type: object
+    required: [path, inputs, formula]
+    properties:
+      path:
+        type: string
+      inputs:
+        type: array
+        items:
+          type: string
+      formula:
+        type: string
+      source:
+        type: string
