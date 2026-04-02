@@ -1,0 +1,82 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Base Definitions
+description: Shared definitions used across all entity schemas
+
+types:
+  entity_header:
+    type: object
+    required: [id, entity_type]
+    properties:
+      id:
+        type: string
+        description: Unique identifier for the entity
+      entity_type:
+        type: string
+        description: Type discriminator for the entity
+      extends:
+        type: array
+        items:
+          type: string
+        description: IDs of entities this entity extends from
+      tags:
+        type: array
+        items:
+          type: string
+        description: Arbitrary string tags for categorization
+
+  save_progression:
+    type: string
+    enum: [good, poor]
+    description: Whether a saving throw progression is good (high) or poor (low)
+
+  bab_type:
+    type: string
+    enum: [full, medium, poor]
+    description: Base attack bonus progression type
+
+  ability_ref:
+    type: string
+    enum: [str, dex, con, int, wis, cha]
+    description: Reference to an ability score
+
+  subscription:
+    type: object
+    required: [trigger, predicate, effects]
+    properties:
+      trigger:
+        type: string
+        description: Event or condition that triggers this subscription
+      predicate:
+        type: object
+        description: Condition that must be true for effects to apply
+      effects:
+        type: array
+        items:
+          type: object
+        description: Effects to apply when triggered
+      plugin:
+        type: string
+        description: Optional plugin name that provides this subscription
+      config:
+        type: object
+        description: Optional configuration for the subscription
+
+  computed_view:
+    type: object
+    required: [path, inputs, formula]
+    properties:
+      path:
+        type: string
+        description: Dot-notation path to the value this computes
+      inputs:
+        type: array
+        items:
+          type: string
+        description: Input values required for the computation
+      formula:
+        type: string
+        description: Computation formula
+      source:
+        type: string
+        description: Optional source plugin providing this computed view

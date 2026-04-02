@@ -1,0 +1,25 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Object Entity Schema
+description: Schema for object entities (weapons, armor, gear) in content packs
+
+type: object
+properties:
+  entity_header:
+    $ref: _base.schema.yaml#/types/entity_header
+  entity_type:
+    type: string
+    pattern: "^object(\\.[a-z_]+)?$"
+  name:
+    type: string
+    description: Display name of the object
+  weight:
+    type: number
+    description: Weight of the object in pounds
+  cost:
+    type: string
+    description: Cost of the object (e.g., "5 gp", "10 sp")
+
+required:
+  - entity_header
+  - name

@@ -1,0 +1,24 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Container Entity Schema
+description: Schema for container entities in content packs
+
+type: object
+properties:
+  entity_header:
+    $ref: _base.schema.yaml#/types/entity_header
+  entity_type:
+    type: string
+    pattern: "^container(\\.[a-z_]+)?$"
+  name:
+    type: string
+    description: Display name of the container
+  items:
+    type: array
+    items:
+      type: string
+    description: Entity IDs of items contained within
+
+required:
+  - entity_header
+  - name

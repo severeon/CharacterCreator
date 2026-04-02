@@ -1,0 +1,27 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Rule Entity Schema
+description: Schema for rule entities (feats, class features) in content packs
+
+type: object
+properties:
+  entity_header:
+    $ref: _base.schema.yaml#/types/entity_header
+  entity_type:
+    type: string
+    pattern: "^rule(\\.[a-z_]+)?$"
+  name:
+    type: string
+    description: Display name of the rule
+  description:
+    type: string
+    description: Description of what this rule does
+  prerequisites:
+    type: array
+    items:
+      type: string
+    description: Prerequisites that must be met to use this rule
+
+required:
+  - entity_header
+  - name

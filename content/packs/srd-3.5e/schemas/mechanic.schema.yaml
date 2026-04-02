@@ -1,0 +1,32 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Mechanic Entity Schema
+description: Schema for mechanic entities in content packs
+$ref: _base.schema.yaml#/types/entity_header
+
+type: object
+properties:
+  entity_header:
+    $ref: _base.schema.yaml#/types/entity_header
+  name:
+    type: string
+    description: Display name of the mechanic
+  subscriptions:
+    type: array
+    items:
+      $ref: _base.schema.yaml#/types/subscription
+    description: Subscriptions that attach behaviors to game events
+  computed_views:
+    type: array
+    items:
+      $ref: _base.schema.yaml#/types/computed_view
+    description: Computed views that derive values from other state
+additionalProperties: true
+
+required:
+  - entity_header
+  - name
+
+patternProperties:
+  "^.*$":
+    description: Arbitrary additional properties

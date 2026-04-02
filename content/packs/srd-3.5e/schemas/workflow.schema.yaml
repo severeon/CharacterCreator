@@ -1,0 +1,61 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Workflow Entity Schema
+description: Schema for workflow entities in content packs
+
+type: object
+properties:
+  entity_header:
+    $ref: _base.schema.yaml#/types/entity_header
+  entity_type:
+    type: string
+    const: "workflow"
+  name:
+    type: string
+    description: Display name of the workflow
+  completion_creates:
+    type: string
+    description: Entity type created upon workflow completion
+  steps:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the step
+        name:
+          type: string
+          description: Display name of the step
+        component:
+          type: string
+          description: UI component to render for this step
+        config:
+          type: object
+          description: Configuration for the step
+        required:
+          type: boolean
+          description: Whether this step is required
+        repeatable:
+          type: boolean
+          description: Whether this step can be repeated
+        depends_on:
+          type: array
+          items:
+            type: string
+          description: Step IDs that must complete before this step
+        before:
+          type: array
+          items:
+            type: string
+          description: Steps that must occur before this step
+        override:
+          type: array
+          items:
+            type: string
+          description: Step IDs that this step overrides
+
+required:
+  - entity_header
+  - name
+  - steps

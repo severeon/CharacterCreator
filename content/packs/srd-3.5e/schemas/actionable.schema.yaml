@@ -1,0 +1,45 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Actionable Entity Schema
+description: Schema for actionable entities (spells, powers) in content packs
+
+type: object
+properties:
+  entity_header:
+    $ref: _base.schema.yaml#/types/entity_header
+  entity_type:
+    type: string
+    pattern: "^actionable(\\.[a-z_]+)?$"
+  name:
+    type: string
+    description: Display name of the spell or power
+  level:
+    type: integer
+    description: Spell or power level
+  school:
+    type: string
+    description: School of magic or power type
+  casting_time:
+    type: string
+    description: Time required to cast
+  range:
+    type: string
+    description: Range of the spell or power
+  duration:
+    type: string
+    description: Duration of the effect
+  saving_throw:
+    type: string
+    description: Saving throw information
+  spell_resistance:
+    type: string
+    description: Spell resistance information
+  components:
+    type: array
+    items:
+      type: string
+    description: Components required to cast
+
+required:
+  - entity_header
+  - name
