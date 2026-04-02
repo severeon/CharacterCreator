@@ -1,0 +1,5 @@
+# .cargo/config.toml
+# Use sccache to share compiled artifacts across git worktrees.
+# sccache is already installed at ~/.cargo/bin/sccache.
+[build]
+rustc-wrapper = "sccache"
