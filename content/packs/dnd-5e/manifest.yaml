@@ -1,0 +1,7 @@
+id: "dnd-5e"
+name: "D&D 5th Edition SRD"
+version: "0.1.0"
+pack_type: source
+system: "dnd-5e"
+defines_system: true
+dependencies: []

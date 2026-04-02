@@ -1,0 +1,33 @@
+---
+id: "5e:mechanic:ability-scores"
+entity_type: "mechanic"
+properties:
+  name: "Ability Scores"
+  modifier_formula: "(score - 10) / 2"
+  generation_methods:
+    - id: "4d6-drop-lowest"
+      name: "Standard Rolling"
+      dice: "4d6kh3"
+    - id: "point-buy"
+      name: "Point Buy"
+      budget: 27
+      cost_table:
+        8: 0
+        9: 1
+        10: 2
+        11: 3
+        12: 4
+        13: 5
+        14: 7
+        15: 9
+    - id: "standard-array"
+      name: "Standard Array"
+      values: [15, 14, 13, 12, 10, 8]
+  abilities:
+    - id: "str"; name: "Strength"; abbreviation: "STR"
+    - id: "dex"; name: "Dexterity"; abbreviation: "DEX"
+    - id: "con"; name: "Constitution"; abbreviation: "CON"
+    - id: "int"; name: "Intelligence"; abbreviation: "INT"
+    - id: "wis"; name: "Wisdom"; abbreviation: "WIS"
+    - id: "cha"; name: "Charisma"; abbreviation: "CHA"
+---
