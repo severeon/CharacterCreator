@@ -4,6 +4,7 @@ use std::path::Path;
 use walkdir::WalkDir;
 
 use crate::entity::Entity;
+use crate::schema_validator;
 
 /// Manifest data from a content pack's manifest.yaml.
 #[derive(Debug, serde::Deserialize)]
@@ -79,6 +80,16 @@ pub fn load_entities(pack_dir: &Path) -> HashMap<String, Entity> {
         return entities;
     }
 
+    // Load schemas if schemas/ directory exists
+    let schemas_dir = pack_dir.join("schemas");
+    let schemas = if schemas_dir.exists() {
+        schema_validator::load_schemas(&schemas_dir)
+            .map_err(|e| eprintln!("Warning: failed to load schemas: {}", e))
+            .ok()
+    } else {
+        None
+    };
+
     for entry in WalkDir::new(&entities_dir)
         .into_iter()
         .filter_map(|e| e.ok())
@@ -87,6 +98,21 @@ pub fn load_entities(pack_dir: &Path) -> HashMap<String, Entity> {
         if path.extension().map_or(false, |ext| ext == "mdx") {
             if let Ok(content) = fs::read_to_string(path) {
                 if let Some(entity) = parse_mdx(&content, &manifest.id, path) {
+                    // Validate against schema if available
+                    if let Some(ref schemas) = schemas {
+                        if let Some(schema_yaml) = schemas.get(&entity.entity_type) {
+                            // Extract frontmatter for validation
+                            let frontmatter = extract_frontmatter(&content);
+                            if let Some(fm) = frontmatter {
+                                if let Err(err) = schema_validator::validate_entity(&fm, schema_yaml) {
+                                    eprintln!(
+                                        "Warning: entity {:?} failed validation: {}",
+                                        entity.id, err
+                                    );
+                                }
+                            }
+                        }
+                    }
                     entities.insert(entity.id.clone(), entity);
                 }
             }
@@ -94,6 +120,17 @@ pub fn load_entities(pack_dir: &Path) -> HashMap<String, Entity> {
     }
 
     entities
+}
+
+/// Extract frontmatter YAML from MDX content
+fn extract_frontmatter(content: &str) -> Option<String> {
+    let trimmed = content.trim_start();
+    if !trimmed.starts_with("---") {
+        return None;
+    }
+    let after_open = &trimmed[3..];
+    let close_pos = after_open.find("---")?;
+    Some(after_open[..close_pos].to_string())
 }
 
 #[cfg(test)]

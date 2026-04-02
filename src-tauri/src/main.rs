@@ -10,6 +10,7 @@ mod ipc;
 mod operation;
 mod pack_loader;
 mod queue;
+mod schema_validator;
 mod subscription;
 mod workflow;
 
