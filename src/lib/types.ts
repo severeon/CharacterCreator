@@ -56,3 +56,28 @@ export interface WorkflowStatus {
   pending: string[]
   available: string[]
 }
+
+export interface WorkflowStep {
+  id: string
+  name: string
+  component: string
+  config: Record<string, unknown>
+  required: boolean
+  depends_on?: string[]
+  repeatable?: boolean
+}
+
+export interface Workflow {
+  id: string
+  properties: {
+    name: string
+    completion_creates?: string
+    steps: WorkflowStep[]
+  }
+}
+
+export interface WorkflowState {
+  currentStep: number
+  completed: string[]
+  data: Record<string, unknown>
+}

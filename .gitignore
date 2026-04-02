@@ -30,6 +30,11 @@ webapp/src/__tests__/__fixtures__/
 .worktrees/
 .superpowers/
 *.pem
+.webui_secret_key
+package-lock.json
+skills-lock.json
+zen-expression/Cargo.lock
+sheet.pdf
 
 # debug
 npm-debug.log*
