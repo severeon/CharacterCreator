@@ -11,6 +11,7 @@ serde_yaml = "0.9"
 walkdir = "2"
 tauri-plugin-mcp-bridge = "0.10"
 uuid = { version = "1", features = ["v4", "serde"] }
+jsonschema = "0.29"
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
