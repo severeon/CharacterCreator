@@ -33,8 +33,8 @@ describe('AbilitiesStep pure logic', () => {
   })
 
   it('BAB table has correct level 1 values', () => {
-    expect(babTable['good'][0]).toBe(1)
+    expect(babTable['full'][0]).toBe(1)
     expect(babTable['medium'][0]).toBe(0)
-    expect(babTable['bad'][0]).toBe(0)
+    expect(babTable['poor'][0]).toBe(0)
   })
 })

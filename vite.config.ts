@@ -12,7 +12,8 @@ export default defineConfig({
     strictPort: true,
   },
   test: {
-    exclude: ['scripts/**', 'node_modules/**'],
+    globals: true,
+    exclude: ['scripts/**', 'node_modules/**', '.worktrees/**', 'e2e/**'],
     environmentMatchGlobs: [
       ['**/*.test.tsx', 'jsdom'],
     ],

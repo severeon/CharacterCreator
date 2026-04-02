@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeAll } from 'vitest'
 
 vi.mock('@tauri-apps/api/core', () => ({
   invoke: vi.fn(),
@@ -8,6 +8,10 @@ import { invoke } from '@tauri-apps/api/core'
 import { getEntitiesByType, getEntityById, searchEntities } from '../engine'
 
 describe('engine IPC wrapper', () => {
+  beforeAll(() => {
+    ;(globalThis as any).window = { __TAURI_INTERNALS__: {} }
+  })
+
   it('getEntitiesByType calls correct command', async () => {
     vi.mocked(invoke).mockResolvedValue([])
     await getEntitiesByType('class')
