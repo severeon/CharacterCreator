@@ -1,0 +1,24 @@
+fixtures:
+  - name: "5e STR modifier for score 16"
+    entity_state:
+      abilities.strength.score: 16
+    expect:
+      abilities.strength.modifier: 3
+
+  - name: "5e proficiency bonus at level 1"
+    entity_state:
+      level: 1
+    expect:
+      proficiency_bonus: 2
+
+  - name: "5e proficiency bonus at level 5"
+    entity_state:
+      level: 5
+    expect:
+      proficiency_bonus: 3
+
+  - name: "5e proficiency bonus at level 17"
+    entity_state:
+      level: 17
+    expect:
+      proficiency_bonus: 6

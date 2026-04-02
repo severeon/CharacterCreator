@@ -1,0 +1,15 @@
+---
+id: "5e:mechanic:saving-throws"
+entity_type: "mechanic"
+properties:
+  name: "Saving Throws"
+  model: "ability-based"
+  saves:
+    - id: "str"; name: "Strength Save"; ability: "str"
+    - id: "dex"; name: "Dexterity Save"; ability: "dex"
+    - id: "con"; name: "Constitution Save"; ability: "con"
+    - id: "int"; name: "Intelligence Save"; ability: "int"
+    - id: "wis"; name: "Wisdom Save"; ability: "wis"
+    - id: "cha"; name: "Charisma Save"; ability: "cha"
+  formula: "if proficient then ability_modifier + proficiency_bonus else ability_modifier"
+---

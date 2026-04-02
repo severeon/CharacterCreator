@@ -1,0 +1,59 @@
+---
+id: "srd:mechanic:skills"
+entity_type: "mechanic"
+properties:
+  name: "Skill System"
+  max_ranks_formula: "if is_class_skill then level + 3 else (level + 3) / 2"
+  cost:
+    class_skill: 1
+    cross_class: 2
+  first_level_multiplier: 4
+  skills:
+    - id: "appraise"; name: "Appraise"; ability: "int"; trained_only: false; armor_check_penalty: false
+    - id: "balance"; name: "Balance"; ability: "dex"; trained_only: false; armor_check_penalty: true
+    - id: "bluff"; name: "Bluff"; ability: "cha"; trained_only: false; armor_check_penalty: false
+    - id: "climb"; name: "Climb"; ability: "str"; trained_only: false; armor_check_penalty: true
+    - id: "concentration"; name: "Concentration"; ability: "con"; trained_only: false; armor_check_penalty: false
+    - id: "craft"; name: "Craft"; ability: "int"; trained_only: false; armor_check_penalty: false
+    - id: "decipher_script"; name: "Decipher Script"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "diplomacy"; name: "Diplomacy"; ability: "cha"; trained_only: false; armor_check_penalty: false
+    - id: "disable_device"; name: "Disable Device"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "disguise"; name: "Disguise"; ability: "cha"; trained_only: false; armor_check_penalty: false
+    - id: "escape_artist"; name: "Escape Artist"; ability: "dex"; trained_only: false; armor_check_penalty: true
+    - id: "forgery"; name: "Forgery"; ability: "int"; trained_only: false; armor_check_penalty: false
+    - id: "gather_information"; name: "Gather Information"; ability: "cha"; trained_only: false; armor_check_penalty: false
+    - id: "handle_animal"; name: "Handle Animal"; ability: "cha"; trained_only: true; armor_check_penalty: false
+    - id: "heal"; name: "Heal"; ability: "wis"; trained_only: false; armor_check_penalty: false
+    - id: "hide"; name: "Hide"; ability: "dex"; trained_only: false; armor_check_penalty: true
+    - id: "intimidate"; name: "Intimidate"; ability: "cha"; trained_only: false; armor_check_penalty: false
+    - id: "jump"; name: "Jump"; ability: "str"; trained_only: false; armor_check_penalty: true
+    - id: "knowledge_arcana"; name: "Knowledge (Arcana)"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "knowledge_dungeoneering"; name: "Knowledge (Dungeoneering)"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "knowledge_engineering"; name: "Knowledge (Engineering)"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "knowledge_geography"; name: "Knowledge (Geography)"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "knowledge_history"; name: "Knowledge (History)"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "knowledge_local"; name: "Knowledge (Local)"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "knowledge_nature"; name: "Knowledge (Nature)"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "knowledge_nobility"; name: "Knowledge (Nobility)"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "knowledge_planes"; name: "Knowledge (The Planes)"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "knowledge_religion"; name: "Knowledge (Religion)"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "listen"; name: "Listen"; ability: "wis"; trained_only: false; armor_check_penalty: false
+    - id: "move_silently"; name: "Move Silently"; ability: "dex"; trained_only: false; armor_check_penalty: true
+    - id: "open_lock"; name: "Open Lock"; ability: "dex"; trained_only: true; armor_check_penalty: false
+    - id: "perform"; name: "Perform"; ability: "cha"; trained_only: false; armor_check_penalty: false
+    - id: "profession"; name: "Profession"; ability: "wis"; trained_only: true; armor_check_penalty: false
+    - id: "ride"; name: "Ride"; ability: "dex"; trained_only: false; armor_check_penalty: false
+    - id: "search"; name: "Search"; ability: "int"; trained_only: false; armor_check_penalty: false
+    - id: "sense_motive"; name: "Sense Motive"; ability: "wis"; trained_only: false; armor_check_penalty: false
+    - id: "sleight_of_hand"; name: "Sleight of Hand"; ability: "dex"; trained_only: true; armor_check_penalty: true
+    - id: "spellcraft"; name: "Spellcraft"; ability: "int"; trained_only: true; armor_check_penalty: false
+    - id: "spot"; name: "Spot"; ability: "wis"; trained_only: false; armor_check_penalty: false
+    - id: "survival"; name: "Survival"; ability: "wis"; trained_only: false; armor_check_penalty: false
+    - id: "swim"; name: "Swim"; ability: "str"; trained_only: false; armor_check_penalty: true
+    - id: "tumble"; name: "Tumble"; ability: "dex"; trained_only: true; armor_check_penalty: true
+    - id: "use_magic_device"; name: "Use Magic Device"; ability: "cha"; trained_only: true; armor_check_penalty: false
+    - id: "use_rope"; name: "Use Rope"; ability: "dex"; trained_only: false; armor_check_penalty: false
+tags:
+  - "source:phb"
+  - "category:mechanic"
+---

@@ -1,0 +1,93 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Rule Entity Schema
+description: Schema for game rule entities (conditions, combat rules, skill uses, etc.)
+
+type: object
+required: [id, entity_type, properties]
+properties:
+  id:
+    type: string
+    description: Unique identifier for the rule
+  entity_type:
+    type: string
+    const: "rule"
+  tags:
+    type: array
+    items:
+      type: string
+  properties:
+    type: object
+    required: [name]
+    properties:
+      name:
+        type: string
+        description: Display name of the rule
+      description:
+        type: string
+        description: Human-readable description
+      category:
+        type: string
+        description: Rule category (e.g., combat, skill, magic)
+      book_reference:
+        type: string
+        description: Source book and page reference
+      prerequisites:
+        type: array
+        items:
+          type: string
+        description: Requirements to use/apply this rule
+      effect:
+        type: string
+        description: What happens when this rule applies
+      duration:
+        type: string
+        description: How long the rule effect lasts
+      stackable:
+        type: boolean
+        description: Whether multiple applications stack
+      mechanically_identical:
+        type: array
+        items:
+          type: string
+        description: IDs of mechanically identical rules
+  subscriptions:
+    type: array
+    items:
+      $ref: "#/types/subscription"
+  computed_views:
+    type: array
+    items:
+      $ref: "#/types/computed_view"
+
+types:
+  subscription:
+    type: object
+    required: [trigger, effects]
+    properties:
+      trigger:
+        type: string
+      predicate:
+        type: object
+      effects:
+        type: array
+        items:
+          type: object
+      plugin:
+        type: string
+      config:
+        type: object
+  computed_view:
+    type: object
+    required: [path, inputs, formula]
+    properties:
+      path:
+        type: string
+      inputs:
+        type: array
+        items:
+          type: string
+      formula:
+        type: string
+      source:
+        type: string

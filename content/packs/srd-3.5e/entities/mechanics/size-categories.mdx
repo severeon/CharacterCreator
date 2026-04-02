@@ -1,0 +1,123 @@
+---
+id: "srd:mechanic:size-categories"
+entity_type: mechanic
+properties:
+  name: Size Categories
+  description: Classification of creatures by physical size, affecting combat statistics
+subscriptions:
+  - trigger: size_modifier
+    predicate:
+      type: has_size
+      size: "{size}"
+    effects:
+      - type: lookup
+        table: size_modifiers
+        key: "{size}"
+        output: "size_mod"
+computed_views:
+  - path: "size.attack_modifier"
+    inputs:
+      - "size.category"
+    formula: "size_modifiers[size.category].attack"
+    source: "srd:mechanic:size-categories"
+  - path: "size.ac_modifier"
+    inputs:
+      - "size.category"
+    formula: "size_modifiers[size.category].ac"
+    source: "srd:mechanic:size-categories"
+  - path: "size.hide_modifier"
+    inputs:
+      - "size.category"
+    formula: "size_modifiers[size.category].hide"
+    source: "srd:mechanic:size-categories"
+tags:
+  - "mechanic:core"
+  - "mechanic:size"
+---
+
+## Size Categories
+
+D&D 3.5e defines nine size categories for creatures, from Fine (tiny) to Colossal (huge). Size affects several combat statistics.
+
+| Size | Space | Reach | AC Mod | Attack Mod | Hide Mod |
+|------|-------|-------|--------|------------|----------|
+| Fine | 1/2 ft | 0 ft | +8 | +8 | +16 |
+| Diminutive | 1 ft | 0 ft | +4 | +4 | +12 |
+| Tiny | 2-1/2 ft | 0 ft | +2 | +2 | +8 |
+| Small | 5 ft | 5 ft | +1 | +1 | +4 |
+| Medium | 5 ft | 5 ft | +0 | +0 | +0 |
+| Large | 10 ft | 10 ft | -1 | -1 | -4 |
+| Huge | 15 ft | 15 ft | -2 | -2 | -8 |
+| Gargantuan | 20 ft | 20 ft | -4 | -4 | -12 |
+| Colossal | 30 ft | 30 ft | -8 | -8 | -16 |
+
+### Size Modifiers
+
+#### Armor Class (AC)
+Larger creatures are easier to hit, while smaller creatures are harder to hit.
+
+#### Attack Modifier
+Larger creatures have easier time hitting smaller creatures; smaller creatures have harder time hitting larger creatures.
+
+#### Hide Modifier
+Smaller creatures can hide more easily; larger creatures are easier to miss.
+
+### Space
+
+The space a creature occupies on the battlefield:
+
+- **Fine through Medium:** 5 feet or less
+- **Large:** 10 feet
+- **Huge:** 15 feet
+- **Gargantuan:** 20 feet
+- **Colossal:** 30 feet
+
+### Natural Reach
+
+| Size | Reach |
+|------|-------|
+| Fine | 0 ft |
+| Diminutive | 0 ft |
+| Tiny | 0 ft |
+| Small | 5 ft |
+| Medium | 5 ft |
+| Large (tall) | 10 ft |
+| Large (long) | 5 ft |
+| Huge (tall) | 15 ft |
+| Huge (long) | 10 ft |
+| Gargantuan (tall) | 20 ft |
+| Gargantuan (long) | 15 ft |
+| Colossal (tall) | 30 ft |
+| Colossal (long) | 20 ft |
+
+### Weapon Size and Damage
+
+Weapons also have sizes. A creature using a weapon larger than its own size deals increased damage, while weapons smaller than the creature's size deal less damage.
+
+| Weapon Size vs. Creature | Damage Modifier |
+|--------------------------|-----------------|
+| One size category larger | +1 step (2d6 becomes 3d6) |
+| Two size categories larger | +2 steps |
+| Same size | Normal |
+| One size category smaller | -1 step |
+| Two size categories smaller | -2 steps |
+
+### Carrying Capacity
+
+Size affects carrying capacity:
+
+| Size | Capacity Multiplier |
+|------|-------------------|
+| Fine | x1/8 |
+| Diminutive | x1/4 |
+| Tiny | x1/2 |
+| Small | x1 |
+| Medium | x1 |
+| Large | x2 |
+| Huge | x4 |
+| Gargantuan | x8 |
+| Colossal | x16 |
+
+---
+
+[Back to Mechanics](./mechanics.mdx)

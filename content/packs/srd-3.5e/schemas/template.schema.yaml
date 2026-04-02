@@ -1,0 +1,139 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Template Entity Schema
+description: Schema for character template entities (paragon classes, racial templates, etc.)
+
+type: object
+required: [id, entity_type, properties]
+properties:
+  id:
+    type: string
+    description: Unique identifier for the template
+  entity_type:
+    type: string
+    const: "template"
+  extends:
+    type: array
+    items:
+      type: string
+    description: IDs of entities this template extends from
+  tags:
+    type: array
+    items:
+      type: string
+  properties:
+    type: object
+    required: [name]
+    properties:
+      name:
+        type: string
+        description: Display name of the template
+      description:
+        type: string
+        description: Human-readable description of the template
+      source:
+        type: string
+        description: Rule source (e.g., PHB, Unearthed Arcana)
+      subtype:
+        type: string
+        description: Template subtype (e.g., paragon, racial, class)
+      level_adjustment:
+        type: integer
+        description: LA adjustment from this template
+      effective_class_level:
+        type: integer
+        description: Effective character level for class features
+      hd:
+        type: integer
+        description: Hit dice type for the template
+      bab:
+        type: string
+        enum: [full, medium, poor]
+        description: Base attack bonus progression
+      saves:
+        type: object
+        properties:
+          fort:
+            type: string
+            enum: [good, poor]
+          ref:
+            type: string
+            enum: [good, poor]
+          will:
+            type: string
+            enum: [good, poor]
+      skill_points:
+        type: integer
+        description: Skill points per level
+      class_skills:
+        type: array
+        items:
+          type: string
+      special_abilities:
+        type: array
+        items:
+          type: string
+      ability_modifiers:
+        type: array
+        items:
+          type: object
+          properties:
+            ability:
+              type: string
+            bonus:
+              type: integer
+      racial_traits:
+        type: array
+        items:
+          type: string
+      features:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            level:
+              type: integer
+  subscriptions:
+    type: array
+    items:
+      $ref: "#/types/subscription"
+  computed_views:
+    type: array
+    items:
+      $ref: "#/types/computed_view"
+
+types:
+  subscription:
+    type: object
+    required: [trigger, effects]
+    properties:
+      trigger:
+        type: string
+      predicate:
+        type: object
+      effects:
+        type: array
+        items:
+          type: object
+      plugin:
+        type: string
+      config:
+        type: object
+  computed_view:
+    type: object
+    required: [path, inputs, formula]
+    properties:
+      path:
+        type: string
+      inputs:
+        type: array
+        items:
+          type: string
+      formula:
+        type: string
+      source:
+        type: string

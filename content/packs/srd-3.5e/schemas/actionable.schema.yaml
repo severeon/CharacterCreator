@@ -1,0 +1,111 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Actionable Entity Schema
+description: Schema for actionable entities (feats, special abilities, class features)
+
+type: object
+required: [id, entity_type, properties]
+properties:
+  id:
+    type: string
+    description: Unique identifier for the actionable
+  entity_type:
+    type: string
+    const: "actionable"
+  tags:
+    type: array
+    items:
+      type: string
+  properties:
+    type: object
+    required: [name]
+    properties:
+      name:
+        type: string
+        description: Display name
+      description:
+        type: string
+        description: Human-readable description
+      source:
+        type: string
+        description: Rule source (e.g., PHB)
+      type:
+        type: string
+        enum: [feat, ability, feature, special_ability]
+        description: Type of actionable
+      prerequisite:
+        type: array
+        items:
+          type: string
+        description: Prerequisites to acquire this
+      prerequisite_for:
+        type: array
+        items:
+          type: string
+        description: What this is a prerequisite for
+      benefit:
+        type: string
+        description: What benefit the actionable provides
+      normal:
+        type: string
+        description: Normal behavior without this actionable
+      special:
+        type: string
+        description: Special notes about this actionable
+      bonus_feat_for:
+        type: array
+        items:
+          type: string
+        description: Classes that can take this as a bonus feat
+      attack_bonus:
+        type: integer
+        description: Attack bonus granted
+      damage_bonus:
+        type: integer
+        description: Damage bonus granted
+      save_bonus:
+        type: integer
+        description: Saving throw bonus granted
+      extra:
+        type: object
+        description: Extra data specific to this actionable type
+  subscriptions:
+    type: array
+    items:
+      $ref: "#/types/subscription"
+  computed_views:
+    type: array
+    items:
+      $ref: "#/types/computed_view"
+
+types:
+  subscription:
+    type: object
+    required: [trigger, effects]
+    properties:
+      trigger:
+        type: string
+      predicate:
+        type: object
+      effects:
+        type: array
+        items:
+          type: object
+      plugin:
+        type: string
+      config:
+        type: object
+  computed_view:
+    type: object
+    required: [path, inputs, formula]
+    properties:
+      path:
+        type: string
+      inputs:
+        type: array
+        items:
+          type: string
+      formula:
+        type: string
+      source:
+        type: string

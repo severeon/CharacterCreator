@@ -1,0 +1,133 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+title: Workflow Entity Schema
+description: Schema for workflow entities (character creation steps, processes, multi-step flows)
+
+type: object
+required: [id, entity_type, properties]
+properties:
+  id:
+    type: string
+    description: Unique identifier for the workflow
+  entity_type:
+    type: string
+    const: "workflow"
+  tags:
+    type: array
+    items:
+      type: string
+  properties:
+    type: object
+    required: [name, steps]
+    properties:
+      name:
+        type: string
+        description: Display name
+      description:
+        type: string
+        description: Human-readable description
+      source:
+        type: string
+        description: Rule source
+      steps:
+        type: array
+        items:
+          type: object
+          required: [id, name, type]
+          properties:
+            id:
+              type: string
+              description: Step identifier
+            name:
+              type: string
+              description: Step display name
+            type:
+              type: string
+              enum: [roll, select, assign, allocate, confirm, optional]
+              description: Step interaction type
+            description:
+              type: string
+              description: Step instructions
+            optional:
+              type: boolean
+              description: Whether this step can be skipped
+            skippable:
+              type: boolean
+              description: Whether user can skip with defaults
+            requires:
+              type: array
+              items:
+                type: string
+              description: Step IDs that must complete first
+            entity_type:
+              type: string
+              description: Entity type this step operates on
+            choices:
+              type: array
+              items:
+                type: string
+              description: Available choice IDs
+            auto_select:
+              type: boolean
+              description: Whether to auto-select based on character state
+            validation:
+              type: object
+              properties:
+                min:
+                  type: integer
+                max:
+                  type: integer
+                required:
+                  type: boolean
+              description: Validation constraints
+      initial_step:
+        type: string
+        description: ID of the first step
+      completion_events:
+        type: array
+        items:
+          type: string
+        description: Events fired on workflow completion
+      rollback_on_cancel:
+        type: boolean
+        description: Whether to rollback changes if cancelled
+  subscriptions:
+    type: array
+    items:
+      $ref: "#/types/subscription"
+  computed_views:
+    type: array
+    items:
+      $ref: "#/types/computed_view"
+
+types:
+  subscription:
+    type: object
+    required: [trigger, effects]
+    properties:
+      trigger:
+        type: string
+      predicate:
+        type: object
+      effects:
+        type: array
+        items:
+          type: object
+      plugin:
+        type: string
+      config:
+        type: object
+  computed_view:
+    type: object
+    required: [path, inputs, formula]
+    properties:
+      path:
+        type: string
+      inputs:
+        type: array
+        items:
+          type: string
+      formula:
+        type: string
+      source:
+        type: string

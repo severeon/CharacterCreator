@@ -69,6 +69,8 @@ pub struct Subscription {
     pub trigger: String,
     #[serde(default)]
     pub predicate: Option<Predicate>,
+    #[serde(default)]
+    pub json_predicate: Option<serde_json::Value>,
     pub effects: Vec<crate::operation::Operation>,
     #[serde(default = "default_priority")]
     pub priority: i32,
@@ -85,9 +87,22 @@ impl Subscription {
             id: Uuid::new_v4(),
             trigger: trigger.to_string(),
             predicate: None,
+            json_predicate: None,
             effects,
             priority: 50,
             source: source.to_string(),
+        }
+    }
+
+    pub fn should_fire(&self, trigger: &str, ctx: &serde_json::Value) -> Result<bool, String> {
+        // Check trigger matches first
+        if self.trigger != trigger {
+            return Ok(false);
+        }
+        // If no json predicate, it always fires when trigger matches
+        match &self.json_predicate {
+            None => Ok(true),
+            Some(pred) => crate::predicate::evaluate_predicate(pred, ctx),
         }
     }
 
@@ -143,6 +158,35 @@ mod tests {
         assert_eq!(sub.trigger, "event.trigger");
         assert_eq!(sub.effects.len(), 1);
         assert!(sub.predicate.is_none());
+    }
+
+    #[test]
+    fn test_should_fire_on_matching_trigger_and_predicate() {
+        let mut sub = Subscription::new("level_up", vec![], "test");
+        sub.json_predicate = Some(serde_json::json!({
+            "all": [
+                { "entity.class": "fighter" },
+                { "level": { "one_of": [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20] } }
+            ]
+        }));
+
+        let ctx = serde_json::json!({ "entity": { "class": "fighter" }, "level": 4 });
+        assert!(sub.should_fire("level_up", &ctx).unwrap());
+
+        // Wrong trigger
+        assert!(!sub.should_fire("rest", &ctx).unwrap());
+
+        // Predicate fails (level 3 not in one_of list)
+        let ctx3 = serde_json::json!({ "entity": { "class": "fighter" }, "level": 3 });
+        assert!(!sub.should_fire("level_up", &ctx3).unwrap());
+    }
+
+    #[test]
+    fn test_should_fire_no_predicate_always_fires() {
+        let sub = Subscription::new("any_trigger", vec![], "test");
+        let ctx = serde_json::json!({});
+        assert!(sub.should_fire("any_trigger", &ctx).unwrap());
+        assert!(!sub.should_fire("wrong_trigger", &ctx).unwrap());
     }
 
     #[test]
