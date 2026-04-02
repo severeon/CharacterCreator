@@ -1,0 +1,473 @@
+# Project Instructions for Hoyt's AI
+
+> This document provides context for building pages and features in the WastelandWares CharacterCreator (Arcanum Engine).
+
+---
+
+## Tech Stack
+
+### Frontend
+- **React 19** with TypeScript (strict)
+- **Vite** — build tool and dev server
+- **TailwindCSS v4** — utility-first CSS (configured via `@tailwindcss/vite`)
+- **React Router v7** — client-side routing
+- **MDX** (`@mdx-js/mdx`) — entity document rendering with embedded React components
+- **Tauri IPC** (`@tauri-apps/api/core`) — commands and queries to Rust backend
+
+### Backend (Rust)
+- **Tauri v2** — desktop app framework
+- **uuid v1** — entity ID generation
+- **serde / serde_json / serde_yaml** — serialization
+- **walkdir** — directory traversal for content pack loading
+
+### Key Files
+| File | Purpose |
+|------|---------|
+| `src/lib/engine.ts` | Frontend API client (wraps Tauri `invoke` calls) |
+| `src/lib/types.ts` | TypeScript types shared across the frontend |
+| `src-tauri/src/ipc.rs` | Rust IPC command handlers |
+| `src-tauri/src/engine/mod.rs` | Engine core module |
+| `src-tauri/src/entity.rs` | `Entity` and `Value` types |
+| `src-tauri/src/workflow.rs` | Workflow engine |
+| `src-tauri/src/pack_loader.rs` | MDX/YAML content pack loader |
+
+---
+
+## Content Pack Structure
+
+Content packs live in `content/packs/`. Each pack has:
+
+```
+pack-id/
+  manifest.yaml        # pack metadata
+  entities/
+    races/
+      human.mdx
+      dwarf.mdx
+    classes/
+      fighter.mdx
+      barbarian/
+        barbarian.mdx
+        barbarian-totem.mdx
+    feats/
+      power-attack.mdx
+    spells/
+      fireball.mdx
+```
+
+### manifest.yaml
+
+```yaml
+id: "srd-3.5e"
+name: "D&D 3.5e System Reference Document"
+version: "1.0.0"
+pack_type: source    # "source" or "campaign"
+dependencies: []      # other packs this pack requires
+```
+
+### MDX Entity Format
+
+Each `.mdx` file is an entity document with **YAML frontmatter** + **MDX body**:
+
+```mdx
+---
+id: "srd:class:barbarian"
+entity_type: class
+properties:
+  name: Barbarian
+  source: PHB
+  hd: 12              # hit die
+  bab: full           # base attack bonus progression
+  saves:
+    fort: good
+    ref: poor
+    will: poor
+  skillPoints: 4
+  classSkills:
+    - Climb
+    - Craft
+    - Handle Animal
+  specialAbilities:
+    - Rage
+    - Fast Movement
+tags:
+  - "source:phb"
+  - "role:tank"
+---
+
+## Barbarian
+
+**Source:** PHB
+**Hit Die:** d12
+
+### Class Skills
+
+Climb, Craft, Handle Animal...
+
+### Special Abilities
+
+- Rage
+- Fast Movement
+```
+
+#### Frontmatter Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique entity ID in format `pack:entityType:name` (e.g., `srd:feat:alertness`) |
+| `entity_type` | string | One of: `race`, `class`, `feat`, `spell`, `character`, `workflow` |
+| `properties` | map | Schemaless key-value pairs — any game data goes here |
+| `tags` | string[] | Searchable labels in format `"source:phb"`, `"role:tank"`, etc. |
+| `subscriptions` | array | Event-driven rules (advanced — see engine design docs) |
+| `computed_views` | array | Derived property declarations (advanced) |
+
+#### Property Value Types
+
+Properties support these value types:
+
+```yaml
+# Primitives
+name: "Barbarian"           # string
+hd: 12                       # integer
+bab: full                    # string
+skillPoints: 4               # integer
+
+# Nested maps
+saves:
+  fort: good
+  ref: poor
+
+# Lists
+classSkills:
+  - Climb
+  - Craft
+  - Handle Animal
+
+# Lists of maps (for complex data)
+variants:
+  - name: Barbarian (Whirling Frenzy)
+    slug: barbarian-whirling-frenzy
+```
+
+---
+
+## Arcanum Engine API
+
+The frontend communicates with the Rust backend via **Tauri IPC commands**. All functions live in `src/lib/engine.ts`.
+
+### Initialization Flow
+
+```typescript
+// App startup loads entities via:
+getEntitiesByType('race')   // → EntitySummary[]
+getEntitiesByType('class')  // → EntitySummary[]
+getEntitiesByType('feat')   // → EntitySummary[]
+getEntitiesByType('spell')  // → EntitySummary[]
+
+// Each entity can be fetched in full:
+getEntityById('srd:class:barbarian')  // → Entity | null
+```
+
+### Character Creation Commands
+
+```typescript
+// 1. Create a new character
+const characterId = await createCharacter('Thorin')  // → string (character ID)
+
+// 2. Update identity fields
+await updateCharacterIdentity(characterId, {
+  alignment: 'lawful-good',
+  deity: 'Tyr',
+  height: 72,
+  // ... any additional fields
+})
+
+// 3. Select race
+await selectRace(characterId, 'srd:race:human')
+
+// 4. Select class (slot defaults to "A" for single-class, use "A" or "B" for gestalt)
+await selectClass(characterId, 'srd:class:barbarian', 1, 'A')
+
+// 5. Assign ability scores
+await assignAbilityScores(characterId, {
+  strength: 16,
+  dexterity: 14,
+  constitution: 15,
+  intelligence: 10,
+  wisdom: 12,
+  charisma: 8
+})
+
+// 6. Allocate skill points
+await allocateSkillPoints(characterId, {
+  'Climb': 4,
+  'Intimidate': 4
+})
+
+// 7. Select feats
+await selectFeat(characterId, 'srd:feat:power-attack')
+```
+
+### Query Functions
+
+```typescript
+// Search entities by name or tags
+await searchEntities('rage')  // → EntitySummary[]
+
+// Get available choices for a workflow step
+await getAvailableChoices(characterId, 'race')   // → Entity[]
+await getAvailableChoices(characterId, 'class')   // → Entity[]
+
+// Get workflow progress
+await getWorkflowStatus(characterId, 'srd:workflow:character_creation')
+// → { completed: string[], pending: string[], available: string[] }
+
+// Get available feats for character
+await getAvailableFeats(characterId)  // → Entity[]
+
+// Get speculative (uncommitted) state during creation
+await getSpeculativeState(characterId, queueId)  // → Entity | null
+
+// Get DM settings
+await getDmSettings()   // → DMSettings
+await setDmSettings(settings)
+
+// Export character
+await exportCharacterJson(characterId)      // → JSON string
+await exportCharacterMarkdown(characterId)    // → Markdown string
+```
+
+### TypeScript Types
+
+```typescript
+// src/lib/types.ts
+
+export type Value =
+  | null
+  | boolean
+  | number
+  | string
+  | Value[]
+  | { [key: string]: Value }
+
+export interface Entity {
+  id: string
+  entity_type: string
+  properties: Record<string, Value>
+  tags: string[]
+  mdx_body: string
+  source_pack: string
+}
+
+export interface EntitySummary {
+  id: string
+  entity_type: string
+  name: string
+  tags: string[]
+}
+
+export interface WorkflowStatus {
+  completed: string[]
+  pending: string[]
+  available: string[]
+}
+```
+
+---
+
+## Existing Components (Building Blocks)
+
+These components exist and can be used or extended:
+
+### `src/components/Sidebar.tsx`
+Navigation sidebar with entity type links.
+
+### `src/components/SearchBar.tsx`
+Search input for filtering entities.
+
+### `src/components/MdxRenderer.tsx`
+Renders MDX body content with optional React component injection.
+
+### `src/components/PropertyTable.tsx`
+Renders entity properties as a key-value table.
+
+### `src/routes/EntityList.tsx`
+Displays a grid/list of entities filtered by type with search.
+
+### `src/routes/EntityDetail.tsx`
+Displays a single entity's full content with MDX rendering.
+
+### `src/routes/CharacterSheet.tsx`
+Displays a completed character with all stats, abilities, skills, feats.
+
+### `src/routes/CreationWizard.tsx`
+Multi-step character creation wizard. State machine: `name → race → class → abilities → skills → feats → review`.
+
+---
+
+## How to Build New Features
+
+### Pattern 1: New Route/Page
+
+1. Create a new file in `src/routes/MyPage.tsx`
+2. Import engine functions from `../lib/engine`
+3. Import types from `../lib/types`
+4. Use React hooks (`useState`, `useEffect`) to load and manage data
+5. Add route in `App.tsx`:
+
+```tsx
+import { Routes, Route } from 'react-router'
+import MyPage from './routes/MyPage'
+
+export default function App() {
+  return (
+    <Routes>
+      {/* ...existing routes... */}
+      <Route path="/my-page" element={<MyPage />} />
+    </Routes>
+  )
+}
+```
+
+### Pattern 2: Entity Type Browser
+
+Use `EntityList` as a reference. The key flow:
+
+```typescript
+const [entities, setEntities] = useState<EntitySummary[]>([])
+const [searchQuery, setSearchQuery] = useState('')
+
+useEffect(() => {
+  const type = 'races' // or classes, feats, spells
+  const loaded = searchQuery
+    ? await searchEntities(searchQuery)
+    : await getEntitiesByType(type)
+  setEntities(loaded)
+}, [searchQuery])
+```
+
+### Pattern 3: Character Creation Step
+
+Reference `CreationWizard.tsx` for the step pattern:
+
+```typescript
+type WizardStep = 'name' | 'race' | 'class' | 'abilities' | 'skills' | 'feats' | 'review'
+
+// Step rendering
+function renderStep() {
+  switch (step) {
+    case 'race':
+      return <RaceSelection onSelect={handleSelectRace} />
+    case 'class':
+      return <ClassSelection onSelect={handleSelectClass} />
+    // ...
+  }
+}
+```
+
+### Pattern 4: Using Engine Data in Components
+
+```typescript
+import { getEntityById, getEntitiesByType } from '../lib/engine'
+import type { Entity, EntitySummary } from '../lib/types'
+
+function MyComponent({ entityId }: { entityId: string }) {
+  const [entity, setEntity] = useState<Entity | null>(null)
+
+  useEffect(() => {
+    getEntityById(entityId).then(setEntity)
+  }, [entityId])
+
+  if (!entity) return <p>Loading...</p>
+
+  const name = entity.properties['name'] as string
+  const hd = entity.properties['hd'] as number
+
+  return (
+    <div>
+      <h1>{name}</h1>
+      <p>Hit Die: d{hd}</p>
+    </div>
+  )
+}
+```
+
+### Pattern 5: DM Tools Panel
+
+The `DMTools.tsx` component demonstrates a slide-out panel with DM-specific controls. It uses `getDmSettings()` and `setDmSettings()`.
+
+---
+
+## Working with Properties
+
+Properties are **schemaless** — the engine doesn't enforce types. Always validate:
+
+```typescript
+function getPropertyString(props: Record<string, Value>, key: string, fallback: string): string {
+  const val = props[key]
+  if (val === null || val === undefined) return fallback
+  if (typeof val === 'string') return val
+  if (typeof val === 'number') return val.toString()
+  return fallback
+}
+
+function getPropertyNumber(props: Record<string, Value>, key: string, fallback: number): number {
+  const val = props[key]
+  if (typeof val === 'number') return val
+  return fallback
+}
+
+function getPropertyList(props: Record<string, Value>, key: string): Value[] {
+  const val = props[key]
+  if (Array.isArray(val)) return val
+  return []
+}
+```
+
+---
+
+## Styling Conventions
+
+- **TailwindCSS** for all styling — no custom CSS files
+- Dark theme for sidebar: `bg-gray-900 text-white`
+- Cards: `border rounded-lg shadow p-4`
+- Primary buttons: `px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700`
+- Secondary buttons: `px-4 py-2 border rounded-lg hover:bg-gray-50`
+- Grid layouts: `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4`
+- Loading states: Simple `if (loading) return <p>Loading...</p>`
+
+---
+
+## Design Principles
+
+1. **The engine owns state** — frontend never mutates entity data directly
+2. **Commands return void (or throw)** — success/failure is the contract
+3. **Queries return data** — always `async`, always typed
+4. **MDX is the content format** — entity descriptions are data, not code
+5. **Properties are schemaless** — content packs define schemas through their properties
+6. **Tags are for filtering** — format: `"source:phb"`, `"role:combat"`, `"psionic"`
+
+---
+
+## Running the App
+
+```sh
+# Full Tauri app (Rust backend + Vite frontend)
+cargo tauri dev
+
+# Frontend only (no Rust, uses mock data)
+npx vite dev
+```
+
+## Running Tests
+
+```sh
+# Rust tests
+cd src-tauri && cargo test
+
+# Frontend tests
+npx vitest run
+
+# Codegen (legacy JS → MDX)
+node scripts/codegen/run.mjs
+```
