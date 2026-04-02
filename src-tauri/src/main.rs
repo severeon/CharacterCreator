@@ -10,6 +10,7 @@ mod expression_eval;
 mod ipc;
 mod operation;
 mod pack_loader;
+mod plugin_host;
 mod predicate;
 mod queue;
 mod schema_validator;
