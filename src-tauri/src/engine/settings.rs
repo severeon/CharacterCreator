@@ -14,6 +14,7 @@ pub struct DMSettings {
     pub enforce_prerequisites: bool,
     pub notes: String,
     pub restricted_entities: Vec<String>,
+    pub rule_cool: bool,
 }
 
 pub type DmSettings = DMSettings;
@@ -30,6 +31,7 @@ impl Default for DMSettings {
             enforce_prerequisites: false,
             notes: String::new(),
             restricted_entities: vec![],
+            rule_cool: false,
         }
     }
 }

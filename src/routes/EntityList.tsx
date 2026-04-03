@@ -110,26 +110,25 @@ export default function EntityList() {
         <div className="dnd-search-wrap" style={{ flex: '1 1 18rem', maxWidth: '28rem' }}>
           <SearchBar onSearch={handleSearch} />
         </div>
-        <select
-          value={sortOrder}
-          onChange={e => setSortOrder(e.target.value as 'az' | 'za')}
+        <button
+          type="button"
+          onClick={() => setSortOrder(o => o === 'az' ? 'za' : 'az')}
           style={{
-            background: 'rgba(250, 243, 224, 0.7)',
-            border: '1px solid var(--gold-rule)',
-            borderRadius: '2px',
-            padding: '7px 10px',
             fontFamily: "'Cinzel', serif",
-            fontSize: '0.65rem',
+            fontSize: '0.6rem',
             fontWeight: 600,
-            letterSpacing: '0.06em',
-            color: 'var(--ink-mid)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            padding: '3px 9px',
+            border: '1px solid var(--gold-rule)',
+            background: 'var(--burgundy)',
+            color: 'var(--parchment-light)',
+            borderRadius: '2px',
             cursor: 'pointer',
-            outline: 'none',
           }}
         >
-          <option value="az">A → Z</option>
-          <option value="za">Z → A</option>
-        </select>
+          {sortOrder === 'az' ? 'A → Z' : 'Z → A'}
+        </button>
       </div>
 
       {/* Tag filter pills */}
