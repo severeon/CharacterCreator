@@ -18,9 +18,9 @@ export function WorkflowStepper({ workflow, state, onNext, onBack, children }: W
   const isLastStep = currentStepIndex === steps.length - 1
 
   return (
-    <div className="flex flex-col h-full">
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Step progress bar */}
-      <div className="flex gap-1 mb-6">
+      <div style={{ display: 'flex', gap: '3px', padding: '10px 14px', borderBottom: '1px solid var(--gold-rule)', background: 'rgba(107,20,20,0.04)' }}>
         {steps.map((step, i) => {
           const isComplete = state.completed.includes(step.id)
           const isCurrent = i === currentStepIndex
@@ -28,42 +28,74 @@ export function WorkflowStepper({ workflow, state, onNext, onBack, children }: W
             <div
               key={step.id}
               data-step-segment
-              className={`flex-1 h-2 rounded transition-colors ${
-                isComplete
-                  ? 'bg-green-600'
-                  : isCurrent
-                    ? 'bg-blue-600'
-                    : 'bg-gray-200'
-              }`}
               title={step.name}
+              style={{
+                flex: 1,
+                height: '4px',
+                background: isComplete
+                  ? 'var(--gold-light)'
+                  : isCurrent
+                    ? 'var(--burgundy)'
+                    : 'rgba(155, 120, 50, 0.2)',
+                transition: 'background 0.2s',
+              }}
             />
           )
         })}
       </div>
 
       {/* Step heading */}
-      <h2 className="text-xl font-semibold mb-4">
+      <div className="dnd-section-header" style={{ padding: '5px 14px' }}>
         {currentStep.name}
-      </h2>
+      </div>
 
       {/* Step content */}
-      <div className="flex-1">
+      <div style={{ flex: 1, padding: '14px 14px 10px' }}>
         {children(currentStep, state.data[currentStep.id])}
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between mt-6 pt-4 border-t border-gray-200">
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '10px 14px',
+        borderTop: '1px solid var(--gold-rule)',
+        background: 'var(--parchment)',
+      }}>
         <button
           onClick={onBack}
           disabled={isFirstStep}
-          className="px-4 py-2 text-gray-500 disabled:opacity-30 hover:text-gray-800 transition-colors"
+          style={{
+            background: 'none',
+            border: 'none',
+            fontFamily: "'Cinzel', serif",
+            fontSize: '0.65rem',
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: isFirstStep ? 'rgba(92,61,30,0.3)' : 'var(--burgundy)',
+            cursor: isFirstStep ? 'default' : 'pointer',
+            padding: '6px 0',
+          }}
         >
           ← Back
         </button>
         {!isLastStep && (
           <button
             onClick={() => onNext({})}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            style={{
+              background: 'var(--burgundy)',
+              border: '1px solid var(--gold-rule)',
+              fontFamily: "'Cinzel', serif",
+              fontSize: '0.65rem',
+              fontWeight: 600,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: 'var(--parchment-light)',
+              padding: '6px 18px',
+              cursor: 'pointer',
+            }}
           >
             Next →
           </button>
@@ -71,7 +103,18 @@ export function WorkflowStepper({ workflow, state, onNext, onBack, children }: W
         {isLastStep && (
           <button
             onClick={() => onNext({})}
-            className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            style={{
+              background: 'var(--gold)',
+              border: '1px solid var(--gold-light)',
+              fontFamily: "'Cinzel', serif",
+              fontSize: '0.65rem',
+              fontWeight: 600,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: 'var(--parchment-light)',
+              padding: '6px 18px',
+              cursor: 'pointer',
+            }}
           >
             Complete
           </button>

@@ -448,16 +448,16 @@ export default function CreationWizard() {
   }
 
   if (!workflow) {
-    return <div className="p-8 text-gray-500">Loading workflow…</div>
+    return <div className="dnd-loading">Loading workflow…</div>
   }
 
   // Race and class steps auto-advance on selection — suppress the WorkflowStepper's Next button for them
   const autoAdvanceSteps = new Set(['select-race', 'select-class', 'select-feats'])
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">Create New Character</h1>
-      <div className="bg-white rounded-lg shadow p-6">
+    <div style={{ padding: '1.75rem 2rem', maxWidth: '64rem' }}>
+      <h2 className="dnd-page-header">Create New Character</h2>
+      <div className="stat-block">
         <WorkflowStepper
           workflow={workflow}
           state={wizardState}
@@ -467,9 +467,10 @@ export default function CreationWizard() {
           {(step) => (
             <div>
               {renderStepContent(step)}
-              {/* Auto-advance steps handle their own navigation; hide the stepper's Next */}
               {autoAdvanceSteps.has(step.id) && (
-                <p className="text-sm text-gray-500 mt-4">Select an option above to continue.</p>
+                <p style={{ fontFamily: "'IM Fell English', serif", fontStyle: 'italic', fontSize: '0.8rem', color: 'var(--ink-light)', marginTop: '1rem', opacity: 0.8 }}>
+                  Select an option above to continue.
+                </p>
               )}
             </div>
           )}

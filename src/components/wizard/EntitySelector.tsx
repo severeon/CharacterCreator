@@ -19,11 +19,23 @@ function FallbackCard({ entity, selected, onSelect }: { entity: Entity; selected
   return (
     <button
       onClick={onSelect}
-      className={`p-4 border rounded-lg text-left transition-colors ${
-        selected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-400'
-      }`}
+      style={{
+        width: '100%',
+        textAlign: 'left',
+        cursor: 'pointer',
+        padding: '8px 10px',
+        background: selected ? 'var(--parchment-dark)' : 'var(--parchment-light)',
+        border: '1px solid var(--gold-rule)',
+        borderTop: selected ? '3px solid var(--burgundy-light)' : '3px solid var(--burgundy)',
+        boxShadow: 'var(--shadow-parchment)',
+        transition: 'border-color 0.15s, transform 0.12s',
+        fontFamily: "'Cinzel', serif",
+        fontSize: '0.85rem',
+        fontWeight: 600,
+        color: 'var(--burgundy-dark)',
+      }}
     >
-      <span className="font-medium">{name}</span>
+      {name}
     </button>
   )
 }
@@ -79,7 +91,9 @@ export function EntitySelector({ config, entities, selectedIds, onSelect }: Enti
         )
       })}
       {entities.length === 0 && (
-        <p className="text-gray-500 text-sm col-span-full">No options available.</p>
+        <p style={{ fontFamily: "'IM Fell English', serif", fontStyle: 'italic', color: 'var(--ink-light)', fontSize: '0.85rem', gridColumn: '1/-1' }}>
+          No options available.
+        </p>
       )}
     </div>
   )
