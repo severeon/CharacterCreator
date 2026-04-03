@@ -87,45 +87,63 @@ export function AssignAbilitiesStep({
 }: AssignAbilitiesStepProps) {
 
   // ── Roll mode state ──────────────────────────────────────────────────────
-  const [pendingRoll, setPendingRoll] = useState<number[] | null>(null)
+  // pending.dice === null means the value came from a swap (no dice breakdown to show)
+  type Pending = { dice: number[]; total: number } | { dice: null; total: number }
+  const [pending, setPending] = useState<Pending | null>(null)
   const [rerollsUsed, setRerollsUsed] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
+
+  function freshRoll(): Pending {
+    const dice = roll4d6()
+    return { dice, total: dropLowestTotal(dice) }
+  }
 
   // Initialise a fresh roll whenever we enter roll mode
   useEffect(() => {
     if (abilityMethod === 'roll') {
-      setPendingRoll(roll4d6())
+      setPending(freshRoll())
       setRerollsUsed(0)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [abilityMethod])
 
-  // After assigning a stat, auto-roll next if there are still unassigned stats
+  // After a normal assignment (pending → null), auto-roll next if stats remain
   useEffect(() => {
-    if (abilityMethod !== 'roll' || pendingRoll !== null) return
+    if (abilityMethod !== 'roll' || pending !== null) return
     const anyUnassigned = ABILITY_ORDER.some(ab => !(abilities[ab] > 0))
     if (anyUnassigned) {
-      const t = setTimeout(() => setPendingRoll(roll4d6()), 250)
+      const t = setTimeout(() => setPending(freshRoll()), 250)
       return () => clearTimeout(t)
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect
-  }, [abilityMethod, pendingRoll, abilities])
+  }, [abilityMethod, pending, abilities])
 
-  const pendingTotal = pendingRoll ? dropLowestTotal(pendingRoll) : null
-  const pendingDiceSorted = pendingRoll ? [...pendingRoll].sort((a, b) => b - a) : []
+  const pendingTotal = pending?.total ?? null
+  const pendingDiceSorted = pending?.dice ? [...pending.dice].sort((a, b) => b - a) : null
   const rerollsRemaining = DEFAULT_MAX_REROLLS - rerollsUsed
   const allRollsAssigned = ABILITY_ORDER.every(ab => abilities[ab] > 0)
 
   function handleAssignStat(ability: string) {
-    if (pendingTotal === null) return
-    onAbilityManualChange(ability, pendingTotal)
-    setPendingRoll(null) // triggers auto-roll via useEffect if stats remain
+    if (pending === null) return
+    const existingValue = abilities[ability]
+
+    // Place the pending value into this stat
+    onAbilityManualChange(ability, pending.total)
+
+    if (existingValue > 0) {
+      // Stat was already filled — swap: old value becomes the new pending (no dice)
+      setPending({ dice: null, total: existingValue })
+    } else {
+      // Empty slot — clear pending; auto-roll fires via useEffect if stats remain
+      setPending(null)
+    }
   }
 
   function handleReroll() {
     if (rerollsRemaining <= 0) return
+    // Discards whatever is currently pending (roll or swapped value) and generates fresh dice
     setRerollsUsed(r => r + 1)
-    setPendingRoll(roll4d6())
+    setPending(freshRoll())
   }
 
   // ── Array mode drag-drop state ───────────────────────────────────────────
@@ -240,34 +258,36 @@ export function AssignAbilitiesStep({
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem',
                 padding: '1.25rem 2rem',
                 background: 'var(--parchment-light)',
-                border: '2px solid #6b2737',
+                border: `2px solid ${pendingDiceSorted ? '#6b2737' : 'var(--gold-rule)'}`,
                 cursor: 'grab',
                 userSelect: 'none',
                 opacity: isDragging ? 0.6 : 1,
                 minWidth: 140,
               }}
             >
-              {/* 4 dice — sorted desc, lowest crossed out */}
-              <div style={{ display: 'flex', gap: '0.3rem' }}>
-                {pendingDiceSorted.map((face, di) => {
-                  const isDropped = di === 3
-                  return (
-                    <div key={di} style={{
-                      width: 28, height: 28,
-                      background: isDropped ? 'var(--parchment-dark)' : 'var(--parchment)',
-                      border: `1px solid ${isDropped ? 'var(--gold-rule)' : 'var(--gold)'}`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: 'Cinzel, serif', fontSize: '0.8rem',
-                      color: isDropped ? 'var(--ink)' : '#6b2737',
-                      fontWeight: isDropped ? 400 : 700,
-                      opacity: isDropped ? 0.3 : 1,
-                      textDecoration: isDropped ? 'line-through' : undefined,
-                    }}>
-                      {face}
-                    </div>
-                  )
-                })}
-              </div>
+              {/* 4 dice — only shown for fresh rolls (not swapped values) */}
+              {pendingDiceSorted !== null && (
+                <div style={{ display: 'flex', gap: '0.3rem' }}>
+                  {pendingDiceSorted.map((face, di) => {
+                    const isDropped = di === 3
+                    return (
+                      <div key={di} style={{
+                        width: 28, height: 28,
+                        background: isDropped ? 'var(--parchment-dark)' : 'var(--parchment)',
+                        border: `1px solid ${isDropped ? 'var(--gold-rule)' : 'var(--gold)'}`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontFamily: 'Cinzel, serif', fontSize: '0.8rem',
+                        color: isDropped ? 'var(--ink)' : '#6b2737',
+                        fontWeight: isDropped ? 400 : 700,
+                        opacity: isDropped ? 0.3 : 1,
+                        textDecoration: isDropped ? 'line-through' : undefined,
+                      }}>
+                        {face}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
 
               {/* Big draggable total */}
               <span style={{
@@ -278,7 +298,9 @@ export function AssignAbilitiesStep({
               </span>
 
               <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.68rem', color: 'var(--ink)', opacity: 0.55, fontStyle: 'italic' }}>
-                drag or tap a stat to assign
+                {pendingDiceSorted !== null
+                  ? 'drag or tap a stat to assign'
+                  : 'swapped — assign elsewhere or reroll to discard'}
               </span>
             </div>
           ) : (
