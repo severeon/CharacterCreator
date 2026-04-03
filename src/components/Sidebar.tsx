@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router'
-import { isTauri } from '../lib/isTauri'
+import { isTauri } from '../lib/platform'
 import { componentRegistry } from '../dev/componentRegistry'
 
 const ENTITY_TYPES = [
@@ -146,7 +146,7 @@ export default function Sidebar() {
         </ul>
 
         {/* App Components section — web only */}
-        {!isTauri() && (
+        {!isTauri && (
           <>
             {/* Gold rule */}
             <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, #9A7B2C, transparent)', margin: '1rem 0 0.6rem' }} />
