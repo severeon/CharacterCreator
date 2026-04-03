@@ -7,12 +7,23 @@ interface RacialClassFeaturesStepProps {
   onBack: () => void
 }
 
-export function RacialClassFeaturesStep({
-  selectedRace,
-  selectedClass,
-  onContinue,
-  onBack,
-}: RacialClassFeaturesStepProps) {
+const featureBlockStyle: React.CSSProperties = {
+  background: 'var(--parchment-light)',
+  border: '1px solid var(--gold-rule)',
+  borderTop: '3px solid var(--burgundy)',
+  marginBottom: '0.75rem',
+  overflow: 'hidden',
+}
+
+const featureBodyStyle: React.CSSProperties = {
+  padding: '8px 12px 10px',
+  fontFamily: "'Libre Baskerville', serif",
+  fontSize: '0.82rem',
+  color: 'var(--ink-mid)',
+  lineHeight: 1.6,
+}
+
+export function RacialClassFeaturesStep({ selectedRace, selectedClass }: RacialClassFeaturesStepProps) {
   const raceName = (selectedRace?.properties['name'] as string) ?? 'Unknown Race'
   const className = (selectedClass?.properties['name'] as string) ?? 'Unknown Class'
   const raceTraits = selectedRace?.properties['traits'] as string[] | undefined
@@ -24,69 +35,53 @@ export function RacialClassFeaturesStep({
   const ref = selectedClass?.properties['ref']
   const will = selectedClass?.properties['will']
 
-  return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Step 5: Record Racial and Class Features</h2>
-      <p className="text-gray-600">
-        Review the features gained from your race and class.
-      </p>
+  const statRow = (label: string, value: string) => (
+    <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid rgba(155,120,50,0.15)', padding: '3px 0', marginTop: '2px' }}>
+      <span style={{ fontFamily: "'Cinzel', serif", fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.04em', color: 'var(--ink-mid)', minWidth: '8rem' }}>
+        {label}
+      </span>
+      <span style={{ color: 'var(--ink)' }}>{value}</span>
+    </div>
+  )
 
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
       {/* Racial Traits */}
-      <div className="bg-white border rounded-lg p-4">
-        <h3 className="font-bold text-xl mb-3 text-blue-800">Racial Traits: {raceName}</h3>
-        {raceTraits && raceTraits.length > 0 ? (
-          <ul className="list-disc list-inside space-y-1">
-            {raceTraits.map((trait, i) => (
-              <li key={i} className="text-gray-700">{trait}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500 italic">No traits listed</p>
-        )}
-        {ecl !== undefined && (
-          <p className="mt-2 text-sm">
-            <strong>Effective Character Level (ECL):</strong> {String(ecl)}
-          </p>
-        )}
+      <div style={featureBlockStyle}>
+        <div className="dnd-section-header">Racial Traits — {raceName}</div>
+        <div style={featureBodyStyle}>
+          {raceTraits && raceTraits.length > 0 ? (
+            <ul style={{ paddingLeft: '1.2rem', margin: 0 }}>
+              {raceTraits.map((trait, i) => (
+                <li key={i} style={{ marginBottom: '2px', color: 'var(--ink)' }}>{trait}</li>
+              ))}
+            </ul>
+          ) : (
+            <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>No traits listed.</p>
+          )}
+          {ecl !== undefined && statRow('Effective Character Level', String(ecl))}
+        </div>
       </div>
 
       {/* Class Features */}
-      <div className="bg-white border rounded-lg p-4">
-        <h3 className="font-bold text-xl mb-3 text-green-800">Class Features: {className}</h3>
-        {classFeatures && classFeatures.length > 0 ? (
-          <ul className="list-disc list-inside space-y-1">
-            {classFeatures.map((feature, i) => (
-              <li key={i} className="text-gray-700">{feature}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500 italic">No features listed</p>
-        )}
-        {hd !== undefined && (
-          <p className="mt-2 text-sm">
-            <strong>Hit Die:</strong> d{String(hd)}
-          </p>
-        )}
-        {bab !== undefined && (
-          <p className="text-sm">
-            <strong>Base Attack Bonus:</strong> {String(bab)}
-          </p>
-        )}
-        {fort !== undefined && (
-          <p className="text-sm">
-            <strong>Fortitude Save:</strong> +{String(fort)}
-          </p>
-        )}
-        {ref !== undefined && (
-          <p className="text-sm">
-            <strong>Reflex Save:</strong> +{String(ref)}
-          </p>
-        )}
-        {will !== undefined && (
-          <p className="text-sm">
-            <strong>Will Save:</strong> +{String(will)}
-          </p>
-        )}
+      <div style={featureBlockStyle}>
+        <div className="dnd-section-header">Class Features — {className}</div>
+        <div style={featureBodyStyle}>
+          {classFeatures && classFeatures.length > 0 ? (
+            <ul style={{ paddingLeft: '1.2rem', margin: 0, marginBottom: '6px' }}>
+              {classFeatures.map((feature, i) => (
+                <li key={i} style={{ marginBottom: '2px', color: 'var(--ink)' }}>{feature}</li>
+              ))}
+            </ul>
+          ) : (
+            <p style={{ fontStyle: 'italic', color: 'var(--ink-light)', marginBottom: '6px' }}>No features listed.</p>
+          )}
+          {hd !== undefined && statRow('Hit Die', `d${String(hd)}`)}
+          {bab !== undefined && statRow('Base Attack Bonus', String(bab))}
+          {fort !== undefined && statRow('Fortitude Save', `+${String(fort)}`)}
+          {ref !== undefined && statRow('Reflex Save', `+${String(ref)}`)}
+          {will !== undefined && statRow('Will Save', `+${String(will)}`)}
+        </div>
       </div>
     </div>
   )

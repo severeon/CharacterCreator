@@ -8,79 +8,82 @@ interface EquipmentStepProps {
   onBack: () => void
 }
 
-export function EquipmentStep({
-  startingGold,
-  selectedClass,
-  onContinue,
-  onBack,
-}: EquipmentStepProps) {
-  // Default starting gold based on class
-  const classGold表: Record<string, number> = {
-    barbarian: 86,
-    bard: 90,
-    cleric: 97,
-    druid: 82,
-    fighter: 106,
-    monk: 82,
-    paladin: 130,
-    ranger: 106,
-    rogue: 100,
-    sorcerer: 70,
-    wizard: 70,
-  }
+const classGoldTable: Record<string, number> = {
+  barbarian: 86,
+  bard: 90,
+  cleric: 97,
+  druid: 82,
+  fighter: 106,
+  monk: 82,
+  paladin: 130,
+  ranger: 106,
+  rogue: 100,
+  sorcerer: 70,
+  wizard: 70,
+}
 
+const categoryStyle: React.CSSProperties = {
+  background: 'var(--parchment-light)',
+  border: '1px solid var(--gold-rule)',
+  borderTop: '2px solid var(--burgundy)',
+  overflow: 'hidden',
+  marginBottom: '0.5rem',
+}
+
+export function EquipmentStep({ startingGold, selectedClass }: EquipmentStepProps) {
   const classId = selectedClass?.id?.toLowerCase() || ''
-  const gold = classGold表[classId] ?? startingGold
+  const gold = classGoldTable[classId] ?? startingGold
   const className = (selectedClass?.properties['name'] as string) ?? 'Unknown'
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Step 9: Select Equipment</h2>
-      <p className="text-gray-600">
-        Purchase equipment using your starting gold. Choose wisely - your equipment can mean
-        the difference between life and death.
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <p style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.875rem', color: 'var(--ink-mid)', lineHeight: 1.6 }}>
+        Purchase equipment using your starting gold. Choose wisely — your equipment can mean the difference between life and death.
       </p>
 
-      {/* Starting Gold Display */}
-      <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-        <p className="font-bold text-yellow-800">
-          Starting Gold: {gold} gp
-        </p>
-        <p className="text-yellow-700 text-sm">
-          Based on your class: {className}
-        </p>
+      {/* Starting Gold */}
+      <div style={{
+        background: 'rgba(155, 120, 50, 0.1)',
+        border: '1px solid var(--gold-rule)',
+        borderLeft: '3px solid var(--gold)',
+        padding: '8px 14px',
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: '0.5rem',
+      }}>
+        <span style={{ fontFamily: "'Cinzel', serif", fontSize: '1.1rem', fontWeight: 700, color: 'var(--gold)' }}>
+          {gold} gp
+        </span>
+        <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.78rem', color: 'var(--ink-light)' }}>
+          starting gold · {className}
+        </span>
       </div>
 
       {/* Equipment Categories */}
-      <div className="space-y-4">
-        <div className="border rounded-lg p-4">
-          <h3 className="font-semibold mb-2">Weapons</h3>
-          <p className="text-gray-500 text-sm">
-            Weapons, ammunition, and ranged weapons coming soon.
+      {['Weapons', 'Armor', 'Tools & Gear'].map(cat => (
+        <div key={cat} style={categoryStyle}>
+          <div className="dnd-section-header">{cat}</div>
+          <p style={{ padding: '7px 12px', fontFamily: "'IM Fell English', Georgia, serif", fontStyle: 'italic', fontSize: '0.8rem', color: 'var(--ink-light)' }}>
+            {cat === 'Weapons' && 'Weapons, ammunition, and ranged weapons coming soon.'}
+            {cat === 'Armor' && 'Armor and shields coming soon.'}
+            {cat === 'Tools & Gear' && 'Adventuring gear, tools, and miscellaneous items coming soon.'}
           </p>
         </div>
+      ))}
 
-        <div className="border rounded-lg p-4">
-          <h3 className="font-semibold mb-2">Armor</h3>
-          <p className="text-gray-500 text-sm">
-            Armor and shields coming soon.
-          </p>
-        </div>
-
-        <div className="border rounded-lg p-4">
-          <h3 className="font-semibold mb-2">Tools & Gear</h3>
-          <p className="text-gray-500 text-sm">
-            Adventuring gear, tools, and miscellaneous items coming soon.
-          </p>
-        </div>
-      </div>
-
-      {/* Preview placeholder */}
-      <div className="bg-gray-100 p-4 rounded-lg text-center">
-        <p className="text-gray-500">
-          Full equipment selection with item categories, prices, and shopping cart
-          functionality coming soon.
-        </p>
+      {/* Placeholder notice */}
+      <div style={{
+        background: 'rgba(155, 120, 50, 0.08)',
+        border: '1px solid var(--gold-rule)',
+        borderLeft: '3px solid var(--burgundy)',
+        padding: '10px 14px',
+        fontFamily: "'Libre Baskerville', serif",
+        fontSize: '0.8rem',
+        color: 'var(--ink-light)',
+        fontStyle: 'italic',
+        textAlign: 'center' as const,
+      }}>
+        Full equipment selection with item categories, prices, and shopping cart functionality coming soon.
       </div>
     </div>
   )
