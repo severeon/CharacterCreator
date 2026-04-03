@@ -6,6 +6,8 @@ import EntityDetail from './routes/EntityDetail'
 import CreationWizard from './routes/CreationWizard'
 import CharacterSheet from './routes/CharacterSheet'
 import DMTools from './components/DMTools'
+import { isTauri } from './lib/isTauri'
+import ComponentPlayground from './routes/ComponentPlayground'
 import { useTheme } from './hooks/useTheme'
 import type { Theme } from './lib/types'
 
@@ -56,6 +58,9 @@ export default function App() {
           <Route path="/character/:id" element={<CharacterSheet />} />
           <Route path="/:entityType" element={<EntityList />} />
           <Route path="/:entityType/:id" element={<EntityDetail />} />
+          {!isTauri() && (
+            <Route path="/dev/components/:name" element={<ComponentPlayground />} />
+          )}
         </Routes>
       </main>
       <DMTools isOpen={dmToolsOpen} onToggle={() => setDmToolsOpen(!dmToolsOpen)} />
