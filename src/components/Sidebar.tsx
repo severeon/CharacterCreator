@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router'
+import { isTauri } from '../lib/isTauri'
+import { componentRegistry } from '../dev/componentRegistry'
 
 const ENTITY_TYPES = [
   { type: 'races', label: 'Races', icon: '🧝' },
@@ -142,6 +144,57 @@ export default function Sidebar() {
             </li>
           ))}
         </ul>
+
+        {/* App Components section — web only */}
+        {!isTauri() && (
+          <>
+            {/* Gold rule */}
+            <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, #9A7B2C, transparent)', margin: '1rem 0 0.6rem' }} />
+
+            {/* Section label */}
+            <div style={{
+              fontFamily: "'Cinzel', serif",
+              fontSize: '0.55rem',
+              fontWeight: 600,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'rgba(184, 149, 74, 0.55)',
+              marginBottom: '0.6rem',
+              paddingLeft: '2px',
+            }}>
+              App Components
+            </div>
+
+            {/* Component nav items */}
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              {Object.entries(componentRegistry).map(([slug, entry]) => (
+                <li key={slug}>
+                  <NavLink
+                    to={`/dev/components/${slug}`}
+                    style={({ isActive }) => ({
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      fontFamily: "'Cinzel', serif",
+                      fontSize: '0.65rem',
+                      fontWeight: isActive ? 600 : 400,
+                      letterSpacing: '0.06em',
+                      textDecoration: 'none',
+                      padding: '4px 10px',
+                      borderRadius: '2px',
+                      borderLeft: `3px solid ${isActive ? '#8B2020' : 'transparent'}`,
+                      background: isActive ? 'rgba(107, 20, 20, 0.3)' : 'transparent',
+                      color: isActive ? '#F2E4C4' : 'rgba(212, 180, 104, 0.55)',
+                      transition: 'all 0.12s',
+                    })}
+                  >
+                    {entry.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
 
       {/* Bottom flourish */}
