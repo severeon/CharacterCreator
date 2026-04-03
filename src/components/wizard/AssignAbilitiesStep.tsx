@@ -100,6 +100,25 @@ export function AssignAbilitiesStep({
   const [draggedValue, setDraggedValue] = useState<number | null>(null)
   const [touchSelected, setTouchSelected] = useState<number | null>(null)
   const [rollingSet, setRollingSet] = useState<number | null>(null)
+  // animFaces: random cycling faces shown during animation; null = not animating (show real values)
+  const [animFaces, setAnimFaces] = useState<number[][] | null>(null)
+
+  // While a set is animating, cycle random die faces for that set every 60ms
+  useEffect(() => {
+    if (rollingSet === null) return
+    const interval = setInterval(() => {
+      setAnimFaces(prev =>
+        prev
+          ? prev.map((set, i) =>
+              i === rollingSet
+                ? Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1)
+                : set
+            )
+          : prev
+      )
+    }, 60)
+    return () => clearInterval(interval)
+  }, [rollingSet])
 
   // Pool source depends on method
   const rolledTotals = computeRolledTotals(rolledSets)
@@ -144,14 +163,22 @@ export function AssignAbilitiesStep({
   }
 
   function handleReroll() {
-    onRollAbilities()
-    // Animate dice sets sequentially
+    // Seed animFaces with initial random values so dice start cycling immediately
+    setAnimFaces(Array.from({ length: 6 }, () =>
+      Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1)
+    ))
+    // Animate each set sequentially (CSS spin + face cycling via useEffect above)
+    const PER_SET = 120
+    const ANIM_DURATION = 300
     for (let i = 0; i < 6; i++) {
-      setTimeout(() => {
-        setRollingSet(i)
-        setTimeout(() => setRollingSet(null), 300)
-      }, i * 120)
+      setTimeout(() => setRollingSet(i), i * PER_SET)
+      setTimeout(() => setRollingSet(null), i * PER_SET + ANIM_DURATION)
     }
+    // After all animations finish, fire the real roll and clear the anim overlay
+    setTimeout(() => {
+      setAnimFaces(null)
+      onRollAbilities()
+    }, 5 * PER_SET + ANIM_DURATION + 30)
   }
 
   // Derived stats
@@ -196,11 +223,13 @@ export function AssignAbilitiesStep({
       {abilityMethod === 'roll' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {/* Dice sets display */}
-          {rolledSets.length === 6 && (
+          {(rolledSets.length === 6 || animFaces !== null) && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              {rolledSets.map((set, si) => {
-                const sorted = [...set].sort((a, b) => b - a) // desc: highest first
-                const total = sorted.slice(0, 3).reduce((s, v) => s + v, 0)
+              {Array.from({ length: 6 }).map((_, si) => {
+                // During animation show cycling faces; otherwise show real rolled values
+                const rawSet = animFaces ? animFaces[si] : (rolledSets[si] ?? [1, 1, 1, 1])
+                const sorted = [...rawSet].sort((a, b) => b - a) // desc: highest first
+                const total = animFaces ? '?' : sorted.slice(0, 3).reduce((s, v) => s + v, 0)
                 return (
                   <div key={si} style={{
                     display: 'flex', alignItems: 'center', gap: '0.5rem',
@@ -254,11 +283,11 @@ export function AssignAbilitiesStep({
               padding: '9px 18px', cursor: 'pointer', alignSelf: 'flex-start',
             }}
           >
-            {rolledSets.length === 6 ? 'Re-roll All' : 'Roll 4d6 × 6'}
+            {rolledSets.length === 6 || animFaces !== null ? 'Re-roll All' : 'Roll 4d6 × 6'}
           </button>
 
-          {/* Drag-drop pool + assignment (shared with array) */}
-          {rolledSets.length === 6 && (
+          {/* Drag-drop pool + assignment — hidden while animating */}
+          {rolledSets.length === 6 && animFaces === null && (
             <PoolAssignment
               poolSource={rolledTotals}
               poolRemaining={poolRemaining}
@@ -273,7 +302,7 @@ export function AssignAbilitiesStep({
             />
           )}
 
-          {rolledSets.length === 0 && (
+          {rolledSets.length === 0 && animFaces === null && (
             <p style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.82rem', color: 'var(--ink)', fontStyle: 'italic', margin: 0 }}>
               Click "Roll 4d6 × 6" to generate your scores.
             </p>
