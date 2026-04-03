@@ -1,9 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
 import type { Entity, EntitySummary } from './types'
-
-function isTauri(): boolean {
-  return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
-}
+import { isTauri } from './isTauri'
 
 async function fetchJson<T>(path: string): Promise<T> {
   const res = await fetch(path)
