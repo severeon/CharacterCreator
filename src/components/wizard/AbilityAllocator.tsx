@@ -49,6 +49,7 @@ export function AbilityAllocator({
     <AssignAbilitiesStep
       abilities={abilities}
       abilityMethod={abilityMethod}
+      rolledSets={rolledSets}
       pointBuyRemaining={pointBuyRemaining}
       selectedClass={selectedClass}
       onRollAbilities={onRollAbilities}
@@ -57,8 +58,6 @@ export function AbilityAllocator({
       onManualEntry={onManualEntry}
       onAbilityPointBuy={onAbilityPointBuy}
       onAbilityManualChange={onAbilityManualChange}
-      onAssignAbilities={() => {}}
-      onBack={() => {}}
     />
   )
 }

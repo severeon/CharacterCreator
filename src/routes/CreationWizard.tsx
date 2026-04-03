@@ -145,16 +145,18 @@ export default function CreationWizard() {
 
   function handleRollAbilities() {
     setAbilityMethod('roll')
-    const scores: number[] = Array.from({ length: 6 }, () => {
-      const rolls = Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1)
-      rolls.sort((a, b) => a - b)
-      return rolls[1] + rolls[2] + rolls[3]
-    })
-    const sorted = [...scores].sort((a, b) => b - a)
-    setRolledSets([sorted])
+    // Generate 6 sets of 4 dice (each set = [d1, d2, d3, d4])
+    const sets: number[][] = Array.from({ length: 6 }, () =>
+      Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1)
+    )
+    setRolledSets(sets)
+    // Auto-assign: total = sum of top 3 dice per set, sorted descending → assigned to stats
+    const totals = sets
+      .map(set => [...set].sort((a, b) => a - b).slice(1).reduce((s, v) => s + v, 0))
+      .sort((a, b) => b - a)
     const keys = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma']
     const newAbilities: Record<string, number> = {}
-    keys.forEach((k, i) => { newAbilities[k] = sorted[i] })
+    keys.forEach((k, i) => { newAbilities[k] = totals[i] })
     setAbilities(newAbilities)
   }
 
