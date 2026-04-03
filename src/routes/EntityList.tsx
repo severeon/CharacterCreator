@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router'
 import { getEntitiesByType, searchEntities } from '../lib/engine'
-import type { EntitySummary } from '../lib/types'
+import type { EntitySummary, Entity } from '../lib/types'
 import SearchBar from '../components/SearchBar'
+import { ViewModeRenderer } from '../components/ViewModeRenderer'
+import { useViewMode } from '../hooks/useViewMode'
 
 const TYPE_MAP: Record<string, string> = {
   races: 'race',
@@ -11,12 +13,24 @@ const TYPE_MAP: Record<string, string> = {
   spells: 'spell',
 }
 
+function summaryToEntity(summary: EntitySummary): Entity {
+  return {
+    id: summary.id,
+    entity_type: summary.entity_type,
+    properties: { name: summary.name },
+    tags: summary.tags,
+    mdx_body: '',
+    source_pack: '',
+  }
+}
+
 export default function EntityList() {
   const { entityType } = useParams<{ entityType: string }>()
   const [entities, setEntities] = useState<EntitySummary[]>([])
   const [loading, setLoading] = useState(true)
 
   const singularType = TYPE_MAP[entityType ?? ''] ?? entityType ?? ''
+  const cardViewMode = useViewMode(singularType, 'card')
 
   useEffect(() => {
     setLoading(true)
@@ -56,27 +70,14 @@ export default function EntityList() {
       ) : entities.length === 0 ? (
         <div className="text-gray-500">No entities found.</div>
       ) : (
-        // TODO: use type-specific Card components when list loads full Entity objects
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {entities.map((entity) => (
+          {entities.map((summary) => (
             <Link
-              key={entity.id}
-              to={`/${entityType}/${encodeURIComponent(entity.id)}`}
-              className="block p-4 border border-gray-200 rounded-lg hover:border-amber-500 hover:shadow-md transition-colors"
+              key={summary.id}
+              to={`/${entityType}/${encodeURIComponent(summary.id)}`}
+              className="block"
             >
-              <h3 className="font-semibold text-lg">{entity.name}</h3>
-              {entity.tags.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {entity.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
+              <ViewModeRenderer entity={summaryToEntity(summary)} viewMode={cardViewMode} />
             </Link>
           ))}
         </div>
