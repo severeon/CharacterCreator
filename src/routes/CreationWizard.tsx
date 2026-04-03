@@ -11,6 +11,7 @@ import {
   selectFeat,
   getAvailableFeats,
   getEntityById,
+  getDmSettings,
 } from '../lib/engine'
 import type { Entity, WorkflowState, WorkflowStep } from '../lib/types'
 import { DEFAULT_ABILITY_SCORES } from '../lib/dnd35/constants'
@@ -25,6 +26,7 @@ import { NarrativeBlock } from '../components/wizard/NarrativeBlock'
 import { RacialClassFeaturesStep } from '../components/wizard/RacialClassFeaturesStep'
 import { StartingPackageStep } from '../components/wizard/StartingPackageStep'
 import { CombatNumbersStep } from '../components/wizard/CombatNumbersStep'
+import { DetailsStep } from '../components/wizard/DetailsStep'
 
 export default function CreationWizard() {
   const navigate = useNavigate()
@@ -78,6 +80,9 @@ export default function CreationWizard() {
   // Equipment
   const [startingGold] = useState(100)
 
+  // DM settings
+  const [ruleCool, setRuleCool] = useState(false)
+
   async function loadContent() {
     try {
       setRaces(await getAvailableChoices('', 'race'))
@@ -93,6 +98,7 @@ export default function CreationWizard() {
 
   useEffect(() => {
     loadContent()
+    getDmSettings().then((s) => setRuleCool(s.rule_cool)).catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -175,10 +181,11 @@ export default function CreationWizard() {
   function handleAbilityPointBuy(ability: string, delta: number) {
     setAbilities((prev) => {
       const current = prev[ability] || 8
-      const newValue = Math.max(8, Math.min(18, current + delta))
+      const [scoreMin, scoreMax] = ruleCool ? [3, 30] : [8, 18]
+      const newValue = Math.max(scoreMin, Math.min(scoreMax, current + delta))
       if (newValue === current) return prev
       const costDiff = (POINT_BUY_COST[newValue] || 0) - (POINT_BUY_COST[current] || 0)
-      if (costDiff > pointBuyRemaining && delta > 0) return prev
+      if (!ruleCool && costDiff > pointBuyRemaining && delta > 0) return prev
       setPointBuyRemaining((pb) => Math.max(0, pb - costDiff))
       return { ...prev, [ability]: newValue }
     })
@@ -304,6 +311,7 @@ export default function CreationWizard() {
             pointBuyRemaining={pointBuyRemaining}
             abilities={abilities}
             selectedClass={selectedClass}
+            unlocked={ruleCool}
             onRollAbilities={handleRollAbilities}
             onStandardArray={handleStandardArray}
             onPointBuy={handlePointBuy}
@@ -342,6 +350,7 @@ export default function CreationWizard() {
             pointBuyRemaining={pointBuyRemaining}
             abilities={abilities}
             selectedClass={selectedClass}
+            unlocked={ruleCool}
             onRollAbilities={handleRollAbilities}
             onStandardArray={handleStandardArray}
             onPointBuy={handlePointBuy}
@@ -426,10 +435,29 @@ export default function CreationWizard() {
 
       case 'details':
         return (
-          <TextForm
-            config={{ fields: ['name', 'player_name', 'alignment', 'deity', 'height', 'weight', 'age', 'eyes', 'hair', 'skin'] }}
-            values={textFields}
-            onChange={(field, value) => setTextFields((prev) => ({ ...prev, [field]: value }))}
+          <DetailsStep
+            characterName={textFields.name}
+            playerName={textFields.player_name}
+            alignment={textFields.alignment}
+            deity={textFields.deity}
+            height={textFields.height}
+            weight={textFields.weight}
+            age={parseInt(textFields.age) || 0}
+            eyes={textFields.eyes}
+            hair={textFields.hair}
+            skin={textFields.skin}
+            selectedRace={selectedRace}
+            unlocked={ruleCool}
+            onCharacterNameChange={(v) => setTextFields((prev) => ({ ...prev, name: v }))}
+            onPlayerNameChange={(v) => setTextFields((prev) => ({ ...prev, player_name: v }))}
+            onAlignmentChange={(v) => setTextFields((prev) => ({ ...prev, alignment: v }))}
+            onDeityChange={(v) => setTextFields((prev) => ({ ...prev, deity: v }))}
+            onHeightChange={(v) => setTextFields((prev) => ({ ...prev, height: v }))}
+            onWeightChange={(v) => setTextFields((prev) => ({ ...prev, weight: v }))}
+            onAgeChange={(v) => setTextFields((prev) => ({ ...prev, age: String(v) }))}
+            onEyesChange={(v) => setTextFields((prev) => ({ ...prev, eyes: v }))}
+            onHairChange={(v) => setTextFields((prev) => ({ ...prev, hair: v }))}
+            onSkinChange={(v) => setTextFields((prev) => ({ ...prev, skin: v }))}
           />
         )
 

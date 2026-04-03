@@ -95,6 +95,7 @@ export interface DMSettings {
   enforce_prerequisites: boolean
   notes: string
   restricted_entities: string[]
+  rule_cool: boolean
 }
 
 export async function getDmSettings(): Promise<DMSettings> {
