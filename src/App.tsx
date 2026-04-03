@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router'
 import Sidebar from './components/Sidebar'
+import SpotlightSearch from './components/SpotlightSearch'
+import { useHotkey } from './hooks/useHotkey'
 import EntityList from './routes/EntityList'
 import EntityDetail from './routes/EntityDetail'
 import SpellIndex from './routes/SpellIndex'
@@ -43,9 +45,14 @@ const DEFAULT_THEME: Theme = {
 
 export default function App() {
   const [dmToolsOpen, setDmToolsOpen] = useState(false)
+  const [spotlightOpen, setSpotlightOpen] = useState(false)
   const location = useLocation()
   const prevPath = useRef(location.pathname)
   useTheme(DEFAULT_THEME)
+
+  const openSpotlight = useCallback(() => setSpotlightOpen(true), [])
+  useHotkey('k', { meta: true }, openSpotlight)
+  useHotkey('k', { ctrl: true }, openSpotlight)
 
   useEffect(() => {
     if (import.meta.env.DEV && prevPath.current !== location.pathname) {
@@ -55,29 +62,32 @@ export default function App() {
   }, [location.pathname])
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <Sidebar />
-      <main style={{
-        flex: 1,
-        overflow: 'auto',
-        background: 'var(--parchment-light)',
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`,
-      }}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/races" replace />} />
-          <Route path="/creation" element={<CreationWizard />} />
-          <Route path="/character/:id" element={<CharacterSheet />} />
-          <Route path="/spells" element={<SpellIndex />} />
-          <Route path="/spells/:kind/:value" element={<SpellCategory />} />
-          <Route path="/spells/:id" element={<EntityDetail />} />
-          <Route path="/:entityType" element={<EntityList />} />
-          <Route path="/:entityType/:id" element={<EntityDetail />} />
-          {!isTauri && (
-            <Route path="/dev/components/:name" element={<ComponentPlayground />} />
-          )}
-        </Routes>
-      </main>
-      <DMTools isOpen={dmToolsOpen} onToggle={() => setDmToolsOpen(!dmToolsOpen)} />
-    </div>
+    <>
+      <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+        <Sidebar onSpotlightOpen={openSpotlight} />
+        <main style={{
+          flex: 1,
+          overflow: 'auto',
+          background: 'var(--parchment-light)',
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`,
+        }}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/races" replace />} />
+            <Route path="/creation" element={<CreationWizard />} />
+            <Route path="/character/:id" element={<CharacterSheet />} />
+            <Route path="/spells" element={<SpellIndex />} />
+            <Route path="/spells/:kind/:value" element={<SpellCategory />} />
+            <Route path="/spells/:id" element={<EntityDetail />} />
+            <Route path="/:entityType" element={<EntityList />} />
+            <Route path="/:entityType/:id" element={<EntityDetail />} />
+            {!isTauri && (
+              <Route path="/dev/components/:name" element={<ComponentPlayground />} />
+            )}
+          </Routes>
+        </main>
+        <DMTools isOpen={dmToolsOpen} onToggle={() => setDmToolsOpen(!dmToolsOpen)} />
+      </div>
+      <SpotlightSearch isOpen={spotlightOpen} onClose={() => setSpotlightOpen(false)} />
+    </>
   )
 }

@@ -9,7 +9,11 @@ const ENTITY_TYPES = [
   { type: 'spells', label: 'Spells', icon: '✦' },
 ]
 
-export default function Sidebar() {
+interface Props {
+  onSpotlightOpen?: () => void
+}
+
+export default function Sidebar({ onSpotlightOpen }: Props) {
   return (
     <nav
       style={{
@@ -101,6 +105,32 @@ export default function Sidebar() {
 
         {/* Gold rule */}
         <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, #9A7B2C, transparent)', margin: '1rem 0 0.6rem' }} />
+
+        {/* Search trigger */}
+        <button
+          onClick={onSpotlightOpen}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            gap: '0.4rem',
+            fontFamily: "'Libre Baskerville', serif",
+            fontSize: '0.68rem',
+            fontStyle: 'italic',
+            color: 'rgba(212, 180, 104, 0.5)',
+            background: 'rgba(184, 149, 74, 0.07)',
+            border: '1px solid rgba(184, 149, 74, 0.2)',
+            borderRadius: '2px',
+            padding: '5px 10px',
+            marginBottom: '0.6rem',
+            cursor: 'pointer',
+            transition: 'all 0.15s',
+          }}
+        >
+          <span style={{ color: 'rgba(212, 180, 104, 0.6)' }}>&#x2694;</span>
+          Search…
+          <span className="spotlight-shortcut-hint">&#x2318;K</span>
+        </button>
 
         {/* Section label */}
         <div style={{

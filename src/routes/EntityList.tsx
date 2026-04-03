@@ -6,21 +6,13 @@ import SearchBar from '../components/SearchBar'
 import { ViewModeRenderer } from '../components/ViewModeRenderer'
 import { useViewMode } from '../hooks/useViewMode'
 import { devRender, devMount, devUnmount, devEffect, devState, devFetchStart, devFetchEnd } from '../lib/devlog'
+import { prettifyName } from '../lib/prettifyName'
 
 const TYPE_MAP: Record<string, string> = {
   races: 'race',
   classes: 'class',
   feats: 'feat',
   spells: 'spell',
-}
-
-/** Convert a raw entity ID or slug to a readable title-cased name. */
-function prettifyName(raw: string): string {
-  const slug = raw.includes(':') ? (raw.split(':').pop() ?? raw) : raw
-  if (slug === slug.toLowerCase()) {
-    return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-  }
-  return slug
 }
 
 function summaryToEntity(summary: EntitySummary): Entity {

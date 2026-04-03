@@ -24,6 +24,7 @@ import { ColorPicker, EYE_COLORS } from '../components/wizard/ColorPicker'
 import { DeitySelector } from '../components/wizard/DeitySelector'
 import { AgePicker } from '../components/wizard/AgePicker'
 import { EntitySelector } from '../components/wizard/EntitySelector'
+import SpotlightSearch from '../components/SpotlightSearch'
 import type { Entity } from '../lib/types'
 
 export interface RegistryEntry {
@@ -415,6 +416,14 @@ export const componentRegistry: Record<string, RegistryEntry> = {
       entities: [STUB_RACE, { ...STUB_RACE, id: 'srd:races:human', properties: { ...STUB_RACE.properties, name: 'Human' } }],
       selectedIds: [],
       onSelect: undefined,
+    },
+  },
+  'spotlight-search': {
+    label: 'SpotlightSearch',
+    component: SpotlightSearch,
+    defaultProps: {
+      isOpen: true,
+      onClose: undefined,
     },
   },
 }

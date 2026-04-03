@@ -27,6 +27,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: mozilla-actions/sccache-action@v0.0.6
+      - name: Check formatting
+        working-directory: src-tauri
+        run: cargo fmt -- --check
+      - name: Run clippy
+        working-directory: src-tauri
+        run: cargo clippy -- -D warnings
+        env:
+          RUSTC_WRAPPER: sccache
       - name: Run Rust tests
         working-directory: src-tauri
         run: cargo test

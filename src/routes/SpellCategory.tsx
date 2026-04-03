@@ -6,14 +6,7 @@ import SearchBar from '../components/SearchBar'
 import { ViewModeRenderer } from '../components/ViewModeRenderer'
 import { useViewMode } from '../hooks/useViewMode'
 import { devRender, devEffect, devState, devFetchStart, devFetchEnd } from '../lib/devlog'
-
-function prettifyName(raw: string): string {
-  const slug = raw.includes(':') ? (raw.split(':').pop() ?? raw) : raw
-  if (slug === slug.toLowerCase()) {
-    return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-  }
-  return slug
-}
+import { prettifyName } from '../lib/prettifyName'
 
 function summaryToEntity(summary: EntitySummary): Entity {
   const name = summary.name && summary.name !== summary.id
