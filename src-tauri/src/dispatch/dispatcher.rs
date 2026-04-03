@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use crate::computed_view::ComputedView;
 use crate::entity::{Entity, Value};
 use crate::event::Event;
 use crate::operation::{OpCode, Operation, StackRule};
@@ -19,8 +18,10 @@ pub struct Dispatcher {
 
 #[derive(Debug, Clone)]
 pub struct AppliedOperation {
+    #[allow(dead_code)]
     pub op: OpCode,
     pub value: Value,
+    #[allow(dead_code)]
     pub source: String,
 }
 
@@ -30,6 +31,7 @@ struct SubscriptionIndexEntry {
     priority: i32,
 }
 
+#[allow(dead_code)]
 impl Dispatcher {
     pub fn new() -> Self {
         Self {
@@ -400,5 +402,60 @@ impl Dispatcher {
 impl Default for Dispatcher {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::entity::Entity;
+    use crate::operation::{OpCode, Operation};
+
+    fn make_entity(id: &str) -> Entity {
+        Entity {
+            id: id.to_string(),
+            entity_type: "test".to_string(),
+            properties: std::collections::HashMap::new(),
+            tags: vec![],
+            mdx_body: String::new(),
+            source_pack: "test".to_string(),
+            subscriptions: vec![],
+            computed_views: vec![],
+            prototype: None,
+        }
+    }
+
+    #[test]
+    fn test_clear_applied_operations() {
+        let mut dispatcher = Dispatcher::new();
+        let op = Operation::new(OpCode::Set, "e1", "hp", crate::entity::Value::Int(10), "src");
+        let rule = crate::operation::StackRule::Additive;
+        let key = dispatcher.stack_key(&op, &rule);
+        dispatcher.applied_operations.insert(key, vec![AppliedOperation { value: crate::entity::Value::Int(10), op: OpCode::Set, source: "src".to_string() }]);
+
+        assert!(!dispatcher.applied_operations.is_empty());
+        dispatcher.clear_applied_operations();
+        assert!(dispatcher.applied_operations.is_empty());
+    }
+
+    #[test]
+    fn test_clear_index() {
+        let mut dispatcher = Dispatcher::new();
+        let mut entity = make_entity("e1");
+        entity.subscriptions.push(crate::subscription::Subscription {
+            id: uuid::Uuid::new_v4(),
+            trigger: "test.event".to_string(),
+            predicate: None,
+            json_predicate: None,
+            effects: vec![],
+            priority: 50,
+            source: "test".to_string(),
+        });
+        dispatcher.index_entity(&entity);
+        assert!(!dispatcher.subscription_index.is_empty());
+
+        dispatcher.clear_index();
+        assert!(dispatcher.subscription_index.is_empty());
+        assert!(dispatcher.applied_operations.is_empty());
     }
 }

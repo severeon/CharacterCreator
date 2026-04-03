@@ -10,10 +10,15 @@ use crate::schema_validator;
 #[derive(Debug, serde::Deserialize)]
 pub struct Manifest {
     pub id: String,
+    // Deserialized from YAML; not yet read in Rust — kept for future pack introspection.
+    #[allow(dead_code)]
     pub name: String,
+    #[allow(dead_code)]
     pub version: String,
+    #[allow(dead_code)]
     #[serde(default)]
     pub pack_type: String,
+    #[allow(dead_code)]
     #[serde(default)]
     pub dependencies: Vec<String>,
 }

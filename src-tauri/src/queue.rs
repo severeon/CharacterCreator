@@ -38,6 +38,7 @@ pub struct Changeset {
     pub entries: Vec<ChangesetEntry>,
 }
 
+#[allow(dead_code)]
 impl Changeset {
     pub fn new() -> Self {
         Self {
@@ -87,6 +88,7 @@ pub struct Queue {
     pub committed_at: Option<u64>,
 }
 
+#[allow(dead_code)]
 impl Queue {
     pub fn new(parent: Option<Uuid>, timestamp: u64) -> Self {
         Self {
@@ -150,6 +152,7 @@ pub struct QueueManager {
     logical_clock: u64,
 }
 
+#[allow(dead_code)]
 impl QueueManager {
     pub fn new() -> Self {
         Self {

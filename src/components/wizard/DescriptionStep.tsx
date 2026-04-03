@@ -3,8 +3,6 @@ interface DescriptionStepProps {
   background: string
   onAppearanceChange: (v: string) => void
   onBackgroundChange: (v: string) => void
-  onContinue: () => void
-  onBack: () => void
 }
 
 export function DescriptionStep({
@@ -12,8 +10,6 @@ export function DescriptionStep({
   background,
   onAppearanceChange,
   onBackgroundChange,
-  onContinue,
-  onBack,
 }: DescriptionStepProps) {
   return (
     <div className="space-y-6">

@@ -22,10 +22,6 @@ export default function DMTools({ isOpen, onToggle }: DMToolsProps) {
   const [settings, setSettings] = useState<DMSettings>(DEFAULT_SETTINGS)
   const [hasChanges, setHasChanges] = useState(false)
 
-  useEffect(() => {
-    loadSettings()
-  }, [])
-
   async function loadSettings() {
     try {
       const loaded = await getDmSettings()
@@ -34,6 +30,11 @@ export default function DMTools({ isOpen, onToggle }: DMToolsProps) {
       console.error('Failed to load DM settings:', err)
     }
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadSettings()
+  }, [])
 
   async function saveSettings() {
     try {
@@ -53,30 +54,60 @@ export default function DMTools({ isOpen, onToggle }: DMToolsProps) {
     return (
       <button
         onClick={onToggle}
-        className="fixed right-0 top-1/2 -translate-y-1/2 bg-purple-600 text-white px-2 py-4 rounded-l-lg shadow-lg z-40 hover:bg-purple-700 transition-colors"
         title="Open DM Tools"
+        style={{
+          position: 'fixed', right: 0, top: '50%', transform: 'translateY(-50%)',
+          background: 'var(--burgundy)',
+          color: 'var(--parchment-light)',
+          border: 'none',
+          borderLeft: '1px solid var(--gold-rule)',
+          borderTop: '1px solid var(--gold-rule)',
+          borderBottom: '1px solid var(--gold-rule)',
+          padding: '1rem 0.5rem',
+          cursor: 'pointer',
+          zIndex: 40,
+          writingMode: 'vertical-rl',
+          fontFamily: "'Cinzel', serif",
+          fontSize: '0.6rem',
+          fontWeight: 600,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          boxShadow: '-2px 0 8px rgba(0,0,0,0.3)',
+        }}
       >
-        <span className="writing-mode-vertical text-sm font-bold">DM TOOLS</span>
+        DM Screen
       </button>
     )
   }
 
   return (
-    <div className="fixed right-0 top-0 h-full w-80 bg-gray-50 border-l border-gray-300 shadow-xl z-50 flex flex-col">
+    <div style={{
+      position: 'fixed', right: 0, top: 0, height: '100%', width: '20rem',
+      background: 'var(--parchment-light)',
+      borderLeft: '2px solid var(--gold-rule)',
+      boxShadow: '-4px 0 20px rgba(28,16,8,0.3)',
+      zIndex: 50,
+      display: 'flex', flexDirection: 'column',
+    }}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-purple-600 text-white">
-        <h2 className="font-bold text-lg">DM Tools</h2>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0.85rem 1rem',
+        background: 'var(--burgundy)',
+        borderBottom: '2px solid var(--gold-rule)',
+      }}>
+        <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.08em', color: 'var(--parchment-light)', margin: 0 }}>DM Screen</h2>
         <button
           onClick={onToggle}
-          className="p-1 hover:bg-purple-700 rounded"
-          title="Close DM Tools"
+          style={{ background: 'none', border: 'none', color: 'var(--parchment-light)', cursor: 'pointer', fontSize: '1rem', opacity: 0.8, padding: '0 4px' }}
+          title="Close"
         >
           ✕
         </button>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         {/* Ability Score Method */}
         <section>
           <h3 className="font-semibold text-gray-700 mb-2">Ability Score Method</h3>
@@ -217,15 +248,24 @@ export default function DMTools({ isOpen, onToggle }: DMToolsProps) {
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t bg-white">
+      <div style={{ padding: '0.75rem 1rem', borderTop: '1px solid var(--gold-rule)', background: 'var(--parchment)' }}>
         <button
           onClick={saveSettings}
           disabled={!hasChanges}
-          className={`w-full py-2 rounded-lg font-medium transition-colors ${
-            hasChanges
-              ? 'bg-purple-600 text-white hover:bg-purple-700'
-              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-          }`}
+          style={{
+            width: '100%',
+            padding: '7px',
+            fontFamily: "'Cinzel', serif",
+            fontSize: '0.7rem',
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            border: `1px solid ${hasChanges ? 'var(--gold-rule)' : 'rgba(155,120,50,0.25)'}`,
+            background: hasChanges ? 'var(--burgundy)' : 'transparent',
+            color: hasChanges ? 'var(--parchment-light)' : 'var(--ink-light)',
+            cursor: hasChanges ? 'pointer' : 'default',
+            opacity: hasChanges ? 1 : 0.5,
+          }}
         >
           {hasChanges ? 'Save Settings' : 'Saved'}
         </button>

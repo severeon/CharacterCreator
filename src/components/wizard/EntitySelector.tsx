@@ -19,23 +19,42 @@ function FallbackCard({ entity, selected, onSelect }: { entity: Entity; selected
   return (
     <button
       onClick={onSelect}
-      className={`p-4 border rounded-lg text-left transition-colors ${
-        selected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-400'
-      }`}
+      style={{
+        width: '100%',
+        textAlign: 'left',
+        cursor: 'pointer',
+        padding: '8px 10px',
+        background: selected ? 'var(--parchment-dark)' : 'var(--parchment-light)',
+        border: '1px solid var(--gold-rule)',
+        borderTop: selected ? '3px solid var(--burgundy-light)' : '3px solid var(--burgundy)',
+        boxShadow: 'var(--shadow-parchment)',
+        transition: 'border-color 0.15s, transform 0.12s',
+        fontFamily: "'Cinzel', serif",
+        fontSize: '0.85rem',
+        fontWeight: 600,
+        color: 'var(--burgundy-dark)',
+      }}
     >
-      <span className="font-medium">{name}</span>
+      {name}
     </button>
   )
 }
 
 export function EntitySelector({ config, entities, selectedIds, onSelect }: EntitySelectorProps) {
-  const gridClass = config.display === 'filterable-list'
-    ? 'grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto'
-    : 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
+  const isFilterableList = config.display === 'filterable-list'
+  // Strip category/index entities — they're navigation pages, not valid selections
+  const selectable = entities.filter(e => !e.tags.includes('index'))
 
   return (
-    <div className={gridClass}>
-      {entities.map((entity) => {
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: isFilterableList ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+      gap: '0.6rem',
+      maxHeight: isFilterableList ? '24rem' : undefined,
+      overflowY: isFilterableList ? 'auto' : undefined,
+      paddingTop: '3px', // prevent top border clipping
+    }}>
+      {selectable.map((entity) => {
         const selected = selectedIds.includes(entity.id)
         const onSelectEntity = () => onSelect(entity)
 
@@ -78,8 +97,10 @@ export function EntitySelector({ config, entities, selectedIds, onSelect }: Enti
           />
         )
       })}
-      {entities.length === 0 && (
-        <p className="text-gray-500 text-sm col-span-full">No options available.</p>
+      {selectable.length === 0 && (
+        <p style={{ fontFamily: "'IM Fell English', serif", fontStyle: 'italic', color: 'var(--ink-light)', fontSize: '0.85rem', gridColumn: '1/-1' }}>
+          No options available.
+        </p>
       )}
     </div>
   )

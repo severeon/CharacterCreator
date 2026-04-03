@@ -22,21 +22,12 @@ pub mod query;
 pub mod selection;
 pub mod settings;
 pub mod skills;
-pub mod tests;
 pub mod types;
+#[cfg(test)]
+mod tests;
 
-pub use abilities::AssignAbilityScores;
-pub use character::{CreateCharacter, UpdateCharacterIdentity};
 pub use error::EngineError;
-pub use export::{ExportCharacterJson, ExportCharacterMarkdown};
-pub use feats::{GetAvailableFeats, SelectFeat};
-pub use query::{
-    GetAvailableChoices, GetEntitiesByType, GetSpeculativeState, GetWorkflowStatus, LoadEntities,
-    SearchEntities,
-};
-pub use selection::{SelectClass, SelectRace};
 pub use settings::{DmSettings, DMSettings};
-pub use skills::AllocateSkillPoints;
 pub use types::WorkflowStatus;
 
 use std::collections::HashMap;
@@ -87,10 +78,6 @@ impl Engine {
 
     pub fn get_entity(&self, id: &str) -> Option<&Entity> {
         self.entities.get(id)
-    }
-
-    pub(crate) fn get_entity_mut(&mut self, id: &str) -> Option<&mut Entity> {
-        self.entities.get_mut(id)
     }
 
     /// Loads entities into the engine, indexing their subscriptions.

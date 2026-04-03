@@ -1,3 +1,5 @@
+import React, { useState } from 'react'
+
 interface RollAbilitiesStepProps {
   rolledSets: number[][]
   abilityMethod: 'manual' | 'array' | 'roll' | 'pointbuy'
@@ -5,6 +7,38 @@ interface RollAbilitiesStepProps {
   onStandardArray: () => void
   onPointBuy: () => void
   onManualEntry: () => void
+}
+
+const DICE_CSS = `
+@keyframes diceSpin2d {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+@keyframes diceSpin3d {
+  0% { transform: rotateX(0deg) rotateY(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg); }
+}
+`
+
+const METHOD_INFO: Record<string, string> = {
+  roll: 'Roll 4d6, drop the lowest. Assign scores in the next step.',
+  array: 'Assign the standard array: 15, 14, 13, 12, 10, 8.',
+  pointbuy: 'Spend 27 points. Scores 8–18, costs increase at higher values.',
+  manual: 'Enter any scores from 1–20 (DM override: 1–30).',
+}
+
+const STANDARD_ARRAY_VALUES = [15, 14, 13, 12, 10, 8]
+
+function MethodButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`dnd-method-btn${active ? ' dnd-method-btn--active' : ''}`}
+    >
+      {children}
+    </button>
+  )
 }
 
 export function RollAbilitiesStep({
@@ -15,109 +49,197 @@ export function RollAbilitiesStep({
   onPointBuy,
   onManualEntry,
 }: RollAbilitiesStepProps) {
-  return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Step 1: Roll Ability Scores</h2>
-      <p className="text-gray-600">
-        Roll 4d6 and drop the lowest die. Repeat 6 times to generate your ability scores.
-      </p>
+  const [diceMode, setDiceMode] = useState<'2d' | '3d'>('2d')
+  const [rolling, setRolling] = useState<number | null>(null)
 
-      {/* Method Selection Buttons */}
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={onRollAbilities}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'roll' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Roll 4d6 (×6)
-        </button>
-        <button
-          onClick={onStandardArray}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'array' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Standard Array
-        </button>
-        <button
-          onClick={onPointBuy}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'pointbuy' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Point Buy
-        </button>
-        <button
-          onClick={onManualEntry}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'manual' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Manual
-        </button>
+  function handleRollAll() {
+    onRollAbilities()
+    // Animate sets 0–5 in sequence with 150ms delays
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => {
+        setRolling(i)
+        setTimeout(() => setRolling(null), 200)
+      }, i * 150)
+    }
+  }
+
+  const hasRolls = rolledSets.length > 0 && rolledSets.length >= 6
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <style>{DICE_CSS}</style>
+
+      {/* Method selector */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+        <MethodButton active={abilityMethod === 'roll'} onClick={onRollAbilities}>Roll 4d6</MethodButton>
+        <MethodButton active={abilityMethod === 'array'} onClick={onStandardArray}>Standard Array</MethodButton>
+        <MethodButton active={abilityMethod === 'pointbuy'} onClick={onPointBuy}>Point Buy</MethodButton>
+        <MethodButton active={abilityMethod === 'manual'} onClick={onManualEntry}>Manual Entry</MethodButton>
       </div>
 
-      {/* Rolled Sets Display */}
-      {abilityMethod === 'roll' && rolledSets.length > 0 && rolledSets[0].length === 6 && (
-        <div className="space-y-4">
-          <h3 className="font-semibold">Your Rolled Ability Scores</h3>
-          <p className="text-sm text-gray-500">
-            These 6 scores will be available for assignment after Race and Class selection.
-            You can re-roll to get new values.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {rolledSets[0].map((score, i) => (
-              <div
-                key={i}
-                className="p-4 border rounded-lg text-center bg-white"
+      {/* Info box */}
+      <div className="dnd-info-box">
+        {METHOD_INFO[abilityMethod]}
+      </div>
+
+      {/* Dice roller section */}
+      {abilityMethod === 'roll' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {/* 2D / 3D toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--ink)', letterSpacing: '0.06em' }}>
+              Dice Style:
+            </span>
+            {(['2d', '3d'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setDiceMode(mode)}
+                style={{
+                  fontFamily: 'Cinzel, serif',
+                  fontSize: '0.65rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase' as const,
+                  padding: '3px 10px',
+                  borderRadius: '999px',
+                  border: '1px solid #6b2737',
+                  background: diceMode === mode ? '#6b2737' : 'var(--parchment-light)',
+                  color: diceMode === mode ? 'var(--parchment)' : '#6b2737',
+                  cursor: 'pointer',
+                }}
               >
-                <span className="text-sm text-gray-500 block">Score {i + 1}</span>
-                <span className="text-2xl font-bold text-blue-600">{score}</span>
-              </div>
+                {mode.toUpperCase()}
+              </button>
             ))}
           </div>
-          <p className="text-sm text-blue-600">
-            Click Continue to proceed to Race selection. You&apos;ll assign these scores after choosing your class.
-          </p>
+
+          {/* 6 dice sets */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {Array.from({ length: 6 }).map((_, setIndex) => {
+              const set = hasRolls ? rolledSets[setIndex] : null
+              // The 4 dice values (sorted descending for display, lowest faded)
+              const dice: number[] = set ? [...set].sort((a, b) => b - a) : [0, 0, 0, 0]
+              const total = set ? dice.slice(0, 3).reduce((s, v) => s + v, 0) : null
+              const isAnimating = rolling === setIndex
+
+              return (
+                <div
+                  key={setIndex}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '6px 10px',
+                    background: set ? 'var(--parchment-light)' : 'var(--parchment)',
+                    border: '1px solid var(--gold-rule)',
+                    borderTop: set ? '3px solid #6b2737' : '1px solid var(--gold-rule)',
+                  }}
+                >
+                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'var(--ink)', minWidth: 48, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Set {setIndex + 1}
+                  </span>
+                  <div style={{ display: 'flex', gap: '0.3rem' }}>
+                    {dice.map((face, dieIdx) => {
+                      const isLowest = dieIdx === 3 // sorted descending, last is lowest
+                      const animation = isAnimating
+                        ? `${diceMode === '3d' ? 'diceSpin3d' : 'diceSpin2d'} 0.2s ease-out`
+                        : undefined
+                      return (
+                        <div
+                          key={dieIdx}
+                          style={{
+                            width: 32, height: 32,
+                            background: 'var(--parchment-light)',
+                            border: '1px solid var(--gold)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontFamily: 'Cinzel, serif',
+                            fontSize: '0.9rem',
+                            color: 'var(--ink)',
+                            opacity: isLowest ? 0.4 : 1,
+                            textDecoration: isLowest ? 'line-through' : undefined,
+                            animation,
+                            transformStyle: diceMode === '3d' ? 'preserve-3d' : undefined,
+                          }}
+                        >
+                          {set ? face : '—'}
+                        </div>
+                      )
+                    })}
+                  </div>
+                  {total !== null && (
+                    <span style={{
+                      marginLeft: 'auto',
+                      fontFamily: 'Cinzel, serif',
+                      fontSize: '1.1rem',
+                      fontWeight: 700,
+                      color: '#6b2737',
+                    }}>
+                      {total}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Roll / Re-roll button */}
+          <button
+            type="button"
+            onClick={handleRollAll}
+            style={{
+              background: '#6b2737',
+              border: '1px solid #4a1a25',
+              color: 'var(--parchment)',
+              fontFamily: 'Cinzel, serif',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase' as const,
+              padding: '10px 20px',
+              cursor: 'pointer',
+              alignSelf: 'flex-start',
+            }}
+          >
+            {hasRolls ? 'Re-roll All' : 'Roll All 6'}
+          </button>
         </div>
       )}
 
-      {/* Standard Array Preview */}
+      {/* Standard array chips */}
       {abilityMethod === 'array' && (
-        <div className="bg-green-50 p-4 rounded-lg">
-          <h3 className="font-semibold text-green-800">Standard Array</h3>
-          <p className="text-green-700 text-sm">
-            STR 15, DEX 14, CON 13, INT 12, WIS 10, CHA 8
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <p style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.82rem', color: 'var(--ink)', fontStyle: 'italic', margin: 0 }}>
+            Drag-and-drop assignment happens in the next step.
           </p>
-          <p className="text-sm text-green-600 mt-2">
-            These values will be available for assignment after Race and Class selection.
-          </p>
+          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+            {STANDARD_ARRAY_VALUES.map((v) => (
+              <span
+                key={v}
+                className="dnd-tag"
+                style={{
+                  background: '#6b2737',
+                  color: 'var(--parchment)',
+                  fontFamily: 'Cinzel, serif',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  padding: '4px 12px',
+                  border: '1px solid #4a1a25',
+                }}
+              >
+                {v}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Point Buy Info */}
-      {abilityMethod === 'pointbuy' && (
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <p className="font-medium text-blue-800">Point Buy: 27 points</p>
-          <p className="text-blue-600 text-sm">
-            Costs: 8=0, 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9, 16=12, 17=15, 18=19
-          </p>
-          <p className="text-sm text-blue-600 mt-1">
-            You&apos;ll be able to adjust these after Race and Class selection.
-          </p>
-        </div>
+      {/* Point buy / manual note */}
+      {(abilityMethod === 'pointbuy' || abilityMethod === 'manual') && (
+        <p style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.82rem', color: 'var(--ink)', fontStyle: 'italic', margin: 0 }}>
+          Configure your scores in the next step.
+        </p>
       )}
-
-      {/* Manual Entry Info */}
-      {abilityMethod === 'manual' && (
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <p className="text-gray-700">
-            You&apos;ll be able to enter ability scores manually after Race and Class selection.
-          </p>
-        </div>
-      )}
-
     </div>
   )
 }

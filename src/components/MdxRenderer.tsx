@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, type MouseEvent } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import * as runtime from 'react/jsx-runtime'
 import { evaluate } from '@mdx-js/mdx'
+import remarkGfm from 'remark-gfm'
 import { entityComponents } from './entities/registry'
 
 interface Props {
@@ -18,7 +19,7 @@ export default function MdxRenderer({ source }: Props) {
 
   useEffect(() => {
     let cancelled = false
-    evaluate(source, { ...(runtime as Record<string, unknown>), development: false } as Parameters<typeof evaluate>[1])
+    evaluate(source, { ...(runtime as Record<string, unknown>), development: false, remarkPlugins: [remarkGfm] } as Parameters<typeof evaluate>[1])
       .then(({ default: MDXContent }) => {
         if (!cancelled) setContent(() => MDXContent as unknown as MdxComponent)
       })
@@ -46,7 +47,7 @@ export default function MdxRenderer({ source }: Props) {
   if (error) return <div className="text-red-500 text-sm">MDX render error: {error}</div>
   if (!Content) return <div className="text-gray-400">Loading...</div>
   return (
-    <div className="prose prose-sm max-w-none" onClick={handleClick}>
+    <div className="dnd-prose" onClick={handleClick}>
       <Content components={entityComponents as Record<string, unknown>} />
     </div>
   )

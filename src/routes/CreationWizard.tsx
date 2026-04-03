@@ -78,10 +78,6 @@ export default function CreationWizard() {
   // Equipment
   const [startingGold] = useState(100)
 
-  useEffect(() => {
-    loadContent()
-  }, [])
-
   async function loadContent() {
     try {
       setRaces(await getAvailableChoices('', 'race'))
@@ -94,6 +90,11 @@ export default function CreationWizard() {
       console.error('Failed to load classes:', err)
     }
   }
+
+  useEffect(() => {
+    loadContent()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function loadSkillsStep() {
     if (!characterId) return
@@ -144,17 +145,9 @@ export default function CreationWizard() {
 
   function handleRollAbilities() {
     setAbilityMethod('roll')
-    const scores: number[] = Array.from({ length: 6 }, () => {
-      const rolls = Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1)
-      rolls.sort((a, b) => a - b)
-      return rolls[1] + rolls[2] + rolls[3]
-    })
-    const sorted = [...scores].sort((a, b) => b - a)
-    setRolledSets([sorted])
-    const keys = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma']
-    const newAbilities: Record<string, number> = {}
-    keys.forEach((k, i) => { newAbilities[k] = sorted[i] })
-    setAbilities(newAbilities)
+    setRolledSets([])
+    // Reset all abilities to 0 so the roll mode can track unassigned stats (value > 0 = assigned)
+    setAbilities({ strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 })
   }
 
   function handleStandardArray() {
@@ -448,16 +441,16 @@ export default function CreationWizard() {
   }
 
   if (!workflow) {
-    return <div className="p-8 text-gray-500">Loading workflow…</div>
+    return <div className="dnd-loading">Loading workflow…</div>
   }
 
   // Race and class steps auto-advance on selection — suppress the WorkflowStepper's Next button for them
   const autoAdvanceSteps = new Set(['select-race', 'select-class', 'select-feats'])
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">Create New Character</h1>
-      <div className="bg-white rounded-lg shadow p-6">
+    <div style={{ padding: '1.75rem 2rem', maxWidth: '64rem' }}>
+      <h2 className="dnd-page-header">Create New Character</h2>
+      <div className="stat-block">
         <WorkflowStepper
           workflow={workflow}
           state={wizardState}
@@ -467,9 +460,10 @@ export default function CreationWizard() {
           {(step) => (
             <div>
               {renderStepContent(step)}
-              {/* Auto-advance steps handle their own navigation; hide the stepper's Next */}
               {autoAdvanceSteps.has(step.id) && (
-                <p className="text-sm text-gray-500 mt-4">Select an option above to continue.</p>
+                <p style={{ fontFamily: "'IM Fell English', serif", fontStyle: 'italic', fontSize: '0.8rem', color: 'var(--ink-light)', marginTop: '1rem', opacity: 0.8 }}>
+                  Select an option above to continue.
+                </p>
               )}
             </div>
           )}

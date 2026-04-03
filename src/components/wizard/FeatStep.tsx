@@ -6,8 +6,6 @@ interface FeatStepProps {
   selectedFeats: string[]
   featSlotsRemaining: number
   onSelectFeat: (feat: Entity) => void
-  onContinue: () => void
-  onBack: () => void
 }
 
 export function FeatStep({
@@ -15,8 +13,6 @@ export function FeatStep({
   selectedFeats,
   featSlotsRemaining,
   onSelectFeat,
-  onContinue,
-  onBack,
 }: FeatStepProps) {
   return (
     <div className="space-y-4">

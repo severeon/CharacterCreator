@@ -1,23 +1,10 @@
 //! Read-only queries and entity loading.
 
-use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::entity::{Entity, EntitySummary};
 use crate::engine::types::WorkflowStatus;
 use crate::engine::Engine;
-
-/// Loads a batch of entities into the engine, indexing their subscriptions.
-pub struct LoadEntities;
-
-impl LoadEntities {
-    pub fn execute(engine: &mut Engine, entities: HashMap<String, Entity>) {
-        for (id, entity) in entities {
-            engine.dispatcher.index_entity(&entity);
-            engine.entities.insert(id, entity);
-        }
-    }
-}
 
 /// Returns all entities of a given type, sorted alphabetically.
 pub struct GetEntitiesByType;

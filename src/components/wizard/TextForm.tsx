@@ -21,32 +21,46 @@ const FIELD_LABELS: Record<string, string> = {
 }
 
 export function TextForm({ config, values, onChange }: TextFormProps) {
+  const isWide = (f: string) => f === 'appearance' || f === 'background' || f === 'notes'
+  const shortFields = config.fields.filter(f => !isWide(f))
+  const longFields = config.fields.filter(f => isWide(f))
+
   return (
-    <div className="space-y-4">
-      {config.fields.map((field) => {
-        const label = FIELD_LABELS[field] ?? field
-        const isLong = field === 'appearance' || field === 'background' || field === 'notes'
-        return (
-          <div key={field}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-            {isLong ? (
-              <textarea
-                value={values[field] ?? ''}
-                onChange={(e) => onChange(field, e.target.value)}
-                rows={3}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            ) : (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      {/* Short fields in a 2-column grid */}
+      {shortFields.length > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.6rem' }}>
+          {shortFields.map((field) => (
+            <div key={field}>
+              <label className="dnd-field-label" style={{ color: 'var(--ink-mid)' }}>{FIELD_LABELS[field] ?? field}</label>
               <input
                 type="text"
                 value={values[field] ?? ''}
                 onChange={(e) => onChange(field, e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="dnd-field-input"
+                onFocus={e => (e.target.style.borderColor = 'var(--burgundy)')}
+                onBlur={e => (e.target.style.borderColor = 'var(--gold-rule)')}
               />
-            )}
-          </div>
-        )
-      })}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Long fields full-width */}
+      {longFields.map((field) => (
+        <div key={field}>
+          <label className="dnd-field-label" style={{ color: 'var(--ink-mid)' }}>{FIELD_LABELS[field] ?? field}</label>
+          <textarea
+            value={values[field] ?? ''}
+            onChange={(e) => onChange(field, e.target.value)}
+            rows={3}
+            className="dnd-field-input"
+            style={{ resize: 'vertical' as const }}
+            onFocus={e => (e.target.style.borderColor = 'var(--burgundy)')}
+            onBlur={e => (e.target.style.borderColor = 'var(--gold-rule)')}
+          />
+        </div>
+      ))}
     </div>
   )
 }

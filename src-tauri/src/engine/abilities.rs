@@ -9,6 +9,7 @@ use crate::engine::EngineError;
 /// Compute the ability modifier for a given score, using the formula from the
 /// `srd:mechanic:ability-scores` mechanic entity if loaded, falling back to the
 /// hardcoded D&D 3.5e formula `(score - 10) / 2` if not.
+#[allow(dead_code)]
 pub fn compute_ability_modifier(engine: &Engine, score: i64) -> i64 {
     let formula = engine
         .entities

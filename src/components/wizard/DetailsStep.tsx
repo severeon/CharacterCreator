@@ -19,8 +19,6 @@ interface DetailsStepProps {
   onEyesChange: (v: string) => void
   onHairChange: (v: string) => void
   onSkinChange: (v: string) => void
-  onFinish: () => void
-  onBack: () => void
 }
 
 const ALIGNMENTS: [string, string, string][] = [
@@ -56,8 +54,6 @@ export function DetailsStep({
   onEyesChange,
   onHairChange,
   onSkinChange,
-  onFinish,
-  onBack,
 }: DetailsStepProps) {
   return (
     <div className="space-y-6">

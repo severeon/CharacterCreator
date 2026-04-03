@@ -4,7 +4,6 @@ import type { Entity } from '../../lib/types'
 
 interface AbilityAllocatorProps {
   config: { mode: 'generate' | 'assign'; show_racial_bonuses?: boolean }
-  // Shared ability score state passed down from CreationWizard
   rolledSets: number[][]
   abilityMethod: 'manual' | 'array' | 'roll' | 'pointbuy'
   pointBuyRemaining: number
@@ -57,8 +56,6 @@ export function AbilityAllocator({
       onManualEntry={onManualEntry}
       onAbilityPointBuy={onAbilityPointBuy}
       onAbilityManualChange={onAbilityManualChange}
-      onAssignAbilities={() => {}}
-      onBack={() => {}}
     />
   )
 }
