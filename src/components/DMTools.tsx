@@ -16,6 +16,7 @@ const DEFAULT_SETTINGS: DMSettings = {
   enforce_prerequisites: false,
   notes: '',
   restricted_entities: [],
+  rule_cool: false,
 }
 
 export default function DMTools({ isOpen, onToggle }: DMToolsProps) {
@@ -149,6 +150,26 @@ export default function DMTools({ isOpen, onToggle }: DMToolsProps) {
               />
             </div>
           </div>
+        </section>
+
+        {/* Rule of Cool */}
+        <section>
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={settings.rule_cool}
+              onChange={(e) => updateSetting('rule_cool', e.target.checked)}
+              style={{ marginTop: 2, accentColor: 'var(--burgundy)', width: 14, height: 14 }}
+            />
+            <span>
+              <span style={{ fontFamily: "'Cinzel', serif", fontSize: '0.78rem', fontWeight: 600, color: 'var(--burgundy)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block' }}>
+                Rule of Cool
+              </span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--ink-light)', fontStyle: 'italic', lineHeight: 1.4, display: 'block', marginTop: 2 }}>
+                Disables all validation constraints — ability ranges extend to 3–30, alignment grid ignores class restrictions, age picker unlocked.
+              </span>
+            </span>
+          </label>
         </section>
 
         {/* Campaign Restrictions */}

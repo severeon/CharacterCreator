@@ -9,6 +9,7 @@ interface AbilityAllocatorProps {
   pointBuyRemaining: number
   abilities: Record<string, number>
   selectedClass: Entity | null
+  unlocked?: boolean
   onRollAbilities: () => void
   onStandardArray: () => void
   onPointBuy: () => void
@@ -24,6 +25,7 @@ export function AbilityAllocator({
   pointBuyRemaining,
   abilities,
   selectedClass,
+  unlocked = false,
   onRollAbilities,
   onStandardArray,
   onPointBuy,
@@ -50,6 +52,7 @@ export function AbilityAllocator({
       abilityMethod={abilityMethod}
       pointBuyRemaining={pointBuyRemaining}
       selectedClass={selectedClass}
+      unlocked={unlocked}
       onRollAbilities={onRollAbilities}
       onStandardArray={onStandardArray}
       onPointBuy={onPointBuy}

@@ -9,6 +9,7 @@ interface AssignAbilitiesStepProps {
   abilityMethod: 'manual' | 'array' | 'roll' | 'pointbuy'
   pointBuyRemaining: number
   selectedClass: Entity | null
+  unlocked?: boolean
   onRollAbilities: () => void
   onStandardArray: () => void
   onPointBuy: () => void
@@ -78,6 +79,7 @@ export function AssignAbilitiesStep({
   abilityMethod,
   pointBuyRemaining,
   selectedClass,
+  unlocked = false,
   onRollAbilities,
   onStandardArray,
   onPointBuy,
@@ -431,8 +433,8 @@ export function AssignAbilitiesStep({
                 const value = abilities[ability] ?? 8
                 const mod = abilityModifier(value)
                 const cost = POINT_BUY_COST[value] ?? 0
-                const canDec = value > 8
-                const canInc = value < 18 && pointBuyRemaining > 0
+                const canDec = value > (unlocked ? 3 : 8)
+                const canInc = unlocked ? value < 30 : (value < 18 && pointBuyRemaining > 0)
                 return (
                   <tr key={ability} style={{ background: idx % 2 === 0 ? 'var(--parchment-light)' : 'var(--parchment-dark)' }}>
                     <td style={{ padding: '6px 8px', textTransform: 'capitalize', fontWeight: 600 }}>
@@ -476,7 +478,7 @@ export function AssignAbilitiesStep({
                 <IncrDecrControl
                   value={value}
                   min={1}
-                  max={20}
+                  max={unlocked ? 30 : 20}
                   onChange={(v) => onAbilityManualChange(ability, v)}
                   sublabel={formatMod(mod)}
                 />
