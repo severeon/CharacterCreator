@@ -27,34 +27,56 @@ function getContextualLabel(age: number, milestones: [number, number, number, nu
   return 'Child'
 }
 
-const rangeSliderStyle = `
-  .age-range-slider {
+// Colored band definitions — progress from pale parchment through gold to deep burgundy
+const BAND_COLORS = ['#DDD0A8', '#C9A84C', '#B07838', '#8B4420', '#6B1414']
+
+const sliderThumbCss = `
+  .age-picker-range {
     -webkit-appearance: none;
     appearance: none;
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: 6px;
-    background: var(--parchment-dark);
-    border: 1px solid var(--gold-rule);
-    outline: none;
+    height: 100%;
+    background: transparent;
     cursor: pointer;
+    margin: 0;
+    padding: 0;
   }
-  .age-range-slider::-webkit-slider-thumb {
+  .age-picker-range::-webkit-slider-runnable-track {
+    background: transparent;
+    height: 100%;
+  }
+  .age-picker-range::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background: var(--burgundy);
+    background: var(--parchment-light);
+    border: 2px solid var(--burgundy);
+    box-shadow: 0 0 0 1px var(--gold-rule), 0 2px 4px rgba(28,16,8,0.35);
     cursor: pointer;
-    border: 2px solid var(--gold-rule);
+    margin-top: -7px;
   }
-  .age-range-slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
+  .age-picker-range::-moz-range-track {
+    background: transparent;
+    height: 100%;
+  }
+  .age-picker-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background: var(--burgundy);
+    background: var(--parchment-light);
+    border: 2px solid var(--burgundy);
+    box-shadow: 0 0 0 1px var(--gold-rule), 0 2px 4px rgba(28,16,8,0.35);
     cursor: pointer;
-    border: 2px solid var(--gold-rule);
+  }
+  .age-picker-range:focus {
+    outline: none;
+  }
+  .age-picker-range:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 2px var(--burgundy), 0 2px 4px rgba(28,16,8,0.35);
   }
 `
 
@@ -65,129 +87,181 @@ export function AgePicker({ value, race, onChange, unlocked = false }: AgePicker
   if (!milestones) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-        <span className="dnd-field-label" style={{ marginBottom: 0 }}>
-          Age
-        </span>
         <IncrDecrControl value={value} onChange={onChange} min={0} />
       </div>
     )
   }
 
-  const [_mature, _middle, _old, venerable] = milestones
+  const [mature, middle, old, venerable] = milestones
   const normalMax = venerable + Math.ceil(venerable * 0.2)
   const sliderMax = unlocked ? 10000 : normalMax
   const contextLabel = getContextualLabel(value, milestones, normalMax, unlocked)
 
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(Number(e.target.value))
-  }
+  // Five bands: Child | Young Adult | Middle Age | Old | Venerable+
+  const bandDefs = [
+    { label: 'Child',       start: 0,        end: mature,  color: BAND_COLORS[0] },
+    { label: 'Young Adult', start: mature,   end: middle,  color: BAND_COLORS[1] },
+    { label: 'Middle Age',  start: middle,   end: old,     color: BAND_COLORS[2] },
+    { label: 'Old',         start: old,      end: venerable, color: BAND_COLORS[3] },
+    { label: 'Venerable',   start: venerable, end: sliderMax, color: BAND_COLORS[4] },
+  ]
 
-  // Tick positions for the datalist
-  const tickId = 'age-ticks'
-  const milestoneValues = milestones
-  const tickLabels: { val: number; name: string }[] = [
-    { val: milestoneValues[0], name: 'Adult' },
-    { val: milestoneValues[1], name: 'Middle' },
-    { val: milestoneValues[2], name: 'Old' },
-    { val: milestoneValues[3], name: 'Venerable' },
+  // Which band is the current age in?
+  const activeBandIdx = bandDefs.findIndex((b) => value >= b.start && value < b.end)
+  const effectiveActiveBand = activeBandIdx === -1 ? bandDefs.length - 1 : activeBandIdx
+
+  // Milestone tick positions as percentages
+  const ticks = [
+    { val: mature,    label: 'Adult' },
+    { val: middle,    label: 'Middle' },
+    { val: old,       label: 'Old' },
+    { val: venerable, label: 'Venerable' },
   ]
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <style>{rangeSliderStyle}</style>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <style>{sliderThumbCss}</style>
 
-      {/* Title */}
-      <div
-        className="dnd-section-header"
-        style={{
-          fontFamily: "'Cinzel', serif",
-          fontSize: '0.75rem',
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          color: 'var(--burgundy)',
-          borderBottom: '1px solid var(--burgundy)',
-          paddingBottom: 4,
-        }}
-      >
-        Age
-      </div>
-
-      {/* Large age display */}
+      {/* Large age + label */}
       <div style={{ textAlign: 'center' }}>
-        <div
-          style={{
-            fontFamily: "'Cinzel', serif",
-            fontSize: '2rem',
-            fontWeight: 700,
-            color: 'var(--burgundy)',
-            lineHeight: 1,
-          }}
-        >
+        <div style={{ fontFamily: "'Cinzel', serif", fontSize: '2rem', fontWeight: 700, color: 'var(--burgundy)', lineHeight: 1 }}>
           {value}
         </div>
-        <div
-          style={{
-            fontFamily: "'Libre Baskerville', serif",
-            fontSize: '0.8rem',
-            fontStyle: 'italic',
-            color: 'var(--ink)',
-            marginTop: 4,
-            opacity: 0.8,
-          }}
-        >
+        <div style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.8rem', fontStyle: 'italic', color: 'var(--ink)', marginTop: 4, opacity: 0.8, minHeight: '1.1em' }}>
           {contextLabel}
         </div>
       </div>
 
-      {/* Slider */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <input
-          type="range"
-          className="age-range-slider"
-          min={0}
-          max={sliderMax}
-          step={1}
-          value={value}
-          onChange={handleSliderChange}
-          list={tickId}
-        />
+      {/* Slider track + bands */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
 
-        {/* Datalist ticks */}
-        <datalist id={tickId}>
-          {tickLabels.map((t) => (
-            <option key={t.val} value={t.val} label={t.name} />
-          ))}
-        </datalist>
+        {/* Band track with range input overlaid */}
+        <div style={{ position: 'relative', height: 6, borderRadius: 3, overflow: 'hidden', border: '1px solid var(--gold-rule)' }}>
 
-        {/* Milestone labels under slider */}
-        <div style={{ position: 'relative', height: 18, marginTop: 2 }}>
-          {tickLabels.map((t) => {
+          {/* Colored segments */}
+          <div style={{ display: 'flex', height: '100%' }}>
+            {bandDefs.map((band, i) => {
+              const widthPct = ((band.end - band.start) / sliderMax) * 100
+              const isActive = i === effectiveActiveBand
+              return (
+                <div
+                  key={band.label}
+                  style={{
+                    width: `${widthPct}%`,
+                    height: '100%',
+                    background: band.color,
+                    opacity: isActive ? 1 : 0.55,
+                    transition: 'opacity 0.15s',
+                    flexShrink: 0,
+                  }}
+                />
+              )
+            })}
+          </div>
+
+          {/* Milestone dividers */}
+          {ticks.map((t) => {
             const pct = (t.val / sliderMax) * 100
             return (
-              <span
+              <div
+                key={t.val}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  left: `${pct}%`,
+                  width: 1,
+                  background: 'rgba(28,16,8,0.35)',
+                  pointerEvents: 'none',
+                }}
+              />
+            )
+          })}
+
+          {/* Range input — transparent track, styled thumb only */}
+          <input
+            type="range"
+            className="age-picker-range"
+            min={0}
+            max={sliderMax}
+            step={1}
+            value={value}
+            onChange={(e) => onChange(Number(e.target.value))}
+          />
+        </div>
+
+        {/* Milestone labels */}
+        <div style={{ position: 'relative', height: 20, marginTop: 3 }}>
+          {ticks.map((t) => {
+            const pct = (t.val / sliderMax) * 100
+            return (
+              <div
                 key={t.val}
                 style={{
                   position: 'absolute',
                   left: `${pct}%`,
                   transform: 'translateX(-50%)',
-                  fontFamily: "'Cinzel', serif",
-                  fontSize: '0.55rem',
-                  textTransform: 'uppercase',
-                  color: 'var(--ink)',
-                  opacity: 0.6,
-                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 1,
                 }}
               >
-                {t.name}
-              </span>
+                <div style={{ width: 1, height: 4, background: 'var(--gold-rule)' }} />
+                <span style={{
+                  fontFamily: "'Cinzel', serif",
+                  fontSize: '0.52rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  color: 'var(--ink)',
+                  opacity: 0.65,
+                  whiteSpace: 'nowrap',
+                }}>
+                  {t.label} {t.val}
+                </span>
+              </div>
             )
           })}
         </div>
+
+      </div>
+
+      {/* Band legend */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: 2 }}>
+        {bandDefs.map((band, i) => (
+          <div
+            key={band.label}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              opacity: i === effectiveActiveBand ? 1 : 0.5,
+              transition: 'opacity 0.15s',
+            }}
+          >
+            <div style={{
+              width: 10,
+              height: 10,
+              background: band.color,
+              border: i === effectiveActiveBand ? '1px solid var(--burgundy)' : '1px solid var(--gold-rule)',
+              flexShrink: 0,
+            }} />
+            <span style={{
+              fontFamily: "'Cinzel', serif",
+              fontSize: '0.58rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              color: 'var(--ink)',
+              fontWeight: i === effectiveActiveBand ? 700 : 400,
+            }}>
+              {band.label}
+            </span>
+          </div>
+        ))}
       </div>
 
       {/* IncrDecrControl for precision */}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
         <IncrDecrControl
           value={value}
           min={0}
