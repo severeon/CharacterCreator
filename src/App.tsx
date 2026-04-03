@@ -1,12 +1,14 @@
-import { useState } from 'react'
-import { Routes, Route, Navigate } from 'react-router'
+import { useState, useEffect, useRef } from 'react'
+import { Routes, Route, Navigate, useLocation } from 'react-router'
 import Sidebar from './components/Sidebar'
 import EntityList from './routes/EntityList'
 import EntityDetail from './routes/EntityDetail'
+import SpellIndex from './routes/SpellIndex'
+import SpellCategory from './routes/SpellCategory'
 import CreationWizard from './routes/CreationWizard'
 import CharacterSheet from './routes/CharacterSheet'
 import DMTools from './components/DMTools'
-import { isTauri } from './lib/isTauri'
+import { isTauri } from './lib/platform'
 import ComponentPlayground from './routes/ComponentPlayground'
 import { useTheme } from './hooks/useTheme'
 import type { Theme } from './lib/types'
@@ -41,7 +43,16 @@ const DEFAULT_THEME: Theme = {
 
 export default function App() {
   const [dmToolsOpen, setDmToolsOpen] = useState(false)
+  const location = useLocation()
+  const prevPath = useRef(location.pathname)
   useTheme(DEFAULT_THEME)
+
+  useEffect(() => {
+    if (import.meta.env.DEV && prevPath.current !== location.pathname) {
+      console.log(`[DEV:nav] +${performance.now().toFixed(1)}ms <Router> ${prevPath.current} → ${location.pathname}`)
+      prevPath.current = location.pathname
+    }
+  }, [location.pathname])
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -56,9 +67,12 @@ export default function App() {
           <Route path="/" element={<Navigate to="/races" replace />} />
           <Route path="/creation" element={<CreationWizard />} />
           <Route path="/character/:id" element={<CharacterSheet />} />
+          <Route path="/spells" element={<SpellIndex />} />
+          <Route path="/spells/:kind/:value" element={<SpellCategory />} />
+          <Route path="/spells/:id" element={<EntityDetail />} />
           <Route path="/:entityType" element={<EntityList />} />
           <Route path="/:entityType/:id" element={<EntityDetail />} />
-          {!isTauri() && (
+          {!isTauri && (
             <Route path="/dev/components/:name" element={<ComponentPlayground />} />
           )}
         </Routes>

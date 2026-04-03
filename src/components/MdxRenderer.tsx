@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, type MouseEvent } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams, useLocation } from 'react-router'
 import * as runtime from 'react/jsx-runtime'
 import { evaluate } from '@mdx-js/mdx'
 import remarkGfm from 'remark-gfm'
@@ -16,6 +16,9 @@ export default function MdxRenderer({ source }: Props) {
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
   const { entityType } = useParams<{ entityType: string }>()
+  const location = useLocation()
+  // Derive entity type from URL param or first path segment (for /spells/:id routes)
+  const resolvedType = entityType ?? location.pathname.split('/')[1]
 
   useEffect(() => {
     let cancelled = false
@@ -34,14 +37,32 @@ export default function MdxRenderer({ source }: Props) {
       const target = (e.target as HTMLElement).closest('a')
       if (!target) return
       const href = target.getAttribute('href')
-      if (href && href.endsWith('.mdx')) {
-        e.preventDefault()
-        if (entityType) {
-          navigate(`/${entityType}`)
+      if (!href || !href.endsWith('.mdx')) return
+      e.preventDefault()
+
+      // Extract the filename stem (e.g. "evocation" from "./evocation.mdx" or "../spells.mdx")
+      const stem = href.replace(/^.*\//, '').replace(/\.mdx$/, '')
+
+      if (resolvedType === 'spells') {
+        // "spells.mdx" → spell index; school names → school category; anything else → entity detail
+        if (stem === 'spells') {
+          navigate('/spells')
+        } else {
+          // Could be a school index (e.g. "evocation") or a spell (e.g. "burning-hands")
+          // School indices match single lowercase words; spells have hyphens
+          const isSchool = /^[a-z]+$/.test(stem)
+          if (isSchool) {
+            navigate(`/spells/school/${stem}`)
+          } else {
+            navigate(`/spells/${encodeURIComponent(`srd:spell:${stem}`)}`)
+          }
         }
+      } else {
+        // For other entity types, try to navigate to the entity
+        navigate(`/${resolvedType}/${encodeURIComponent(`srd:${resolvedType?.replace(/s$/, '')}:${stem}`)}`)
       }
     },
-    [navigate, entityType],
+    [navigate, resolvedType],
   )
 
   if (error) return <div className="text-red-500 text-sm">MDX render error: {error}</div>
