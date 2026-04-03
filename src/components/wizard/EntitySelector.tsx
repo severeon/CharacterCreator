@@ -42,6 +42,8 @@ function FallbackCard({ entity, selected, onSelect }: { entity: Entity; selected
 
 export function EntitySelector({ config, entities, selectedIds, onSelect }: EntitySelectorProps) {
   const isFilterableList = config.display === 'filterable-list'
+  // Strip category/index entities — they're navigation pages, not valid selections
+  const selectable = entities.filter(e => !e.tags.includes('index'))
 
   return (
     <div style={{
@@ -52,7 +54,7 @@ export function EntitySelector({ config, entities, selectedIds, onSelect }: Enti
       overflowY: isFilterableList ? 'auto' : undefined,
       paddingTop: '3px', // prevent top border clipping
     }}>
-      {entities.map((entity) => {
+      {selectable.map((entity) => {
         const selected = selectedIds.includes(entity.id)
         const onSelectEntity = () => onSelect(entity)
 
@@ -95,7 +97,7 @@ export function EntitySelector({ config, entities, selectedIds, onSelect }: Enti
           />
         )
       })}
-      {entities.length === 0 && (
+      {selectable.length === 0 && (
         <p style={{ fontFamily: "'IM Fell English', serif", fontStyle: 'italic', color: 'var(--ink-light)', fontSize: '0.85rem', gridColumn: '1/-1' }}>
           No options available.
         </p>
