@@ -65,16 +65,7 @@ export function AgePicker({ value, race, onChange, unlocked = false }: AgePicker
   if (!milestones) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-        <span
-          style={{
-            fontFamily: "'Cinzel', serif",
-            fontSize: '0.62rem',
-            fontWeight: 600,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: 'var(--ink)',
-          }}
-        >
+        <span className="dnd-field-label" style={{ marginBottom: 0 }}>
           Age
         </span>
         <IncrDecrControl value={value} onChange={onChange} min={0} />

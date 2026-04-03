@@ -47,17 +47,7 @@ export function IncrDecrControl({
   return (
     <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
       {label && (
-        <span
-          style={{
-            fontFamily: "'Cinzel', serif",
-            fontSize: '0.62rem',
-            fontWeight: 600,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: 'var(--ink)',
-            marginBottom: '2px',
-          }}
-        >
+        <span className="dnd-field-label" style={{ marginBottom: '2px' }}>
           {label}
         </span>
       )}

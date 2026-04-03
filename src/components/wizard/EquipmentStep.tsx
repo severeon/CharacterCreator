@@ -22,13 +22,6 @@ const classGoldTable: Record<string, number> = {
   wizard: 70,
 }
 
-const categoryStyle: React.CSSProperties = {
-  background: 'var(--parchment-light)',
-  border: '1px solid var(--gold-rule)',
-  borderTop: '2px solid var(--burgundy)',
-  overflow: 'hidden',
-  marginBottom: '0.5rem',
-}
 
 export function EquipmentStep({ startingGold, selectedClass }: EquipmentStepProps) {
   const classId = selectedClass?.id?.toLowerCase() || ''
@@ -61,7 +54,7 @@ export function EquipmentStep({ startingGold, selectedClass }: EquipmentStepProp
 
       {/* Equipment Categories */}
       {['Weapons', 'Armor', 'Tools & Gear'].map(cat => (
-        <div key={cat} style={categoryStyle}>
+        <div key={cat} className="dnd-stat-box" style={{ overflow: 'hidden', marginBottom: '0.5rem' }}>
           <div className="dnd-section-header">{cat}</div>
           <p style={{ padding: '7px 12px', fontFamily: "'IM Fell English', Georgia, serif", fontStyle: 'italic', fontSize: '0.8rem', color: 'var(--ink-light)' }}>
             {cat === 'Weapons' && 'Weapons, ammunition, and ranged weapons coming soon.'}
@@ -72,17 +65,7 @@ export function EquipmentStep({ startingGold, selectedClass }: EquipmentStepProp
       ))}
 
       {/* Placeholder notice */}
-      <div style={{
-        background: 'rgba(155, 120, 50, 0.08)',
-        border: '1px solid var(--gold-rule)',
-        borderLeft: '3px solid var(--burgundy)',
-        padding: '10px 14px',
-        fontFamily: "'Libre Baskerville', serif",
-        fontSize: '0.8rem',
-        color: 'var(--ink-light)',
-        fontStyle: 'italic',
-        textAlign: 'center' as const,
-      }}>
+      <div className="dnd-note-box" style={{ fontSize: '0.8rem', color: 'var(--ink-light)', fontStyle: 'italic', textAlign: 'center', padding: '10px 14px' }}>
         Full equipment selection with item categories, prices, and shopping cart functionality coming soon.
       </div>
     </div>

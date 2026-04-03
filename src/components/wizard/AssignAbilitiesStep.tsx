@@ -44,19 +44,7 @@ function MethodButton({ active, onClick, children }: { active: boolean; onClick:
     <button
       type="button"
       onClick={onClick}
-      style={{
-        background: active ? 'var(--burgundy)' : 'var(--parchment-light)',
-        border: `1px solid ${active ? '#6b2737' : 'var(--gold-rule)'}`,
-        fontFamily: 'Cinzel, serif',
-        fontSize: '0.7rem',
-        fontWeight: 600,
-        letterSpacing: '0.07em',
-        textTransform: 'uppercase' as const,
-        color: active ? 'var(--parchment)' : 'var(--burgundy)',
-        padding: '7px 14px',
-        cursor: 'pointer',
-        transition: 'background 0.15s, color 0.15s',
-      }}
+      className={`dnd-method-btn${active ? ' dnd-method-btn--active' : ''}`}
     >
       {children}
     </button>
@@ -138,24 +126,6 @@ export function AssignAbilitiesStep({
   const flatFooted = 10
   const touch = 10 + dexMod
 
-  const statBoxStyle: React.CSSProperties = {
-    background: 'var(--parchment-light)',
-    border: '1px solid var(--gold-rule)',
-    borderTop: '2px solid #6b2737',
-    padding: '8px 10px',
-  }
-
-  const statLabelStyle: React.CSSProperties = {
-    display: 'block',
-    fontSize: '0.6rem',
-    fontFamily: 'Cinzel, serif',
-    fontWeight: 600,
-    letterSpacing: '0.06em',
-    textTransform: 'uppercase',
-    color: 'var(--ink)',
-    marginBottom: '2px',
-  }
-
   const statValueStyle = (positive: boolean): React.CSSProperties => ({
     display: 'block',
     fontSize: '1.4rem',
@@ -185,13 +155,7 @@ export function AssignAbilitiesStep({
               const value = abilities[ability] ?? 10
               const mod = abilityModifier(value)
               return (
-                <div key={ability} style={{
-                  display: 'flex', alignItems: 'center', gap: '0.5rem',
-                  padding: '8px 10px',
-                  background: 'var(--parchment-light)',
-                  border: '1px solid var(--gold-rule)',
-                  borderTop: '2px solid #6b2737',
-                }}>
+                <div key={ability} className="dnd-stat-box" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderTopWidth: '2px' }}>
                   <div style={{ flex: 1 }}>
                     <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 600, textTransform: 'capitalize', color: 'var(--ink)' }}>
                       {ability}
@@ -262,12 +226,12 @@ export function AssignAbilitiesStep({
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={() => handleArrayDrop(ability)}
                   onClick={() => touchSelected !== null && handleTouchSlotTap(ability)}
+                  className="dnd-stat-box"
                   style={{
                     display: 'flex', alignItems: 'center', gap: '0.5rem',
-                    padding: '8px 10px',
-                    background: 'var(--parchment-light)',
-                    border: assigned !== null ? '1px solid var(--gold-rule)' : '1px dashed var(--gold)',
-                    borderTop: assigned !== null ? '2px solid #6b2737' : '2px dashed #6b2737',
+                    borderTopWidth: '2px',
+                    border: assigned !== null ? undefined : '1px dashed var(--gold)',
+                    borderTop: assigned !== null ? undefined : '2px dashed #6b2737',
                     cursor: touchSelected !== null ? 'pointer' : 'default',
                   }}
                 >
@@ -420,8 +384,8 @@ export function AssignAbilitiesStep({
             { label: 'Will', value: formatMod(willBase + wisMod), positive: willBase + wisMod >= 0 },
             { label: 'Speed', value: '30 ft', positive: true },
           ].map(({ label, value, sub, positive }) => (
-            <div key={label} style={statBoxStyle}>
-              <span style={statLabelStyle}>{label}</span>
+            <div key={label} className="dnd-stat-box" style={{ borderTopWidth: '2px' }}>
+              <span className="dnd-stat-box-label" style={{ color: 'var(--ink)' }}>{label}</span>
               <span style={statValueStyle(positive)}>{value}</span>
               {sub && <span style={{ display: 'block', fontSize: '0.6rem', color: 'var(--ink)', opacity: 0.7, marginTop: '1px' }}>{sub}</span>}
             </div>

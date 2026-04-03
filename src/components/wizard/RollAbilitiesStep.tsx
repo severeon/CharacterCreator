@@ -34,19 +34,7 @@ function MethodButton({ active, onClick, children }: { active: boolean; onClick:
     <button
       type="button"
       onClick={onClick}
-      style={{
-        background: active ? 'var(--burgundy)' : 'var(--parchment-light)',
-        border: `1px solid ${active ? '#6b2737' : 'var(--gold-rule)'}`,
-        fontFamily: 'Cinzel, serif',
-        fontSize: '0.7rem',
-        fontWeight: 600,
-        letterSpacing: '0.07em',
-        textTransform: 'uppercase' as const,
-        color: active ? 'var(--parchment)' : 'var(--burgundy)',
-        padding: '7px 14px',
-        cursor: 'pointer',
-        transition: 'background 0.15s, color 0.15s',
-      }}
+      className={`dnd-method-btn${active ? ' dnd-method-btn--active' : ''}`}
     >
       {children}
     </button>
@@ -90,15 +78,7 @@ export function RollAbilitiesStep({
       </div>
 
       {/* Info box */}
-      <div style={{
-        borderLeft: '3px solid var(--gold)',
-        background: 'var(--parchment-dark)',
-        padding: '8px 12px',
-        fontFamily: "'Libre Baskerville', serif",
-        fontSize: '0.82rem',
-        color: 'var(--ink)',
-        lineHeight: 1.55,
-      }}>
+      <div className="dnd-info-box">
         {METHOD_INFO[abilityMethod]}
       </div>
 

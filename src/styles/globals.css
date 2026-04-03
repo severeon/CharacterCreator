@@ -438,3 +438,146 @@ h1, h2, h3, h4, h5, h6 {
 .mdx-content {
   composes: dnd-prose;
 }
+
+/* ── Wizard / Primitive extracted classes ─────────── */
+
+/* Uppercase Cinzel micro-label used on form fields, grid axes, stat captions */
+.dnd-field-label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+/* Parchment text input / textarea */
+.dnd-field-input {
+  width: 100%;
+  background: var(--parchment-dark);
+  border: 1px solid var(--gold-rule);
+  padding: 6px 10px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+  outline: none;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+/* Stat preview box — parchment-light bg, gold-rule border, burgundy top stripe */
+.dnd-stat-box {
+  background: var(--parchment-light);
+  border: 1px solid var(--gold-rule);
+  border-top: 2px solid var(--burgundy);
+  padding: 8px 10px;
+}
+
+/* Label inside a stat box */
+.dnd-stat-box-label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 2px;
+}
+
+/* Sub-text inside a stat box */
+.dnd-stat-box-sub {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--ink-light);
+  margin-top: 1px;
+}
+
+/* Feature block — parchment-light card with 3px burgundy top stripe */
+.dnd-feature-block {
+  background: var(--parchment-light);
+  border: 1px solid var(--gold-rule);
+  border-top: 3px solid var(--burgundy);
+  overflow: hidden;
+}
+
+/* Info / note box — gold left border on parchment-dark */
+.dnd-info-box {
+  border-left: 3px solid var(--gold);
+  background: var(--parchment-dark);
+  padding: 8px 12px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.82rem;
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+/* Note box — burgundy left border, gold-rule border, parchment bg */
+.dnd-note-box {
+  background: rgba(155, 120, 50, 0.08);
+  border: 1px solid var(--gold-rule);
+  border-left: 3px solid var(--burgundy);
+  padding: 8px 12px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.78rem;
+  color: var(--ink-mid);
+  line-height: 1.55;
+}
+
+/* Method selector button (inactive state) */
+.dnd-method-btn {
+  background: var(--parchment-light);
+  border: 1px solid var(--gold-rule);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--burgundy);
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+/* Method selector button (active/selected state) */
+.dnd-method-btn--active {
+  background: var(--burgundy);
+  border-color: var(--burgundy-dark);
+  color: var(--parchment);
+}
+
+/* Wizard card outer button — parchment card used in entity selectors */
+.dnd-wizard-card {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+  border: 1px solid var(--gold-rule);
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+}
+
+/* Wizard card header area */
+.dnd-wizard-card-header {
+  padding: 7px 10px 5px;
+  min-height: 2.6rem;
+  border-bottom: 1px solid var(--border-rule);
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Wizard card body area */
+.dnd-wizard-card-body {
+  padding: 5px 10px 8px;
+}
+
+/* Wizard card entity name */
+.dnd-wizard-card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: block;
+  line-height: 1.3;
+}

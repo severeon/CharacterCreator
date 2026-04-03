@@ -15,19 +15,13 @@ export default function FeatWizardCard({ entity, selected = false, onSelect }: P
     <button
       type="button"
       onClick={() => onSelect?.(entity.id)}
+      className="dnd-wizard-card"
       style={{
-        width: '100%',
-        textAlign: 'left',
-        cursor: 'pointer',
-        padding: 0,
         background: selected ? 'var(--parchment-dark)' : 'var(--parchment-light)',
-        border: '1px solid var(--gold-rule)',
         borderTop: selected ? '3px solid var(--burgundy-light)' : '3px solid var(--burgundy)',
         boxShadow: selected
           ? '0 2px 8px rgba(107,20,20,0.18), inset 0 0 0 1px rgba(107,20,20,0.12)'
           : 'var(--shadow-parchment)',
-        transition: 'border-color 0.15s, box-shadow 0.15s, transform 0.12s',
-        overflow: 'hidden',
       }}
       onMouseEnter={e => {
         if (!selected) {
@@ -42,24 +36,22 @@ export default function FeatWizardCard({ entity, selected = false, onSelect }: P
         }
       }}
     >
-      <div style={{
-        padding: '7px 10px 5px',
-        borderBottom: benefit ? '1px solid var(--border-rule)' : 'none',
-        background: selected ? 'rgba(107,20,20,0.08)' : 'transparent',
-      }}>
-        <span style={{
-          fontFamily: "'Cinzel', serif",
-          fontSize: '0.88rem',
-          fontWeight: 600,
-          color: selected ? 'var(--burgundy)' : 'var(--burgundy-dark)',
-          display: 'block',
-          lineHeight: 1.25,
-        }}>
+      <div
+        style={{
+          padding: '7px 10px 5px',
+          borderBottom: benefit ? '1px solid var(--border-rule)' : 'none',
+          background: selected ? 'rgba(107,20,20,0.08)' : 'transparent',
+        }}
+      >
+        <span
+          className="dnd-wizard-card-title"
+          style={{ color: selected ? 'var(--burgundy)' : 'var(--burgundy-dark)', fontSize: '0.88rem', lineHeight: 1.25 }}
+        >
           {name}
         </span>
       </div>
       {benefit && (
-        <div style={{ padding: '5px 10px 8px' }}>
+        <div className="dnd-wizard-card-body">
           <p style={{
             fontSize: '0.72rem',
             color: 'var(--ink-mid)',

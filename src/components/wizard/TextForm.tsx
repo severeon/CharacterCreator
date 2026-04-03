@@ -20,30 +20,6 @@ const FIELD_LABELS: Record<string, string> = {
   notes: 'Notes',
 }
 
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  background: 'var(--parchment-dark)',
-  border: '1px solid var(--gold-rule)',
-  padding: '6px 10px',
-  fontFamily: "'Libre Baskerville', serif",
-  fontSize: '0.85rem',
-  color: 'var(--ink)',
-  outline: 'none',
-  lineHeight: 1.5,
-  boxSizing: 'border-box',
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontFamily: "'Cinzel', serif",
-  fontSize: '0.62rem',
-  fontWeight: 600,
-  letterSpacing: '0.08em',
-  textTransform: 'uppercase',
-  color: 'var(--ink-mid)',
-  marginBottom: '4px',
-}
-
 export function TextForm({ config, values, onChange }: TextFormProps) {
   const isWide = (f: string) => f === 'appearance' || f === 'background' || f === 'notes'
   const shortFields = config.fields.filter(f => !isWide(f))
@@ -56,12 +32,12 @@ export function TextForm({ config, values, onChange }: TextFormProps) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.6rem' }}>
           {shortFields.map((field) => (
             <div key={field}>
-              <label style={labelStyle}>{FIELD_LABELS[field] ?? field}</label>
+              <label className="dnd-field-label" style={{ color: 'var(--ink-mid)' }}>{FIELD_LABELS[field] ?? field}</label>
               <input
                 type="text"
                 value={values[field] ?? ''}
                 onChange={(e) => onChange(field, e.target.value)}
-                style={inputStyle}
+                className="dnd-field-input"
                 onFocus={e => (e.target.style.borderColor = 'var(--burgundy)')}
                 onBlur={e => (e.target.style.borderColor = 'var(--gold-rule)')}
               />
@@ -73,12 +49,13 @@ export function TextForm({ config, values, onChange }: TextFormProps) {
       {/* Long fields full-width */}
       {longFields.map((field) => (
         <div key={field}>
-          <label style={labelStyle}>{FIELD_LABELS[field] ?? field}</label>
+          <label className="dnd-field-label" style={{ color: 'var(--ink-mid)' }}>{FIELD_LABELS[field] ?? field}</label>
           <textarea
             value={values[field] ?? ''}
             onChange={(e) => onChange(field, e.target.value)}
             rows={3}
-            style={{ ...inputStyle, resize: 'vertical' as const }}
+            className="dnd-field-input"
+            style={{ resize: 'vertical' as const }}
             onFocus={e => (e.target.style.borderColor = 'var(--burgundy)')}
             onBlur={e => (e.target.style.borderColor = 'var(--gold-rule)')}
           />

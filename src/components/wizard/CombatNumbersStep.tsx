@@ -14,24 +14,6 @@ function abilityModifier(score: number): number {
   return Math.floor((score - 10) / 2)
 }
 
-const statBox: React.CSSProperties = {
-  background: 'var(--parchment-light)',
-  border: '1px solid var(--gold-rule)',
-  borderTop: '2px solid var(--burgundy)',
-  padding: '8px 10px',
-}
-
-const statLabel: React.CSSProperties = {
-  display: 'block',
-  fontFamily: "'Cinzel', serif",
-  fontSize: '0.6rem',
-  fontWeight: 600,
-  letterSpacing: '0.06em',
-  textTransform: 'uppercase',
-  color: 'var(--ink-light)',
-  marginBottom: '2px',
-}
-
 const statValue = (positive: boolean): React.CSSProperties => ({
   display: 'block',
   fontFamily: "'Cinzel', serif",
@@ -39,13 +21,6 @@ const statValue = (positive: boolean): React.CSSProperties => ({
   fontWeight: 700,
   color: positive ? 'var(--burgundy)' : '#8B1010',
 })
-
-const statSub: React.CSSProperties = {
-  display: 'block',
-  fontSize: '0.6rem',
-  color: 'var(--ink-light)',
-  marginTop: '1px',
-}
 
 export function CombatNumbersStep({ abilities, selectedClass }: CombatNumbersStepProps) {
   const strMod = abilityModifier(abilities.strength || 10)
@@ -97,10 +72,10 @@ export function CombatNumbersStep({ abilities, selectedClass }: CombatNumbersSte
       {/* Combat Numbers Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.4rem' }}>
         {stats.map(({ label, value, sub, positive }) => (
-          <div key={label} style={statBox}>
-            <span style={statLabel}>{label}</span>
+          <div key={label} className="dnd-stat-box">
+            <span className="dnd-stat-box-label">{label}</span>
             <span style={statValue(positive)}>{value}</span>
-            <span style={statSub}>{sub}</span>
+            <span className="dnd-stat-box-sub">{sub}</span>
           </div>
         ))}
       </div>

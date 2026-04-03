@@ -79,17 +79,7 @@ export function StartingPackageStep({ selectedClass, onAccept, onCustomize, onBa
           </p>
         </div>
 
-        <div style={{
-          margin: '10px 12px',
-          background: 'rgba(155, 120, 50, 0.08)',
-          border: '1px solid var(--gold-rule)',
-          borderLeft: '3px solid var(--burgundy)',
-          padding: '8px 12px',
-          fontFamily: "'Libre Baskerville', serif",
-          fontSize: '0.78rem',
-          color: 'var(--ink-mid)',
-          lineHeight: 1.55,
-        }}>
+        <div className="dnd-note-box" style={{ margin: '10px 12px' }}>
           <strong style={{ fontFamily: "'Cinzel', serif", fontSize: '0.62rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--burgundy)' }}>
             Note:{' '}
           </strong>

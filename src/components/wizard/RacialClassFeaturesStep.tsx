@@ -7,21 +7,6 @@ interface RacialClassFeaturesStepProps {
   onBack: () => void
 }
 
-const featureBlockStyle: React.CSSProperties = {
-  background: 'var(--parchment-light)',
-  border: '1px solid var(--gold-rule)',
-  borderTop: '3px solid var(--burgundy)',
-  marginBottom: '0.75rem',
-  overflow: 'hidden',
-}
-
-const featureBodyStyle: React.CSSProperties = {
-  padding: '8px 12px 10px',
-  fontFamily: "'Libre Baskerville', serif",
-  fontSize: '0.82rem',
-  color: 'var(--ink-mid)',
-  lineHeight: 1.6,
-}
 
 export function RacialClassFeaturesStep({ selectedRace, selectedClass }: RacialClassFeaturesStepProps) {
   const raceName = (selectedRace?.properties['name'] as string) ?? 'Unknown Race'
@@ -47,9 +32,9 @@ export function RacialClassFeaturesStep({ selectedRace, selectedClass }: RacialC
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
       {/* Racial Traits */}
-      <div style={featureBlockStyle}>
+      <div className="dnd-feature-block" style={{ marginBottom: '0.75rem' }}>
         <div className="dnd-section-header">Racial Traits — {raceName}</div>
-        <div style={featureBodyStyle}>
+        <div style={{ padding: '8px 12px 10px', fontFamily: "'Libre Baskerville', serif", fontSize: '0.82rem', color: 'var(--ink-mid)', lineHeight: 1.6 }}>
           {raceTraits && raceTraits.length > 0 ? (
             <ul style={{ paddingLeft: '1.2rem', margin: 0 }}>
               {raceTraits.map((trait, i) => (
@@ -64,9 +49,9 @@ export function RacialClassFeaturesStep({ selectedRace, selectedClass }: RacialC
       </div>
 
       {/* Class Features */}
-      <div style={featureBlockStyle}>
+      <div className="dnd-feature-block" style={{ marginBottom: '0.75rem' }}>
         <div className="dnd-section-header">Class Features — {className}</div>
-        <div style={featureBodyStyle}>
+        <div style={{ padding: '8px 12px 10px', fontFamily: "'Libre Baskerville', serif", fontSize: '0.82rem', color: 'var(--ink-mid)', lineHeight: 1.6 }}>
           {classFeatures && classFeatures.length > 0 ? (
             <ul style={{ paddingLeft: '1.2rem', margin: 0, marginBottom: '6px' }}>
               {classFeatures.map((feature, i) => (
