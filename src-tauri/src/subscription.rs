@@ -20,6 +20,7 @@ pub enum Predicate {
     PayloadEq(String, Value),
 }
 
+#[allow(dead_code)]
 impl Predicate {
     pub fn and(predicates: Vec<Predicate>) -> Self {
         Predicate::And(predicates)
@@ -81,6 +82,7 @@ fn default_priority() -> i32 {
     50
 }
 
+#[allow(dead_code)]
 impl Subscription {
     pub fn new(trigger: &str, effects: Vec<super::operation::Operation>, source: &str) -> Self {
         Self {

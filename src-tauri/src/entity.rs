@@ -16,6 +16,7 @@ pub enum Value {
     Null,
 }
 
+#[allow(dead_code)]
 impl Value {
     pub fn as_int(&self) -> Option<i64> {
         match self {
@@ -31,6 +32,7 @@ impl Value {
         }
     }
 
+    #[allow(dead_code)]
     pub fn as_bool(&self) -> Option<bool> {
         match self {
             Value::Bool(b) => Some(*b),
@@ -45,6 +47,7 @@ impl Value {
         }
     }
 
+    #[allow(dead_code)]
     pub fn as_map(&self) -> Option<&HashMap<String, Value>> {
         match self {
             Value::Map(m) => Some(m),
@@ -52,6 +55,7 @@ impl Value {
         }
     }
 
+    #[allow(dead_code)]
     pub fn get_nested(&self, path: &str) -> Option<&Value> {
         let parts: Vec<&str> = path.split('.').collect();
         let mut current = self;
@@ -64,6 +68,7 @@ impl Value {
         Some(current)
     }
 
+    #[allow(dead_code)]
     pub fn with_path(&self, path: &str, value: Value) -> Value {
         let parts: Vec<&str> = path.split('.').collect();
         if parts.len() == 1 {
@@ -113,6 +118,7 @@ pub struct EntitySummary {
     pub tags: Vec<String>,
 }
 
+#[allow(dead_code)]
 impl Entity {
     pub fn to_summary(&self) -> EntitySummary {
         let name = match self.properties.get("name") {

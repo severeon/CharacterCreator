@@ -22,10 +22,6 @@ export default function DMTools({ isOpen, onToggle }: DMToolsProps) {
   const [settings, setSettings] = useState<DMSettings>(DEFAULT_SETTINGS)
   const [hasChanges, setHasChanges] = useState(false)
 
-  useEffect(() => {
-    loadSettings()
-  }, [])
-
   async function loadSettings() {
     try {
       const loaded = await getDmSettings()
@@ -34,6 +30,11 @@ export default function DMTools({ isOpen, onToggle }: DMToolsProps) {
       console.error('Failed to load DM settings:', err)
     }
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadSettings()
+  }, [])
 
   async function saveSettings() {
     try {

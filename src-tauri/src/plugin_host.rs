@@ -1,3 +1,7 @@
+// Pre-wiring infrastructure for Phase 6 WASM/Lua plugin runtime.
+// Fully tested; not yet wired to the IPC layer.
+#![allow(dead_code)]
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

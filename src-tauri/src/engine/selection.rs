@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use crate::entity::{Entity, Value};
+use crate::entity::Value;
 use crate::engine::Engine;
 use crate::engine::EngineError;
 
@@ -159,6 +159,7 @@ impl SelectClass {
 mod tests {
     use super::*;
     use crate::engine::character::CreateCharacter;
+    use crate::entity::Entity;
 
     #[test]
     fn test_select_class_gestalt() {

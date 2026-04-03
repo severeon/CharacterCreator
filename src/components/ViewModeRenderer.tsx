@@ -14,7 +14,7 @@ interface ViewModeRendererProps {
 function resolvePathInEntity(entity: Entity, path: string): unknown {
   const parts = path.split('.')
   // Try top-level properties first
-  let value: Value | undefined = entity.properties[parts[0]]
+  const value: Value | undefined = entity.properties[parts[0]]
   if (parts.length === 1) return value
 
   // Try nested in properties

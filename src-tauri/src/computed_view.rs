@@ -17,6 +17,7 @@ pub enum Computation {
     Literal(Value),
 }
 
+#[allow(dead_code)]
 impl Computation {
     pub fn evaluate(&self, entity: &Entity) -> Option<Value> {
         match self {
@@ -120,6 +121,7 @@ fn default_version() -> u64 {
     1
 }
 
+#[allow(dead_code)]
 impl ComputedView {
     pub fn new(
         target: &str,
@@ -206,6 +208,7 @@ mod tests {
     }
 }
 
+#[allow(dead_code)]
 /// Sort computed views topologically by their input dependencies.
 /// Returns views in evaluation order (dependencies first).
 /// Returns Err with cycle description if views have circular dependencies.

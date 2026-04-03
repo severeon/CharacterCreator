@@ -78,10 +78,6 @@ export default function CreationWizard() {
   // Equipment
   const [startingGold] = useState(100)
 
-  useEffect(() => {
-    loadContent()
-  }, [])
-
   async function loadContent() {
     try {
       setRaces(await getAvailableChoices('', 'race'))
@@ -94,6 +90,11 @@ export default function CreationWizard() {
       console.error('Failed to load classes:', err)
     }
   }
+
+  useEffect(() => {
+    loadContent()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function loadSkillsStep() {
     if (!characterId) return

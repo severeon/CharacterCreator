@@ -47,6 +47,7 @@ export default function EntityList() {
   const cardViewMode = useViewMode(singularType, 'card')
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true)
     setActiveTag(null)
     getEntitiesByType(singularType)

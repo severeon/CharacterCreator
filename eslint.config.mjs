@@ -23,14 +23,17 @@ export default tseslint.config(
       "react-refresh": reactRefresh,
     },
     rules: {
-      // --- Inline styles: hard no ---
+      // --- Inline styles: warn, not error ---
+      // Dynamic D&D theme values (conditional CSS variable composition, runtime
+      // number calculations) require inline styles. Static repeated values live
+      // in .dnd-* classes in globals.css; dynamic calcs stay inline.
       "react/forbid-component-props": [
-        "error",
-        { forbid: [{ propName: "style", message: "Use CSS modules or Tailwind. No inline styles." }] },
+        "warn",
+        { forbid: [{ propName: "style", message: "Prefer .dnd-* CSS classes for static values; inline styles are OK for dynamic/calculated values." }] },
       ],
       "react/forbid-dom-props": [
-        "error",
-        { forbid: [{ propName: "style", message: "Use CSS modules or Tailwind. No inline styles." }] },
+        "warn",
+        { forbid: [{ propName: "style", message: "Prefer .dnd-* CSS classes for static values; inline styles are OK for dynamic/calculated values." }] },
       ],
 
       // --- React hooks discipline ---
@@ -55,7 +58,7 @@ export default tseslint.config(
 
       // --- General quality ---
       "no-console": ["warn", { allow: ["warn", "error"] }],
-      eqeqeq: ["error", "always"],
+      eqeqeq: ["error", "always", { null: "ignore" }],
       "no-eval": "error",
       "prefer-const": "error",
       "no-var": "error",

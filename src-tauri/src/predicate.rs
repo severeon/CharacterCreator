@@ -1,3 +1,7 @@
+// Pre-wiring infrastructure: fully tested, not yet called from IPC layer.
+// Will be wired to the dispatch system in a future phase.
+#![allow(dead_code)]
+
 /// JSON-combinator predicate evaluator.
 ///
 /// Predicates are `serde_json::Value` objects (loaded from YAML subscription

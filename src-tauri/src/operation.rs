@@ -33,6 +33,7 @@ pub struct Operation {
     pub source: String,
 }
 
+#[allow(dead_code)]
 impl Operation {
     pub fn new(
         op: OpCode,

@@ -34,6 +34,7 @@ pub struct Workflow {
     pub steps: Vec<WorkflowStep>,
 }
 
+#[allow(dead_code)]
 impl Workflow {
     pub fn new(id: &str) -> Self {
         Self {
@@ -69,6 +70,7 @@ pub struct WorkflowEngine {
     workflows: std::collections::HashMap<String, Workflow>,
 }
 
+#[allow(dead_code)]
 impl WorkflowEngine {
     pub fn new() -> Self {
         Self {
@@ -229,6 +231,7 @@ pub fn create_character_creation_workflow() -> Workflow {
         })
 }
 
+#[allow(dead_code)]
 fn make_entity(id: &str, properties: HashMap<String, Value>) -> crate::entity::Entity {
     crate::entity::Entity {
         id: id.to_string(),

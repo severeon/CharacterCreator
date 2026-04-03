@@ -16,6 +16,7 @@ pub struct Event {
     pub timestamp: u64,
 }
 
+#[allow(dead_code)]
 impl Event {
     pub fn new(event_type: &str, source: &str, queue_id: Uuid, timestamp: u64) -> Self {
         Self {
@@ -54,6 +55,7 @@ pub struct EventBuilder {
     event: Event,
 }
 
+#[allow(dead_code)]
 impl EventBuilder {
     pub fn new(event_type: &str, source: &str, queue_id: Uuid, timestamp: u64) -> Self {
         Self {

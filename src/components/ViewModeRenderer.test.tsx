@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import { ViewModeRenderer } from './ViewModeRenderer'
-import type { Entity, ViewMode } from '../lib/types'
+import type { Entity, ViewMode, Value } from '../lib/types'
 
 const mockEntity: Entity = {
   id: 'srd:spell:fireball',
@@ -49,7 +49,7 @@ describe('ViewModeRenderer', () => {
   it('resolves nested property path', () => {
     const entity: Entity = {
       ...mockEntity,
-      properties: { nested: { deep: 'value' } as unknown as import('../lib/types').Value },
+      properties: { nested: { deep: 'value' } as unknown as Value },
     }
     const mode: ViewMode = { id: 'x', template: 'card', slots: { title: { path: 'nested.deep' } } }
     render(<ViewModeRenderer entity={entity} viewMode={mode} />)

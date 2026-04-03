@@ -64,6 +64,7 @@ fn test_dm_settings() {
         enforce_prerequisites: true,
         notes: "Test campaign".to_string(),
         restricted_entities: vec!["srd:race:drow".to_string()],
+        rule_cool: true,
     };
     engine.set_dm_settings(new_settings.clone());
 
@@ -76,4 +77,5 @@ fn test_dm_settings() {
     assert_eq!(settings.notes, "Test campaign");
     assert_eq!(settings.restricted_entities.len(), 1);
     assert_eq!(settings.restricted_entities[0], "srd:race:drow");
+    assert!(settings.rule_cool);
 }
