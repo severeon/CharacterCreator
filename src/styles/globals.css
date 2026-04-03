@@ -385,6 +385,55 @@ h1, h2, h3, h4, h5, h6 {
   margin: 1rem 0;
 }
 
+.dnd-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin: 0.75em 0;
+}
+
+.dnd-prose thead {
+  background: var(--burgundy);
+}
+
+.dnd-prose thead th {
+  color: var(--parchment-light);
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  text-align: left;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.dnd-prose thead th:last-child {
+  border-right: none;
+}
+
+.dnd-prose tbody tr {
+  border-bottom: 1px solid rgba(155, 120, 50, 0.2);
+}
+
+.dnd-prose tbody tr:nth-child(even) {
+  background: rgba(155, 120, 50, 0.06);
+}
+
+.dnd-prose tbody td {
+  padding: 4px 10px;
+  color: var(--ink);
+  border-right: 1px solid rgba(155, 120, 50, 0.12);
+}
+
+.dnd-prose tbody td:last-child {
+  border-right: none;
+}
+
+.dnd-prose table a {
+  color: var(--burgundy);
+}
+
 /* ── MdxRenderer component override ──────────────── */
 .mdx-content {
   composes: dnd-prose;

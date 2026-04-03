@@ -49,7 +49,9 @@ export default function EntityDetail() {
 
   if (!entity) return null
 
-  const name = typeof entity.properties.name === 'string' ? entity.properties.name : entity.id
+  const name = typeof entity.properties.name === 'string'
+    ? entity.properties.name
+    : entity.id.split(':').pop()?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) ?? entity.id
 
   return (
     <div style={{ padding: '1.75rem 2rem', maxWidth: '56rem' }}>
