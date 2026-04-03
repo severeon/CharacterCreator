@@ -11,7 +11,7 @@ interface CardViewProps {
   theme?: Record<string, string>
 }
 
-export function CardView({ slots }: CardViewProps) {
+export function CardView({ entity, slots }: CardViewProps) {
   return (
     <div className="entity-card">
       {slots.thumbnail?.value && (
@@ -72,6 +72,15 @@ export function CardView({ slots }: CardViewProps) {
             overflow: 'hidden',
           }}>
             {String(slots.short_desc.value)}
+          </div>
+        )}
+
+        {/* Fallback: show tags when no other body content is available */}
+        {slots.subtitle?.value == null && slots.badge?.value == null && slots.short_desc?.value == null && entity.tags.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '4px' }}>
+            {entity.tags.slice(0, 3).map(tag => (
+              <span key={tag} className="dnd-tag" style={{ fontSize: '0.55rem' }}>{tag}</span>
+            ))}
           </div>
         )}
       </div>
