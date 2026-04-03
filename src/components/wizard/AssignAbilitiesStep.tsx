@@ -7,7 +7,6 @@ import { IncrDecrControl } from '../primitives/IncrDecrControl'
 interface AssignAbilitiesStepProps {
   abilities: Record<string, number>
   abilityMethod: 'manual' | 'array' | 'roll' | 'pointbuy'
-  rolledSets: number[][]
   pointBuyRemaining: number
   selectedClass: Entity | null
   onRollAbilities: () => void
@@ -20,23 +19,22 @@ interface AssignAbilitiesStepProps {
 
 const ABILITY_ORDER = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma']
 const ABILITY_SHORT: Record<string, string> = {
-  strength: 'STR',
-  dexterity: 'DEX',
-  constitution: 'CON',
-  intelligence: 'INT',
-  wisdom: 'WIS',
-  charisma: 'CHA',
+  strength: 'STR', dexterity: 'DEX', constitution: 'CON',
+  intelligence: 'INT', wisdom: 'WIS', charisma: 'CHA',
 }
 
 const STANDARD_ARRAY_VALUES = [15, 14, 13, 12, 10, 8]
 
-const DICE_SPIN_CSS = `
-@keyframes diceSpin {
-  0%   { transform: rotateY(0deg) scale(1.15); }
-  50%  { transform: rotateY(180deg) scale(0.9); }
-  100% { transform: rotateY(360deg) scale(1); }
+// Default max rerolls — TODO: wire to DM settings (DMSettings.max_rerolls)
+const DEFAULT_MAX_REROLLS = 3
+
+function roll4d6(): number[] {
+  return Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1)
 }
-`
+
+function dropLowestTotal(dice: number[]): number {
+  return [...dice].sort((a, b) => a - b).slice(1).reduce((s, v) => s + v, 0)
+}
 
 function abilityModifier(score: number): number {
   return Math.floor((score - 10) / 2)
@@ -58,17 +56,8 @@ function MethodButton({ active, onClick, children }: { active: boolean; onClick:
   )
 }
 
-/** Compute rolled totals (drop lowest die) from a set of 6×4 dice */
-function computeRolledTotals(sets: number[][]): number[] {
-  return sets.map(set => {
-    const sorted = [...set].sort((a, b) => a - b)
-    return sorted.slice(1).reduce((s, v) => s + v, 0)
-  })
-}
-
 /** Build an assignment map: ability → value|null, seeded from current abilities */
 function buildAssignment(abilities: Record<string, number>, pool: number[]): Record<string, number | null> {
-  // Track how many of each value have been "claimed" so duplicates are handled correctly
   const remaining = [...pool]
   const result: Record<string, number | null> = {}
   for (const ab of ABILITY_ORDER) {
@@ -87,7 +76,6 @@ function buildAssignment(abilities: Record<string, number>, pool: number[]): Rec
 export function AssignAbilitiesStep({
   abilities,
   abilityMethod,
-  rolledSets,
   pointBuyRemaining,
   selectedClass,
   onRollAbilities,
@@ -97,50 +85,66 @@ export function AssignAbilitiesStep({
   onAbilityPointBuy,
   onAbilityManualChange,
 }: AssignAbilitiesStepProps) {
+
+  // ── Roll mode state ──────────────────────────────────────────────────────
+  const [pendingRoll, setPendingRoll] = useState<number[] | null>(null)
+  const [rerollsUsed, setRerollsUsed] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+
+  // Initialise a fresh roll whenever we enter roll mode
+  useEffect(() => {
+    if (abilityMethod === 'roll') {
+      setPendingRoll(roll4d6())
+      setRerollsUsed(0)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [abilityMethod])
+
+  // After assigning a stat, auto-roll next if there are still unassigned stats
+  useEffect(() => {
+    if (abilityMethod !== 'roll' || pendingRoll !== null) return
+    const anyUnassigned = ABILITY_ORDER.some(ab => !(abilities[ab] > 0))
+    if (anyUnassigned) {
+      const t = setTimeout(() => setPendingRoll(roll4d6()), 250)
+      return () => clearTimeout(t)
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+  }, [abilityMethod, pendingRoll, abilities])
+
+  const pendingTotal = pendingRoll ? dropLowestTotal(pendingRoll) : null
+  const pendingDiceSorted = pendingRoll ? [...pendingRoll].sort((a, b) => b - a) : []
+  const rerollsRemaining = DEFAULT_MAX_REROLLS - rerollsUsed
+  const allRollsAssigned = ABILITY_ORDER.every(ab => abilities[ab] > 0)
+
+  function handleAssignStat(ability: string) {
+    if (pendingTotal === null) return
+    onAbilityManualChange(ability, pendingTotal)
+    setPendingRoll(null) // triggers auto-roll via useEffect if stats remain
+  }
+
+  function handleReroll() {
+    if (rerollsRemaining <= 0) return
+    setRerollsUsed(r => r + 1)
+    setPendingRoll(roll4d6())
+  }
+
+  // ── Array mode drag-drop state ───────────────────────────────────────────
   const [draggedValue, setDraggedValue] = useState<number | null>(null)
   const [touchSelected, setTouchSelected] = useState<number | null>(null)
-  const [rollingSet, setRollingSet] = useState<number | null>(null)
-  // animFaces: random cycling faces shown during animation; null = not animating (show real values)
-  const [animFaces, setAnimFaces] = useState<number[][] | null>(null)
+  const poolSource: number[] = abilityMethod === 'array' ? STANDARD_ARRAY_VALUES : []
 
-  // While a set is animating, cycle random die faces for that set every 60ms
-  useEffect(() => {
-    if (rollingSet === null) return
-    const interval = setInterval(() => {
-      setAnimFaces(prev =>
-        prev
-          ? prev.map((set, i) =>
-              i === rollingSet
-                ? Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1)
-                : set
-            )
-          : prev
-      )
-    }, 60)
-    return () => clearInterval(interval)
-  }, [rollingSet])
-
-  // Pool source depends on method
-  const rolledTotals = computeRolledTotals(rolledSets)
-  const poolSource: number[] = abilityMethod === 'array' ? STANDARD_ARRAY_VALUES : rolledTotals
-
-  // Assignment map: ability → value | null
   const [assignment, setAssignment] = useState<Record<string, number | null>>(() =>
     buildAssignment(abilities, poolSource)
   )
 
-  // Reset assignment whenever method or rolled dice change
   useEffect(() => {
-    const pool = abilityMethod === 'array'
-      ? STANDARD_ARRAY_VALUES
-      : computeRolledTotals(rolledSets)
-    setAssignment(buildAssignment(abilities, pool))
+    if (abilityMethod !== 'array') return
+    setAssignment(buildAssignment(abilities, STANDARD_ARRAY_VALUES))
     setDraggedValue(null)
     setTouchSelected(null)
     // eslint-disable-next-line react-hooks/set-state-in-effect
-  }, [abilityMethod, rolledSets])
+  }, [abilityMethod])
 
-  // Unassigned pool chips
   const assignedValues = Object.values(assignment).filter((v) => v !== null) as number[]
   const poolRemaining = poolSource.filter((v, i) => {
     const alreadyClaimed = assignedValues.filter((a) => a === v).length
@@ -148,40 +152,21 @@ export function AssignAbilitiesStep({
     return appearsBeforeThis >= alreadyClaimed
   })
 
-  function handleDrop(ability: string) {
+  function handleArrayDrop(ability: string) {
     if (draggedValue === null) return
     setAssignment((cur) => ({ ...cur, [ability]: draggedValue }))
     onAbilityManualChange(ability, draggedValue)
     setDraggedValue(null)
   }
 
-  function handleSlotTap(ability: string) {
+  function handleArraySlotTap(ability: string) {
     if (touchSelected === null) return
     setAssignment((cur) => ({ ...cur, [ability]: touchSelected }))
     onAbilityManualChange(ability, touchSelected)
     setTouchSelected(null)
   }
 
-  function handleReroll() {
-    // Seed animFaces with initial random values so dice start cycling immediately
-    setAnimFaces(Array.from({ length: 6 }, () =>
-      Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1)
-    ))
-    // Animate each set sequentially (CSS spin + face cycling via useEffect above)
-    const PER_SET = 120
-    const ANIM_DURATION = 300
-    for (let i = 0; i < 6; i++) {
-      setTimeout(() => setRollingSet(i), i * PER_SET)
-      setTimeout(() => setRollingSet(null), i * PER_SET + ANIM_DURATION)
-    }
-    // After all animations finish, fire the real roll and clear the anim overlay
-    setTimeout(() => {
-      setAnimFaces(null)
-      onRollAbilities()
-    }, 5 * PER_SET + ANIM_DURATION + 30)
-  }
-
-  // Derived stats
+  // ── Derived stats ────────────────────────────────────────────────────────
   const conMod = abilityModifier(abilities.constitution || 10)
   const dexMod = abilityModifier(abilities.dexterity || 10)
   const wisMod = abilityModifier(abilities.wisdom || 10)
@@ -200,16 +185,12 @@ export function AssignAbilitiesStep({
   const touch = 10 + dexMod
 
   const statValueStyle = (positive: boolean): React.CSSProperties => ({
-    display: 'block',
-    fontSize: '1.4rem',
-    fontWeight: 700,
-    fontFamily: 'Cinzel, serif',
-    color: positive ? '#6b2737' : '#8B1010',
+    display: 'block', fontSize: '1.4rem', fontWeight: 700,
+    fontFamily: 'Cinzel, serif', color: positive ? '#6b2737' : '#8B1010',
   })
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <style>{DICE_SPIN_CSS}</style>
 
       {/* Method selector */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
@@ -219,98 +200,171 @@ export function AssignAbilitiesStep({
         <MethodButton active={abilityMethod === 'manual'} onClick={onManualEntry}>Manual Entry</MethodButton>
       </div>
 
-      {/* ── ROLL MODE ── */}
+      {/* ── ROLL MODE ─────────────────────────────────────────────────────── */}
       {abilityMethod === 'roll' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {/* Dice sets display */}
-          {(rolledSets.length === 6 || animFaces !== null) && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              {Array.from({ length: 6 }).map((_, si) => {
-                // During animation show cycling faces; otherwise show real rolled values
-                const rawSet = animFaces ? animFaces[si] : (rolledSets[si] ?? [1, 1, 1, 1])
-                const sorted = [...rawSet].sort((a, b) => b - a) // desc: highest first
-                const total = animFaces ? '?' : sorted.slice(0, 3).reduce((s, v) => s + v, 0)
-                return (
-                  <div key={si} style={{
-                    display: 'flex', alignItems: 'center', gap: '0.5rem',
-                    padding: '5px 8px',
-                    background: 'var(--parchment-light)',
-                    border: '1px solid var(--gold-rule)',
-                    borderTop: '2px solid #6b2737',
-                  }}>
-                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'var(--ink)', minWidth: 38, textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.6 }}>
-                      Set {si + 1}
-                    </span>
-                    <div style={{ display: 'flex', gap: '0.25rem' }}>
-                      {sorted.map((face, di) => {
-                        const isDropped = di === 3
-                        return (
-                          <div key={di} style={{
-                            width: 26, height: 26,
-                            background: isDropped ? 'var(--parchment-dark)' : 'var(--parchment-light)',
-                            border: `1px solid ${isDropped ? 'var(--gold-rule)' : 'var(--gold)'}`,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontFamily: 'Cinzel, serif', fontSize: '0.8rem',
-                            color: isDropped ? 'var(--ink)' : '#6b2737',
-                            fontWeight: isDropped ? 400 : 700,
-                            opacity: isDropped ? 0.35 : 1,
-                            textDecoration: isDropped ? 'line-through' : undefined,
-                            animation: rollingSet === si ? 'diceSpin 0.3s ease-out' : undefined,
-                          }}>
-                            {face}
-                          </div>
-                        )
-                      })}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+
+          {/* Reroll charge tokens */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--ink)', opacity: 0.6 }}>
+              Rerolls
+            </span>
+            {Array.from({ length: DEFAULT_MAX_REROLLS }).map((_, i) => {
+              const spent = i < rerollsUsed
+              return (
+                <div key={i} style={{
+                  width: 30, height: 30,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700,
+                  background: spent ? '#6b2737' : 'var(--parchment-light)',
+                  border: '1px solid var(--gold-rule)',
+                  color: spent ? 'var(--parchment)' : '#6b2737',
+                  opacity: spent ? 0.5 : 1,
+                }}>
+                  {i + 1}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Die roll card — draggable big number */}
+          {pendingTotal !== null ? (
+            <div
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData('text/plain', String(pendingTotal))
+                setIsDragging(true)
+              }}
+              onDragEnd={() => setIsDragging(false)}
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem',
+                padding: '1.25rem 2rem',
+                background: 'var(--parchment-light)',
+                border: '2px solid #6b2737',
+                cursor: 'grab',
+                userSelect: 'none',
+                opacity: isDragging ? 0.6 : 1,
+                minWidth: 140,
+              }}
+            >
+              {/* 4 dice — sorted desc, lowest crossed out */}
+              <div style={{ display: 'flex', gap: '0.3rem' }}>
+                {pendingDiceSorted.map((face, di) => {
+                  const isDropped = di === 3
+                  return (
+                    <div key={di} style={{
+                      width: 28, height: 28,
+                      background: isDropped ? 'var(--parchment-dark)' : 'var(--parchment)',
+                      border: `1px solid ${isDropped ? 'var(--gold-rule)' : 'var(--gold)'}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontFamily: 'Cinzel, serif', fontSize: '0.8rem',
+                      color: isDropped ? 'var(--ink)' : '#6b2737',
+                      fontWeight: isDropped ? 400 : 700,
+                      opacity: isDropped ? 0.3 : 1,
+                      textDecoration: isDropped ? 'line-through' : undefined,
+                    }}>
+                      {face}
                     </div>
-                    <span style={{ marginLeft: 'auto', fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 700, color: '#6b2737' }}>
-                      {total}
-                    </span>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
+
+              {/* Big draggable total */}
+              <span style={{
+                fontFamily: 'Cinzel, serif', fontSize: '4rem', fontWeight: 700,
+                color: '#6b2737', lineHeight: 1,
+              }}>
+                {pendingTotal}
+              </span>
+
+              <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.68rem', color: 'var(--ink)', opacity: 0.55, fontStyle: 'italic' }}>
+                drag or tap a stat to assign
+              </span>
             </div>
+          ) : (
+            /* Between assignments — brief gap while next roll generates */
+            !allRollsAssigned && (
+              <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', color: 'var(--ink)', opacity: 0.4, letterSpacing: '0.06em' }}>Rolling…</span>
+              </div>
+            )
           )}
 
-          {/* Roll / Re-roll button */}
+          {/* Reroll button */}
           <button
             type="button"
             onClick={handleReroll}
+            disabled={rerollsRemaining <= 0}
             style={{
-              background: '#6b2737', border: '1px solid #4a1a25',
-              color: 'var(--parchment)',
-              fontFamily: 'Cinzel, serif', fontSize: '0.75rem', fontWeight: 600,
+              background: rerollsRemaining > 0 ? '#6b2737' : 'transparent',
+              border: '1px solid var(--gold-rule)',
+              color: rerollsRemaining > 0 ? 'var(--parchment)' : 'var(--ink)',
+              fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 600,
               letterSpacing: '0.08em', textTransform: 'uppercase' as const,
-              padding: '9px 18px', cursor: 'pointer', alignSelf: 'flex-start',
+              padding: '7px 16px',
+              cursor: rerollsRemaining > 0 ? 'pointer' : 'default',
+              opacity: rerollsRemaining > 0 ? 1 : 0.35,
             }}
           >
-            {rolledSets.length === 6 || animFaces !== null ? 'Re-roll All' : 'Roll 4d6 × 6'}
+            Reroll — {rerollsRemaining} of {DEFAULT_MAX_REROLLS} left
           </button>
 
-          {/* Drag-drop pool + assignment — hidden while animating */}
-          {rolledSets.length === 6 && animFaces === null && (
-            <PoolAssignment
-              poolSource={rolledTotals}
-              poolRemaining={poolRemaining}
-              assignment={assignment}
-              draggedValue={draggedValue}
-              touchSelected={touchSelected}
-              onDragStart={setDraggedValue}
-              onDragEnd={() => setDraggedValue(null)}
-              onTouchSelect={(v) => setTouchSelected(touchSelected === v ? null : v)}
-              onDrop={handleDrop}
-              onSlotTap={handleSlotTap}
-            />
+          {/* Completion hint when all assigned but rerolls remain */}
+          {allRollsAssigned && rerollsRemaining > 0 && (
+            <div className="dnd-info-box" style={{ textAlign: 'center', maxWidth: 360 }}>
+              {rerollsRemaining === 1 ? '1 reroll remaining' : `${rerollsRemaining} rerolls remaining`} — use {rerollsRemaining === 1 ? 'it' : 'them'} to try for higher scores. Drag the result onto any assigned stat to replace it.
+            </div>
           )}
 
-          {rolledSets.length === 0 && animFaces === null && (
-            <p style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.82rem', color: 'var(--ink)', fontStyle: 'italic', margin: 0 }}>
-              Click "Roll 4d6 × 6" to generate your scores.
-            </p>
-          )}
+          {/* 6 stat boxes — drop targets */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.35rem', width: '100%' }}>
+            {ABILITY_ORDER.map((ability) => {
+              const value = abilities[ability]
+              const isAssigned = value > 0
+              const isTarget = pendingTotal !== null
+              return (
+                <div
+                  key={ability}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleAssignStat(ability)}
+                  onClick={() => isTarget && handleAssignStat(ability)}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem',
+                    padding: '0.6rem 0.25rem',
+                    background: isTarget && !isAssigned ? 'var(--parchment-dark)' : 'var(--parchment-light)',
+                    border: `1px solid var(--gold-rule)`,
+                    borderTop: isAssigned ? '2px solid #6b2737' : isTarget ? '2px dashed #6b2737' : '1px solid var(--gold-rule)',
+                    cursor: isTarget ? 'pointer' : 'default',
+                    transition: 'background 0.15s',
+                  }}
+                >
+                  <span style={{
+                    fontFamily: 'Cinzel, serif',
+                    fontSize: isAssigned ? '1.4rem' : '1.6rem',
+                    fontWeight: 700,
+                    color: isAssigned ? '#6b2737' : 'var(--ink)',
+                    opacity: isAssigned ? 1 : 0.2,
+                    lineHeight: 1,
+                  }}>
+                    {isAssigned ? value : '?'}
+                  </span>
+                  {isAssigned && (
+                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'var(--ink)', opacity: 0.55, fontStyle: 'italic' }}>
+                      {formatMod(abilityModifier(value))}
+                    </span>
+                  )}
+                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: 'var(--ink)', opacity: 0.65, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {ABILITY_SHORT[ability]}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+
         </div>
       )}
 
-      {/* ── STANDARD ARRAY MODE ── */}
+      {/* ── STANDARD ARRAY MODE ───────────────────────────────────────────── */}
       {abilityMethod === 'array' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <p style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.82rem', color: 'var(--ink)', fontStyle: 'italic', margin: 0 }}>
@@ -325,13 +379,13 @@ export function AssignAbilitiesStep({
             onDragStart={setDraggedValue}
             onDragEnd={() => setDraggedValue(null)}
             onTouchSelect={(v) => setTouchSelected(touchSelected === v ? null : v)}
-            onDrop={handleDrop}
-            onSlotTap={handleSlotTap}
+            onDrop={handleArrayDrop}
+            onSlotTap={handleArraySlotTap}
           />
         </div>
       )}
 
-      {/* ── POINT BUY MODE ── */}
+      {/* ── POINT BUY MODE ────────────────────────────────────────────────── */}
       {abilityMethod === 'pointbuy' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <div style={{
@@ -385,7 +439,7 @@ export function AssignAbilitiesStep({
         </div>
       )}
 
-      {/* ── MANUAL MODE ── */}
+      {/* ── MANUAL MODE ───────────────────────────────────────────────────── */}
       {abilityMethod === 'manual' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.6rem' }}>
           {ABILITY_ORDER.map((ability) => {
@@ -410,7 +464,7 @@ export function AssignAbilitiesStep({
         </div>
       )}
 
-      {/* ── DERIVED STATS PANEL ── */}
+      {/* ── DERIVED STATS PANEL ───────────────────────────────────────────── */}
       <div>
         <div className="dnd-section-header">Derived Statistics (Preview)</div>
         <div style={{
@@ -440,7 +494,7 @@ export function AssignAbilitiesStep({
   )
 }
 
-// ── Shared drag-drop pool + assignment grid (used by both roll and array modes) ──
+// ── Shared pool assignment widget (standard array) ──────────────────────────
 
 interface PoolAssignmentProps {
   poolSource: number[]
@@ -468,12 +522,9 @@ function PoolAssignment({
 }: PoolAssignmentProps) {
   return (
     <>
-      {/* Unassigned pool */}
       <div style={{
         display: 'flex', gap: '0.4rem', flexWrap: 'wrap', minHeight: 40,
-        padding: '6px 8px',
-        background: 'var(--parchment-dark)',
-        border: '1px solid var(--gold-rule)',
+        padding: '6px 8px', background: 'var(--parchment-dark)', border: '1px solid var(--gold-rule)',
       }}>
         {poolRemaining.length === 0 && (
           <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.78rem', fontStyle: 'italic', color: 'var(--ink)', opacity: 0.6 }}>
@@ -494,7 +545,6 @@ function PoolAssignment({
               padding: '4px 14px',
               border: touchSelected === v ? '2px solid var(--gold)' : '1px solid #4a1a25',
               cursor: 'grab', userSelect: 'none',
-              outline: touchSelected === v ? '2px solid var(--gold)' : undefined,
             }}
           >
             {v}
@@ -502,7 +552,6 @@ function PoolAssignment({
         ))}
       </div>
 
-      {/* Ability slots */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
         {ABILITY_ORDER.map((ability) => {
           const assigned = assignment[ability]
@@ -516,8 +565,7 @@ function PoolAssignment({
               onClick={() => isTarget && onSlotTap(ability)}
               className="dnd-stat-box"
               style={{
-                display: 'flex', alignItems: 'center', gap: '0.5rem',
-                borderTopWidth: '2px',
+                display: 'flex', alignItems: 'center', gap: '0.5rem', borderTopWidth: '2px',
                 border: assigned !== null ? undefined : '1px dashed var(--gold)',
                 borderTop: assigned !== null ? undefined : '2px dashed #6b2737',
                 cursor: isTarget ? 'pointer' : 'default',
