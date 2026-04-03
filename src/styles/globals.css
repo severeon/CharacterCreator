@@ -1,1 +1,391 @@
 @import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────
+   D&D 3.5e PHB Design System
+   Parchment · Burgundy · Cinzel · Libre Baskerville
+───────────────────────────────────────────────────── */
+
+:root {
+  /* Parchment palette */
+  --parchment:        #F2E4C4;
+  --parchment-light:  #FAF3E0;
+  --parchment-dark:   #E0CFA0;
+  --parchment-mid:    #EAD9B0;
+
+  /* Ink */
+  --ink:              #1C1008;
+  --ink-mid:          #3A2410;
+  --ink-light:        #5C3D1E;
+
+  /* Burgundy — the 3.5e chapter color */
+  --burgundy:         #6B1414;
+  --burgundy-dark:    #4A0D0D;
+  --burgundy-light:   #8B2020;
+  --burgundy-hover:   #7E1818;
+
+  /* Gold accents */
+  --gold:             #9A7B2C;
+  --gold-light:       #C4A24A;
+  --gold-bright:      #D4B468;
+  --gold-rule:        #B8954A;
+
+  /* Sidebar leather */
+  --leather:          #1E0F08;
+  --leather-mid:      #2D160C;
+  --leather-light:    #3D1E10;
+
+  /* UI states */
+  --border-rule:      rgba(155, 120, 50, 0.4);
+  --shadow-parchment: 0 2px 8px rgba(28, 16, 8, 0.18), 0 1px 3px rgba(28, 16, 8, 0.12);
+  --shadow-card:      0 4px 16px rgba(28, 16, 8, 0.22), 0 1px 4px rgba(28, 16, 8, 0.15);
+}
+
+/* ── Base ─────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--leather);
+  color: var(--ink);
+  font-family: 'Libre Baskerville', Georgia, serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ── Typography ───────────────────────────────────── */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cinzel', 'Palatino Linotype', serif;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+/* The 3.5e stat-block section header style */
+.dnd-section-header {
+  background: var(--burgundy);
+  color: #F2E4C4;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  margin: 0;
+}
+
+/* Chapter/page header */
+.dnd-page-header {
+  font-family: 'Cinzel', serif;
+  color: var(--burgundy);
+  font-size: 1.75rem;
+  font-weight: 600;
+  border-bottom: 2px solid var(--gold-rule);
+  padding-bottom: 0.35rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Ornamental rule — double line with middle gap */
+.dnd-rule {
+  border: none;
+  height: 6px;
+  background:
+    linear-gradient(var(--gold-rule), var(--gold-rule)) 0 0 / 100% 1.5px no-repeat,
+    linear-gradient(var(--gold-rule), var(--gold-rule)) 0 100% / 100% 1.5px no-repeat;
+  margin: 1rem 0;
+  opacity: 0.7;
+}
+
+.dnd-rule-single {
+  border: none;
+  height: 1px;
+  background: var(--gold-rule);
+  opacity: 0.5;
+  margin: 0.75rem 0;
+}
+
+/* ── Parchment surface ────────────────────────────── */
+
+.parchment {
+  background-color: var(--parchment-light);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.045'/%3E%3C/svg%3E");
+  color: var(--ink);
+}
+
+/* ── Stat Block ───────────────────────────────────── */
+
+.stat-block {
+  background: var(--parchment-light);
+  border: 1px solid var(--gold-rule);
+  border-top: 3px solid var(--burgundy);
+  box-shadow: var(--shadow-card);
+  padding: 0;
+  overflow: hidden;
+}
+
+.stat-block-header {
+  background: var(--burgundy);
+  padding: 6px 12px 5px;
+  border-bottom: 2px solid var(--gold-rule);
+}
+
+.stat-block-header h2,
+.stat-block-header h3 {
+  color: var(--parchment-light);
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.stat-block-body {
+  padding: 10px 14px;
+  font-size: 0.875rem;
+}
+
+.stat-block-row {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(155, 120, 50, 0.2);
+  padding: 3px 0;
+}
+
+.stat-block-row:last-child {
+  border-bottom: none;
+}
+
+.stat-block-label {
+  font-weight: 700;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-mid);
+  min-width: 5rem;
+  padding-top: 1px;
+}
+
+/* ── Entity card (list grid) ──────────────────────── */
+
+.entity-card {
+  background: var(--parchment-light);
+  border: 1px solid var(--gold-rule);
+  border-top: 3px solid var(--burgundy);
+  box-shadow: var(--shadow-parchment);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.entity-card:hover {
+  border-color: var(--gold-light);
+  border-top-color: var(--burgundy-light);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-2px);
+}
+
+.entity-card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--burgundy-dark);
+  padding: 9px 12px 5px;
+  border-bottom: 1px solid var(--border-rule);
+}
+
+.entity-card-body {
+  padding: 7px 12px 10px;
+  font-size: 0.8rem;
+  color: var(--ink-mid);
+}
+
+/* ── Tag badges ───────────────────────────────────── */
+
+.dnd-tag {
+  display: inline-block;
+  background: rgba(107, 20, 20, 0.1);
+  border: 1px solid rgba(107, 20, 20, 0.25);
+  color: var(--burgundy);
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+
+/* ── Search input ─────────────────────────────────── */
+
+.dnd-search {
+  width: 100%;
+  background: rgba(250, 243, 224, 0.7);
+  border: 1px solid var(--gold-rule);
+  border-radius: 2px;
+  padding: 7px 12px 7px 36px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.dnd-search::placeholder {
+  color: var(--ink-light);
+  font-style: italic;
+  opacity: 0.65;
+}
+
+.dnd-search:focus {
+  border-color: var(--burgundy);
+  box-shadow: 0 0 0 2px rgba(107, 20, 20, 0.12);
+}
+
+.dnd-search-wrap {
+  position: relative;
+}
+
+.dnd-search-wrap::before {
+  content: '⚔';
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gold);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+/* ── Back link ────────────────────────────────────── */
+
+.dnd-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--burgundy);
+  text-decoration: none;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+.dnd-back-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Loading / empty states ───────────────────────── */
+
+.dnd-loading {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-style: italic;
+  color: var(--ink-light);
+  text-align: center;
+  padding: 2.5rem;
+  opacity: 0.7;
+}
+
+/* ── Scrollbar ────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--parchment-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--burgundy);
+  border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--burgundy-light);
+}
+
+/* ── MdxRenderer prose ────────────────────────────── */
+
+.dnd-prose {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.dnd-prose h2,
+.dnd-prose h3,
+.dnd-prose h4 {
+  font-family: 'Cinzel', serif;
+  color: var(--burgundy);
+  margin-top: 1.25em;
+  margin-bottom: 0.4em;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-rule);
+  padding-bottom: 0.15em;
+}
+
+.dnd-prose p {
+  margin-bottom: 0.75em;
+}
+
+.dnd-prose strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.dnd-prose ul {
+  padding-left: 1.25rem;
+  margin-bottom: 0.75em;
+}
+
+.dnd-prose li {
+  margin-bottom: 0.2em;
+}
+
+.dnd-prose li::marker {
+  color: var(--burgundy);
+}
+
+.dnd-prose a {
+  color: var(--burgundy);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.dnd-prose a:hover {
+  color: var(--burgundy-light);
+}
+
+.dnd-prose hr {
+  border: none;
+  height: 1px;
+  background: var(--gold-rule);
+  opacity: 0.5;
+  margin: 1rem 0;
+}
+
+/* ── MdxRenderer component override ──────────────── */
+.mdx-content {
+  composes: dnd-prose;
+}

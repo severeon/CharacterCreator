@@ -21,25 +21,28 @@ export default function EntityDetail() {
     setNotFound(false)
     getEntityById(decodedId)
       .then((result) => {
-        if (result === null) {
-          setNotFound(true)
-        } else {
-          setEntity(result)
-        }
+        if (result === null) setNotFound(true)
+        else setEntity(result)
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
   }, [decodedId])
 
-  if (loading) return <div className="p-6 text-gray-400">Loading...</div>
+  if (loading) {
+    return (
+      <div style={{ padding: '2rem' }}>
+        <div className="dnd-loading">Consulting the archives…</div>
+      </div>
+    )
+  }
 
   if (notFound) {
     return (
-      <div className="p-6">
-        <Link to={`/${entityType}`} className="text-amber-600 hover:underline">
-          &larr; Back to {entityType}
-        </Link>
-        <p className="mt-4 text-gray-500">Entity not found.</p>
+      <div style={{ padding: '2rem' }}>
+        <Link to={`/${entityType}`} className="dnd-back-link">← Back to {entityType}</Link>
+        <p style={{ fontFamily: "'IM Fell English', serif", fontStyle: 'italic', color: 'var(--ink-light)', marginTop: '1rem' }}>
+          This entry has been lost to the ages.
+        </p>
       </div>
     )
   }
@@ -49,26 +52,45 @@ export default function EntityDetail() {
   const name = typeof entity.properties.name === 'string' ? entity.properties.name : entity.id
 
   return (
-    <div className="p-6 max-w-3xl">
-      <Link to={`/${entityType}`} className="text-amber-600 hover:underline">
-        &larr; Back to {entityType}
+    <div style={{ padding: '1.75rem 2rem', maxWidth: '56rem' }}>
+      {/* Back navigation */}
+      <Link to={`/${entityType}`} className="dnd-back-link">
+        ← Back to {entityType}
       </Link>
-      <h2 className="text-2xl font-bold mt-4 mb-4">{name}</h2>
 
-      {entity.tags.length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-1">
-          {entity.tags.map((tag) => (
-            <span key={tag} className="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full">
-              {tag}
-            </span>
-          ))}
+      {/* Entry header — stat block style */}
+      <div className="stat-block" style={{ marginBottom: '1.5rem' }}>
+        <div className="stat-block-header">
+          <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '1.2rem', color: 'var(--parchment-light)', margin: 0 }}>
+            {name}
+          </h2>
         </div>
-      )}
 
-      <ViewModeRenderer entity={entity} viewMode={viewMode} />
+        {/* Tags row */}
+        {entity.tags.length > 0 && (
+          <div style={{
+            padding: '5px 12px',
+            borderBottom: '1px solid rgba(155, 120, 50, 0.25)',
+            display: 'flex',
+            flexWrap: 'wrap' as const,
+            gap: '0.4rem',
+            background: 'rgba(107, 20, 20, 0.04)',
+          }}>
+            {entity.tags.map((tag) => (
+              <span key={tag} className="dnd-tag">{tag}</span>
+            ))}
+          </div>
+        )}
 
+        {/* Reference view metadata */}
+        <div className="stat-block-body">
+          <ViewModeRenderer entity={entity} viewMode={viewMode} />
+        </div>
+      </div>
+
+      {/* MDX body — prose section */}
       {entity.mdx_body && (
-        <div className="mt-6">
+        <div className="dnd-prose">
           <MdxRenderer source={entity.mdx_body} />
         </div>
       )}

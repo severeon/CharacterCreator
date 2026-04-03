@@ -59,23 +59,29 @@ export default function EntityList() {
     [singularType],
   )
 
+  const typeLabel = entityType ? entityType.charAt(0).toUpperCase() + entityType.slice(1) : ''
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4 capitalize">{entityType}</h2>
-      <div className="mb-4">
+    <div style={{ padding: '1.75rem 2rem', maxWidth: '72rem' }}>
+      {/* Page header */}
+      <h2 className="dnd-page-header">{typeLabel}</h2>
+
+      {/* Search */}
+      <div className="dnd-search-wrap" style={{ marginBottom: '1.5rem', maxWidth: '28rem' }}>
         <SearchBar onSearch={handleSearch} />
       </div>
+
       {loading ? (
-        <div className="text-gray-400">Loading...</div>
+        <div className="dnd-loading">Consulting the archives…</div>
       ) : entities.length === 0 ? (
-        <div className="text-gray-500">No entities found.</div>
+        <div className="dnd-loading">No entries found in the compendium.</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
           {entities.map((summary) => (
             <Link
               key={summary.id}
               to={`/${entityType}/${encodeURIComponent(summary.id)}`}
-              className="block"
+              style={{ textDecoration: 'none' }}
             >
               <ViewModeRenderer entity={summaryToEntity(summary)} viewMode={cardViewMode} />
             </Link>

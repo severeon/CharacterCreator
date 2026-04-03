@@ -18,42 +18,48 @@ export function ReferenceView({ slots }: ReferenceViewProps) {
     ([k]) => !['title', 'image', 'body'].includes(k)
   ).filter(([, v]) => v.value != null)
 
+  const bodyContent = slots.body?.value != null ? String(slots.body.value) : null
+
   if (hasImage) {
     return (
-      <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-        <div className="w-full h-64 bg-gray-900 overflow-hidden">
-          <img
-            src={String(slots.image!.value)}
-            alt=""
-            className="w-full h-full object-cover"
-          />
+      <div>
+        <div style={{ width: '100%', maxHeight: '16rem', overflow: 'hidden', marginBottom: '0.75rem' }}>
+          <img src={String(slots.image!.value)} alt="" style={{ width: '100%', objectFit: 'cover' }} />
         </div>
-        <div className="p-4 space-y-1">
-          {metaSlots.map(([key, slot]) => (
-            <div key={key} className="flex gap-2 text-sm">
-              {slot.label && <span className="text-gray-500 min-w-24">{slot.label}:</span>}
-              <span className="text-gray-200">{String(slot.value)}</span>
-            </div>
-          ))}
-          {slots.body?.value != null && (
-            <p className="mt-3 text-gray-300 text-sm leading-relaxed">{String(slots.body.value)}</p>
-          )}
-        </div>
+        {metaSlots.length > 0 && (
+          <div>
+            {metaSlots.map(([key, slot]) => (
+              <div key={key} className="stat-block-row">
+                {slot.label && <span className="stat-block-label">{slot.label}</span>}
+                <span style={{ color: 'var(--ink)', fontSize: '0.875rem' }}>{String(slot.value)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {bodyContent && (
+          <p style={{ marginTop: '0.75rem', color: 'var(--ink-mid)', fontSize: '0.875rem', lineHeight: 1.6, fontStyle: 'italic' }}>
+            {bodyContent}
+          </p>
+        )}
       </div>
     )
   }
 
-  // No image — render as a flat metadata list, no card wrapper
+  // No image — stat-block rows
+  if (metaSlots.length === 0 && !bodyContent) return null
+
   return (
-    <div className="space-y-1">
+    <div>
       {metaSlots.map(([key, slot]) => (
-        <div key={key} className="flex gap-2 text-sm">
-          {slot.label && <span className="text-gray-500 min-w-24">{slot.label}:</span>}
-          <span className="text-gray-200">{String(slot.value)}</span>
+        <div key={key} className="stat-block-row">
+          {slot.label && <span className="stat-block-label">{slot.label}</span>}
+          <span style={{ color: 'var(--ink)', fontSize: '0.875rem' }}>{String(slot.value)}</span>
         </div>
       ))}
-      {slots.body?.value != null && (
-        <p className="mt-3 text-gray-300 text-sm leading-relaxed">{String(slots.body.value)}</p>
+      {bodyContent && (
+        <p style={{ marginTop: '0.75rem', color: 'var(--ink-mid)', fontSize: '0.875rem', lineHeight: 1.6, fontStyle: 'italic', fontFamily: "'IM Fell English', Georgia, serif" }}>
+          {bodyContent}
+        </p>
       )}
     </div>
   )

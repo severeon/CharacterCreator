@@ -13,36 +13,68 @@ interface CardViewProps {
 
 export function CardView({ slots }: CardViewProps) {
   return (
-    <div className="bg-gray-800 rounded-lg p-4 shadow-md border border-gray-700 hover:border-gray-500 transition-colors cursor-pointer">
+    <div className="entity-card">
       {slots.thumbnail?.value && (
-        <div className="w-full h-32 bg-gray-700 rounded mb-3 overflow-hidden">
+        <div style={{ width: '100%', height: '7rem', overflow: 'hidden', background: 'var(--parchment-dark)' }}>
           <img
             src={String(slots.thumbnail.value)}
             alt=""
-            className="w-full h-full object-cover"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         </div>
       )}
-      {slots.title?.value != null && (
-        <h3 className="text-lg font-semibold text-white">{String(slots.title.value)}</h3>
-      )}
-      {slots.subtitle?.value != null && (
-        <p className="text-sm text-gray-400">
-          {slots.subtitle.label ? `${slots.subtitle.label}: ` : ''}
-          {String(slots.subtitle.value)}
-        </p>
-      )}
-      {slots.badge?.value != null && (
-        <span className="inline-block mt-2 px-2 py-0.5 bg-blue-900 text-blue-200 text-xs rounded">
-          {slots.badge.label ? `${slots.badge.label}: ` : ''}
-          {String(slots.badge.value)}
-        </span>
-      )}
-      {slots.short_desc?.value != null && (
-        <p className="text-sm text-gray-300 mt-2 line-clamp-2">
-          {String(slots.short_desc.value)}
-        </p>
-      )}
+
+      <div className="entity-card-title">
+        {slots.title?.value != null ? String(slots.title.value) : '—'}
+      </div>
+
+      <div className="entity-card-body">
+        {slots.subtitle?.value != null && (
+          <div style={{ marginBottom: '3px', color: 'var(--ink-light)', fontSize: '0.75rem' }}>
+            {slots.subtitle.label ? (
+              <>
+                <span style={{ fontWeight: 700, fontFamily: "'Cinzel', serif", fontSize: '0.65rem', letterSpacing: '0.04em' }}>
+                  {slots.subtitle.label}:
+                </span>{' '}
+                {String(slots.subtitle.value)}
+              </>
+            ) : String(slots.subtitle.value)}
+          </div>
+        )}
+
+        {slots.badge?.value != null && (
+          <div style={{
+            display: 'inline-block',
+            background: 'var(--burgundy)',
+            color: 'var(--parchment-light)',
+            fontFamily: "'Cinzel', serif",
+            fontSize: '0.6rem',
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            padding: '2px 7px',
+            marginTop: '4px',
+          }}>
+            {slots.badge.label ? `${slots.badge.label} ${String(slots.badge.value)}` : String(slots.badge.value)}
+          </div>
+        )}
+
+        {slots.short_desc?.value != null && (
+          <div style={{
+            marginTop: '5px',
+            fontSize: '0.75rem',
+            color: 'var(--ink-mid)',
+            fontStyle: 'italic',
+            fontFamily: "'IM Fell English', Georgia, serif",
+            lineHeight: 1.4,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical' as const,
+            overflow: 'hidden',
+          }}>
+            {String(slots.short_desc.value)}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
