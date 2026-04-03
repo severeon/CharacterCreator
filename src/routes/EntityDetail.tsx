@@ -1,32 +1,62 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router'
 import { getEntityById } from '../lib/engine'
 import type { Entity } from '../lib/types'
 import MdxRenderer from '../components/MdxRenderer'
 import { ViewModeRenderer } from '../components/ViewModeRenderer'
 import { useViewMode } from '../hooks/useViewMode'
+import { devRender, devMount, devUnmount, devEffect, devState, devFetchStart, devFetchEnd } from '../lib/devlog'
 
 export default function EntityDetail() {
   const { entityType, id } = useParams<{ entityType: string; id: string }>()
   const [entity, setEntity] = useState<Entity | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [loading, setLoading] = useState(true)
+  const renderCount = useRef(0)
 
   const decodedId = decodeURIComponent(id ?? '')
-  const singularType = { races: 'race', classes: 'class', feats: 'feat', spells: 'spell', skills: 'skill' }[entityType ?? ''] ?? entityType ?? ''
+  // Derive type from URL param, or fall back to the loaded entity's type
+  const TYPE_MAP: Record<string, string> = { races: 'race', classes: 'class', feats: 'feat', spells: 'spell', skills: 'skill' }
+  const PLURAL_MAP: Record<string, string> = { race: 'races', class: 'classes', feat: 'feats', spell: 'spells', skill: 'skills' }
+  const singularType = TYPE_MAP[entityType ?? ''] ?? entity?.entity_type ?? entityType ?? ''
+  const pluralType = entityType ?? PLURAL_MAP[singularType] ?? ''
   const viewMode = useViewMode(singularType, 'reference')
 
+  renderCount.current++
+  devRender('EntityDetail', { renderNum: renderCount.current, entityType, id: decodedId, loading, notFound, hasEntity: !!entity })
+
   useEffect(() => {
+    devMount('EntityDetail')
+    return () => devUnmount('EntityDetail')
+  }, [])
+
+  useEffect(() => {
+    let stale = false
+    devEffect('EntityDetail', 'loadEntity', { decodedId })
+    devState('EntityDetail', 'loading', loading, true)
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true)
     setNotFound(false)
+    devFetchStart('EntityDetail', `getEntityById(${decodedId})`)
     getEntityById(decodedId)
       .then((result) => {
-        if (result === null) setNotFound(true)
-        else setEntity(result)
+        if (stale) return
+        if (result === null) {
+          devFetchEnd('EntityDetail', `getEntityById(${decodedId})`, { error: 'not found (null)' })
+          setNotFound(true)
+        } else {
+          devFetchEnd('EntityDetail', `getEntityById(${decodedId})`, { count: 1 })
+          setEntity(result)
+        }
       })
-      .catch(() => setNotFound(true))
-      .finally(() => setLoading(false))
+      .catch((err) => {
+        if (!stale) {
+          devFetchEnd('EntityDetail', `getEntityById(${decodedId})`, { error: String(err) })
+          setNotFound(true)
+        }
+      })
+      .finally(() => { if (!stale) { devState('EntityDetail', 'loading', true, false); setLoading(false) } })
+    return () => { stale = true }
   }, [decodedId])
 
   if (loading) {
@@ -40,7 +70,7 @@ export default function EntityDetail() {
   if (notFound) {
     return (
       <div style={{ padding: '2rem' }}>
-        <Link to={`/${entityType}`} className="dnd-back-link">← Back to {entityType}</Link>
+        <Link to={`/${pluralType || 'races'}`} className="dnd-back-link">← Back to {pluralType || 'home'}</Link>
         <p style={{ fontFamily: "'IM Fell English', serif", fontStyle: 'italic', color: 'var(--ink-light)', marginTop: '1rem' }}>
           This entry has been lost to the ages.
         </p>
@@ -54,11 +84,26 @@ export default function EntityDetail() {
     ? entity.properties.name
     : entity.id.split(':').pop()?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) ?? entity.id
 
+  // Build a context-aware back link — spells go to their school category
+  let backTo = `/${pluralType}`
+  let backLabel = pluralType
+  if (entity.entity_type === 'spell' && !entity.tags.includes('index')) {
+    const schoolTag = entity.tags.find(t => t.startsWith('school:'))
+    if (schoolTag) {
+      const school = schoolTag.split(':')[1]
+      backTo = `/spells/school/${school}`
+      backLabel = `${school.charAt(0).toUpperCase() + school.slice(1)} Spells`
+    } else {
+      backTo = '/spells'
+      backLabel = 'Spells'
+    }
+  }
+
   return (
     <div style={{ padding: '1.75rem 2rem', maxWidth: '56rem' }}>
       {/* Back navigation */}
-      <Link to={`/${entityType}`} className="dnd-back-link">
-        ← Back to {entityType}
+      <Link to={backTo} className="dnd-back-link">
+        ← Back to {backLabel}
       </Link>
 
       {/* Entry header — stat block style */}

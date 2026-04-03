@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useParams, Link } from 'react-router'
 import { getEntitiesByType, searchEntities } from '../lib/engine'
 import type { EntitySummary, Entity } from '../lib/types'
 import SearchBar from '../components/SearchBar'
 import { ViewModeRenderer } from '../components/ViewModeRenderer'
 import { useViewMode } from '../hooks/useViewMode'
+import { devRender, devMount, devUnmount, devEffect, devState, devFetchStart, devFetchEnd } from '../lib/devlog'
 
 const TYPE_MAP: Record<string, string> = {
   races: 'race',
@@ -42,33 +43,72 @@ export default function EntityList() {
   const [loading, setLoading] = useState(true)
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [sortOrder, setSortOrder] = useState<'az' | 'za'>('az')
+  const renderCount = useRef(0)
 
   const singularType = TYPE_MAP[entityType ?? ''] ?? entityType ?? ''
   const cardViewMode = useViewMode(singularType, 'card')
 
+  renderCount.current++
+  devRender('EntityList', { renderNum: renderCount.current, entityType, singularType, loading, entityCount: entities.length })
+
   useEffect(() => {
+    devMount('EntityList')
+    return () => devUnmount('EntityList')
+  }, [])
+
+  useEffect(() => {
+    let stale = false
+    devEffect('EntityList', 'loadEntities', { singularType })
+    devState('EntityList', 'loading', loading, true)
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true)
     setActiveTag(null)
+    devFetchStart('EntityList', `getEntitiesByType(${singularType})`)
     getEntitiesByType(singularType)
-      .then(setEntities)
-      .catch(() => setEntities([]))
-      .finally(() => setLoading(false))
+      .then(data => {
+        if (!stale) {
+          devFetchEnd('EntityList', `getEntitiesByType(${singularType})`, { count: data.length })
+          devState('EntityList', 'entities', `[${entities.length} items]`, `[${data.length} items]`)
+          setEntities(data)
+        }
+      })
+      .catch((err) => {
+        if (!stale) {
+          devFetchEnd('EntityList', `getEntitiesByType(${singularType})`, { error: String(err) })
+          setEntities([])
+        }
+      })
+      .finally(() => {
+        if (!stale) {
+          devState('EntityList', 'loading', true, false)
+          setLoading(false)
+        }
+      })
+    return () => { stale = true }
   }, [singularType])
 
   const handleSearch = useCallback(
     (query: string) => {
       if (!query.trim()) {
+        devFetchStart('EntityList', `getEntitiesByType(${singularType}) [search-reset]`)
         setLoading(true)
         getEntitiesByType(singularType)
-          .then(setEntities)
+          .then((data) => {
+            devFetchEnd('EntityList', `getEntitiesByType(${singularType}) [search-reset]`, { count: data.length })
+            setEntities(data)
+          })
           .catch(() => setEntities([]))
           .finally(() => setLoading(false))
         return
       }
+      devFetchStart('EntityList', `searchEntities(${query})`)
       setLoading(true)
       searchEntities(query)
-        .then((results) => setEntities(results.filter((e) => e.entity_type === singularType)))
+        .then((results) => {
+          const filtered = results.filter((e) => e.entity_type === singularType)
+          devFetchEnd('EntityList', `searchEntities(${query})`, { count: filtered.length })
+          setEntities(filtered)
+        })
         .catch(() => setEntities([]))
         .finally(() => setLoading(false))
     },
