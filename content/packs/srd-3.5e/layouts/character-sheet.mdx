@@ -1,0 +1,101 @@
+---
+id: "srd:layout:character-sheet"
+entity_type: "layout"
+extends: "template:layout"
+properties:
+  name: "D&D 3.5e Character Sheet"
+  default_view_mode: "srd:view:dm-screen"
+
+  sections:
+    - id: "identity"
+      component: block
+      title: "Identity"
+      children:
+        - id: "name"
+          component: text-field
+          path: "identity.name"
+          label: "Name"
+        - id: "race-class"
+          component: computed-field
+          formula: "class_levels"
+          label: "Race & Class"
+
+    - id: "abilities"
+      component: block
+      title: "Ability Scores"
+      children:
+        - id: "str"
+          component: computed-field
+          path: "abilities.str.score"
+          label: "STR"
+        - id: "dex"
+          component: computed-field
+          path: "abilities.dex.score"
+          label: "DEX"
+        - id: "con"
+          component: computed-field
+          path: "abilities.con.score"
+          label: "CON"
+        - id: "int"
+          component: computed-field
+          path: "abilities.int.score"
+          label: "INT"
+        - id: "wis"
+          component: computed-field
+          path: "abilities.wis.score"
+          label: "WIS"
+        - id: "cha"
+          component: computed-field
+          path: "abilities.cha.score"
+          label: "CHA"
+
+    - id: "combat"
+      component: block
+      title: "Combat"
+      children:
+        - id: "hp"
+          component: progress-bar
+          path: "combat.hp"
+          max_path: "combat.max_hp"
+          label: "Hit Points"
+        - id: "ac"
+          component: computed-field
+          formula: "combat.ac"
+          label: "AC"
+        - id: "bab"
+          component: table
+          headers: ["Attack", "Bonus"]
+          rows_path: "combat.iterative_attacks"
+        - id: "saves"
+          component: table
+          headers: ["Save", "Base", "Ability", "Misc", "Total"]
+          rows_path: "combat.saves_summary"
+
+    - id: "skills"
+      component: block
+      title: "Skills"
+      children:
+        - id: "skill-list"
+          component: list
+          item_view_mode: "srd:view:table-row"
+          source_path: "skills"
+          filter: "is_class_skill or (rank > 0)"
+
+    - id: "feats"
+      component: block
+      title: "Feats"
+      children:
+        - id: "feat-list"
+          component: list
+          item_view_mode: "srd:view:card"
+          source_path: "feats"
+
+    - id: "spells"
+      component: block
+      title: "Spells"
+      children:
+        - id: "spell-list"
+          component: list
+          item_view_mode: "srd:view:spell-card"
+          source_path: "spells_known"
+---
