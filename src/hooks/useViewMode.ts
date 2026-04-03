@@ -16,7 +16,6 @@ const DEFAULT_VIEW_MODES: Record<string, Record<string, ViewMode>> = {
       id: 'default:view:race-reference',
       template: 'reference',
       slots: {
-        title: { path: 'name' },
         subtitle: { path: 'size', label: 'Size' },
       },
     },
@@ -35,7 +34,6 @@ const DEFAULT_VIEW_MODES: Record<string, Record<string, ViewMode>> = {
       id: 'default:view:class-reference',
       template: 'reference',
       slots: {
-        title: { path: 'name' },
         subtitle: { path: 'hit_die', label: 'Hit Die' },
       },
     },
@@ -54,7 +52,6 @@ const DEFAULT_VIEW_MODES: Record<string, Record<string, ViewMode>> = {
       id: 'default:view:feat-reference',
       template: 'reference',
       slots: {
-        title: { path: 'name' },
         subtitle: { path: 'type', label: 'Type' },
         body: { path: 'benefit' },
       },
@@ -75,7 +72,6 @@ const DEFAULT_VIEW_MODES: Record<string, Record<string, ViewMode>> = {
       id: 'default:view:spell-reference',
       template: 'reference',
       slots: {
-        title: { path: 'name' },
         subtitle: { path: 'school', label: 'School' },
         body: { path: 'description' },
       },
@@ -102,7 +98,6 @@ const DEFAULT_VIEW_MODES: Record<string, Record<string, ViewMode>> = {
       id: 'default:view:skill-reference',
       template: 'reference',
       slots: {
-        title: { path: 'name' },
         subtitle: { path: 'ability', label: 'Ability' },
         body: { path: 'description' },
       },
