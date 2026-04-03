@@ -41,12 +41,17 @@ function FallbackCard({ entity, selected, onSelect }: { entity: Entity; selected
 }
 
 export function EntitySelector({ config, entities, selectedIds, onSelect }: EntitySelectorProps) {
-  const gridClass = config.display === 'filterable-list'
-    ? 'grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto'
-    : 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
+  const isFilterableList = config.display === 'filterable-list'
 
   return (
-    <div className={gridClass}>
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: isFilterableList ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+      gap: '0.6rem',
+      maxHeight: isFilterableList ? '24rem' : undefined,
+      overflowY: isFilterableList ? 'auto' : undefined,
+      paddingTop: '3px', // prevent top border clipping
+    }}>
       {entities.map((entity) => {
         const selected = selectedIds.includes(entity.id)
         const onSelectEntity = () => onSelect(entity)

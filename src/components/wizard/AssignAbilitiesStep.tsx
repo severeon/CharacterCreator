@@ -20,6 +20,30 @@ function abilityModifier(score: number): number {
   return Math.floor((score - 10) / 2)
 }
 
+function MethodButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        background: active ? 'var(--burgundy)' : 'var(--parchment-light)',
+        border: `1px solid ${active ? 'var(--burgundy-dark)' : 'var(--gold-rule)'}`,
+        fontFamily: "'Cinzel', serif",
+        fontSize: '0.65rem',
+        fontWeight: 600,
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase' as const,
+        color: active ? 'var(--parchment-light)' : 'var(--ink-mid)',
+        padding: '6px 14px',
+        cursor: 'pointer',
+        transition: 'background 0.15s, color 0.15s',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
 export function AssignAbilitiesStep({
   abilities,
   abilityMethod,
@@ -31,8 +55,6 @@ export function AssignAbilitiesStep({
   onManualEntry,
   onAbilityPointBuy,
   onAbilityManualChange,
-  onAssignAbilities,
-  onBack,
 }: AssignAbilitiesStepProps) {
   const conMod = abilityModifier(abilities.constitution || 10)
   const dexMod = abilityModifier(abilities.dexterity || 10)
@@ -53,177 +75,189 @@ export function AssignAbilitiesStep({
   const flatFooted = 10 + dexMod
   const touch = 10 + dexMod
 
-  return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Step 3: Assign and Adjust Ability Scores</h2>
+  const statBoxStyle = {
+    background: 'var(--parchment-light)',
+    border: '1px solid var(--gold-rule)',
+    borderTop: '2px solid var(--burgundy)',
+    padding: '8px 10px',
+  }
 
+  const statLabelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: '0.6rem',
+    fontFamily: "'Cinzel', serif",
+    fontWeight: 600,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+    color: 'var(--ink-light)',
+    marginBottom: '2px',
+  }
+
+  const statValueStyle = (positive: boolean): React.CSSProperties => ({
+    display: 'block',
+    fontSize: '1.4rem',
+    fontWeight: 700,
+    fontFamily: "'Cinzel', serif",
+    color: positive ? 'var(--burgundy)' : '#8B1010',
+  })
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {/* Method Selection Buttons */}
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={onRollAbilities}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'roll' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Roll 4d6 (×6)
-        </button>
-        <button
-          onClick={onStandardArray}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'array' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Standard Array
-        </button>
-        <button
-          onClick={onPointBuy}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'pointbuy' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+        <MethodButton active={abilityMethod === 'roll'} onClick={onRollAbilities}>Roll 4d6 (×6)</MethodButton>
+        <MethodButton active={abilityMethod === 'array'} onClick={onStandardArray}>Standard Array</MethodButton>
+        <MethodButton active={abilityMethod === 'pointbuy'} onClick={onPointBuy}>
           Point Buy ({pointBuyRemaining} pts)
-        </button>
-        <button
-          onClick={onManualEntry}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'manual' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Manual
-        </button>
+        </MethodButton>
+        <MethodButton active={abilityMethod === 'manual'} onClick={onManualEntry}>Manual</MethodButton>
       </div>
 
-      {/* Point Buy Info */}
+      {/* Point Buy remaining info */}
       {abilityMethod === 'pointbuy' && (
-        <div className="bg-blue-50 p-3 rounded-lg text-sm">
-          <p className="font-medium text-blue-800">Point Buy: 27 points</p>
-          <p className="text-blue-600">
-            Costs: 8=0, 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9, 16=12, 17=15, 18=19
-          </p>
-          <p className="text-blue-600">
-            Remaining: <span className="font-bold">{pointBuyRemaining}</span> points
-          </p>
+        <div style={{
+          background: 'rgba(155, 120, 50, 0.08)',
+          border: '1px solid var(--gold-rule)',
+          borderLeft: '3px solid var(--burgundy)',
+          padding: '7px 12px',
+          fontSize: '0.78rem',
+          fontFamily: "'Libre Baskerville', serif",
+          color: 'var(--ink-mid)',
+        }}>
+          Costs: 8=0, 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9, 16=12, 17=15, 18=19
+          {' · '}
+          <strong style={{ color: 'var(--burgundy)' }}>{pointBuyRemaining}</strong> points remaining
         </div>
       )}
 
       {/* Ability Score Inputs */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {Object.entries(abilities).map(([ability, value]) => (
-          <div
-            key={ability}
-            className="flex items-center gap-3 p-3 border rounded-lg bg-white"
-          >
-            <span className="w-24 font-medium capitalize">{ability}</span>
-            {abilityMethod === 'pointbuy' ? (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => onAbilityPointBuy(ability, -1)}
-                  disabled={value <= 8}
-                  className="w-8 h-8 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-                >
-                  −
-                </button>
-                <span className="w-12 text-center font-bold">{value}</span>
-                <button
-                  onClick={() => onAbilityPointBuy(ability, 1)}
-                  disabled={value >= 18 || pointBuyRemaining <= 0}
-                  className="w-8 h-8 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-                >
-                  +
-                </button>
-              </div>
-            ) : (
-              <input
-                type="number"
-                value={value}
-                onChange={(e) => {
-                  const newVal = parseInt(e.target.value) || 10
-                  onAbilityManualChange(ability, Math.max(1, Math.min(20, newVal)))
-                }}
-                min={1}
-                max={20}
-                className="w-20 px-2 py-1 border rounded"
-              />
-            )}
-            <span
-              className={`text-sm font-medium ${
-                abilityModifier(value) >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              {abilityModifier(value) >= 0 ? '+' : ''}
-              {abilityModifier(value)}
-            </span>
-          </div>
-        ))}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+        {Object.entries(abilities).map(([ability, value]) => {
+          const mod = abilityModifier(value)
+          return (
+            <div key={ability} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '7px 10px',
+              background: 'var(--parchment-light)',
+              border: '1px solid var(--gold-rule)',
+              borderTop: '2px solid var(--burgundy)',
+            }}>
+              <span style={{
+                flex: 1,
+                fontFamily: "'Cinzel', serif",
+                fontSize: '0.72rem',
+                fontWeight: 600,
+                letterSpacing: '0.04em',
+                color: 'var(--ink-mid)',
+                textTransform: 'capitalize' as const,
+              }}>
+                {ability}
+              </span>
+              {abilityMethod === 'pointbuy' ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <button
+                    onClick={() => onAbilityPointBuy(ability, -1)}
+                    disabled={value <= 8}
+                    style={{
+                      width: '22px', height: '22px',
+                      background: 'var(--parchment-dark)',
+                      border: '1px solid var(--gold-rule)',
+                      fontFamily: "'Cinzel', serif",
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: 'var(--ink-mid)',
+                      cursor: 'pointer',
+                      opacity: value <= 8 ? 0.3 : 1,
+                      lineHeight: 1,
+                    }}
+                  >−</button>
+                  <span style={{ width: '28px', textAlign: 'center', fontWeight: 700, fontFamily: "'Cinzel', serif", fontSize: '0.9rem' }}>{value}</span>
+                  <button
+                    onClick={() => onAbilityPointBuy(ability, 1)}
+                    disabled={value >= 18 || pointBuyRemaining <= 0}
+                    style={{
+                      width: '22px', height: '22px',
+                      background: 'var(--parchment-dark)',
+                      border: '1px solid var(--gold-rule)',
+                      fontFamily: "'Cinzel', serif",
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: 'var(--ink-mid)',
+                      cursor: 'pointer',
+                      opacity: (value >= 18 || pointBuyRemaining <= 0) ? 0.3 : 1,
+                      lineHeight: 1,
+                    }}
+                  >+</button>
+                </div>
+              ) : (
+                <input
+                  type="number"
+                  value={value}
+                  onChange={(e) => {
+                    const newVal = parseInt(e.target.value) || 10
+                    onAbilityManualChange(ability, Math.max(1, Math.min(20, newVal)))
+                  }}
+                  min={1}
+                  max={20}
+                  style={{
+                    width: '52px',
+                    padding: '3px 6px',
+                    background: 'var(--parchment-dark)',
+                    border: '1px solid var(--gold-rule)',
+                    fontFamily: "'Cinzel', serif",
+                    fontSize: '0.9rem',
+                    fontWeight: 700,
+                    color: 'var(--ink)',
+                    textAlign: 'center',
+                    outline: 'none',
+                  }}
+                />
+              )}
+              <span style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                fontFamily: "'Cinzel', serif",
+                color: mod >= 0 ? 'var(--burgundy)' : '#8B1010',
+                minWidth: '2rem',
+                textAlign: 'right',
+              }}>
+                {mod >= 0 ? '+' : ''}{mod}
+              </span>
+            </div>
+          )
+        })}
       </div>
 
       {/* Derived Stats Preview */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="font-bold text-lg mb-3">Derived Statistics (Preview)</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div className="bg-white p-3 rounded border">
-            <span className="text-gray-600 block">Hit Points</span>
-            <span className="text-2xl font-bold text-red-600">{hp}</span>
-            <span className="text-gray-500 text-xs block">HD: d{hd}</span>
-          </div>
-          <div className="bg-white p-3 rounded border">
-            <span className="text-gray-600 block">Base Attack</span>
-            <span className="text-2xl font-bold text-blue-600">+{currentBAB}</span>
-          </div>
-          <div className="bg-white p-3 rounded border">
-            <span className="text-gray-600 block">Initiative</span>
-            <span
-              className={`text-2xl font-bold ${
-                initiative >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              {initiative >= 0 ? '+' : ''}
-              {initiative}
-            </span>
-          </div>
-          <div className="bg-white p-3 rounded border">
-            <span className="text-gray-600 block">Armor Class</span>
-            <span className="text-2xl font-bold">{ac}</span>
-            <span className="text-gray-500 text-xs block">
-              Touch: {touch} / Flat: {flatFooted}
-            </span>
-          </div>
-          <div className="bg-white p-3 rounded border">
-            <span className="text-gray-600 block">Fortitude Save</span>
-            <span
-              className={`text-2xl font-bold ${
-                fortBase + conMod >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              +{fortBase + conMod}
-            </span>
-          </div>
-          <div className="bg-white p-3 rounded border">
-            <span className="text-gray-600 block">Reflex Save</span>
-            <span
-              className={`text-2xl font-bold ${
-                refBase + dexMod >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              +{refBase + dexMod}
-            </span>
-          </div>
-          <div className="bg-white p-3 rounded border">
-            <span className="text-gray-600 block">Will Save</span>
-            <span
-              className={`text-2xl font-bold ${
-                willBase + abilityModifier(abilities.wisdom || 10) >= 0
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              }`}
-            >
-              +{willBase + abilityModifier(abilities.wisdom || 10)}
-            </span>
-          </div>
-          <div className="bg-white p-3 rounded border">
-            <span className="text-gray-600 block">Speed</span>
-            <span className="text-2xl font-bold">30 ft</span>
-          </div>
+      <div>
+        <div className="dnd-section-header">Derived Statistics (Preview)</div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '0.4rem',
+          padding: '10px',
+          background: 'var(--parchment-dark)',
+          border: '1px solid var(--gold-rule)',
+          borderTop: 'none',
+        }}>
+          {[
+            { label: 'Hit Points', value: `${hp}`, sub: `HD: d${hd}`, positive: hp > 0 },
+            { label: 'Base Attack', value: `+${currentBAB}`, positive: true },
+            { label: 'Initiative', value: `${initiative >= 0 ? '+' : ''}${initiative}`, positive: initiative >= 0 },
+            { label: 'Armor Class', value: `${ac}`, sub: `Touch: ${touch} / Flat: ${flatFooted}`, positive: true },
+            { label: 'Fortitude', value: `+${fortBase + conMod}`, positive: fortBase + conMod >= 0 },
+            { label: 'Reflex', value: `+${refBase + dexMod}`, positive: refBase + dexMod >= 0 },
+            { label: 'Will', value: `+${willBase + abilityModifier(abilities.wisdom || 10)}`, positive: willBase + abilityModifier(abilities.wisdom || 10) >= 0 },
+            { label: 'Speed', value: '30 ft', positive: true },
+          ].map(({ label, value, sub, positive }) => (
+            <div key={label} style={statBoxStyle}>
+              <span style={statLabelStyle}>{label}</span>
+              <span style={statValueStyle(positive)}>{value}</span>
+              {sub && <span style={{ display: 'block', fontSize: '0.6rem', color: 'var(--ink-light)', marginTop: '1px' }}>{sub}</span>}
+            </div>
+          ))}
         </div>
       </div>
     </div>

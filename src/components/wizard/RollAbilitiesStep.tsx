@@ -1,3 +1,10 @@
+const METHOD_LABELS: Record<string, string> = {
+  roll: 'Roll 4d6 (×6)',
+  array: 'Standard Array',
+  pointbuy: 'Point Buy',
+  manual: 'Manual',
+}
+
 interface RollAbilitiesStepProps {
   rolledSets: number[][]
   abilityMethod: 'manual' | 'array' | 'roll' | 'pointbuy'
@@ -5,6 +12,47 @@ interface RollAbilitiesStepProps {
   onStandardArray: () => void
   onPointBuy: () => void
   onManualEntry: () => void
+}
+
+function InfoBox({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{
+      background: 'rgba(155, 120, 50, 0.08)',
+      border: '1px solid var(--gold-rule)',
+      borderLeft: '3px solid var(--burgundy)',
+      padding: '10px 14px',
+      fontFamily: "'Libre Baskerville', serif",
+      fontSize: '0.82rem',
+      color: 'var(--ink-mid)',
+      lineHeight: 1.55,
+    }}>
+      {children}
+    </div>
+  )
+}
+
+function MethodButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        background: active ? 'var(--burgundy)' : 'var(--parchment-light)',
+        border: `1px solid ${active ? 'var(--burgundy-dark)' : 'var(--gold-rule)'}`,
+        fontFamily: "'Cinzel', serif",
+        fontSize: '0.65rem',
+        fontWeight: 600,
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase' as const,
+        color: active ? 'var(--parchment-light)' : 'var(--ink-mid)',
+        padding: '6px 14px',
+        cursor: 'pointer',
+        transition: 'background 0.15s, color 0.15s',
+      }}
+    >
+      {children}
+    </button>
+  )
 }
 
 export function RollAbilitiesStep({
@@ -16,108 +64,91 @@ export function RollAbilitiesStep({
   onManualEntry,
 }: RollAbilitiesStepProps) {
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Step 1: Roll Ability Scores</h2>
-      <p className="text-gray-600">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <p style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '0.875rem', color: 'var(--ink-mid)', lineHeight: 1.6 }}>
         Roll 4d6 and drop the lowest die. Repeat 6 times to generate your ability scores.
       </p>
 
       {/* Method Selection Buttons */}
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={onRollAbilities}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'roll' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Roll 4d6 (×6)
-        </button>
-        <button
-          onClick={onStandardArray}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'array' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Standard Array
-        </button>
-        <button
-          onClick={onPointBuy}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'pointbuy' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Point Buy
-        </button>
-        <button
-          onClick={onManualEntry}
-          className={`px-4 py-2 rounded-lg border ${
-            abilityMethod === 'manual' ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-          }`}
-        >
-          Manual
-        </button>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+        <MethodButton active={abilityMethod === 'roll'} onClick={onRollAbilities}>
+          {METHOD_LABELS.roll}
+        </MethodButton>
+        <MethodButton active={abilityMethod === 'array'} onClick={onStandardArray}>
+          {METHOD_LABELS.array}
+        </MethodButton>
+        <MethodButton active={abilityMethod === 'pointbuy'} onClick={onPointBuy}>
+          {METHOD_LABELS.pointbuy}
+        </MethodButton>
+        <MethodButton active={abilityMethod === 'manual'} onClick={onManualEntry}>
+          {METHOD_LABELS.manual}
+        </MethodButton>
       </div>
 
       {/* Rolled Sets Display */}
       {abilityMethod === 'roll' && rolledSets.length > 0 && rolledSets[0].length === 6 && (
-        <div className="space-y-4">
-          <h3 className="font-semibold">Your Rolled Ability Scores</h3>
-          <p className="text-sm text-gray-500">
-            These 6 scores will be available for assignment after Race and Class selection.
-            You can re-roll to get new values.
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <p className="dnd-section-header" style={{ display: 'inline-block', marginBottom: '0.25rem' }}>
+            Your Rolled Scores
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <p style={{ fontSize: '0.78rem', color: 'var(--ink-light)', fontStyle: 'italic', fontFamily: "'IM Fell English', serif" }}>
+            These 6 scores will be assigned after Race and Class selection.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.5rem' }}>
             {rolledSets[0].map((score, i) => (
-              <div
-                key={i}
-                className="p-4 border rounded-lg text-center bg-white"
-              >
-                <span className="text-sm text-gray-500 block">Score {i + 1}</span>
-                <span className="text-2xl font-bold text-blue-600">{score}</span>
+              <div key={i} style={{
+                background: 'var(--parchment-dark)',
+                border: '1px solid var(--gold-rule)',
+                borderTop: '2px solid var(--burgundy)',
+                padding: '8px 4px',
+                textAlign: 'center',
+              }}>
+                <span style={{ display: 'block', fontSize: '0.6rem', fontFamily: "'Cinzel', serif", letterSpacing: '0.05em', color: 'var(--ink-light)', textTransform: 'uppercase' }}>
+                  Score {i + 1}
+                </span>
+                <span style={{ display: 'block', fontSize: '1.4rem', fontWeight: 700, fontFamily: "'Cinzel', serif", color: 'var(--burgundy)' }}>
+                  {score}
+                </span>
               </div>
             ))}
           </div>
-          <p className="text-sm text-blue-600">
-            Click Continue to proceed to Race selection. You&apos;ll assign these scores after choosing your class.
-          </p>
         </div>
       )}
 
       {/* Standard Array Preview */}
       {abilityMethod === 'array' && (
-        <div className="bg-green-50 p-4 rounded-lg">
-          <h3 className="font-semibold text-green-800">Standard Array</h3>
-          <p className="text-green-700 text-sm">
-            STR 15, DEX 14, CON 13, INT 12, WIS 10, CHA 8
-          </p>
-          <p className="text-sm text-green-600 mt-2">
+        <InfoBox>
+          <strong style={{ fontFamily: "'Cinzel', serif", fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--burgundy)', display: 'block', marginBottom: '4px' }}>
+            Standard Array
+          </strong>
+          STR 15 · DEX 14 · CON 13 · INT 12 · WIS 10 · CHA 8
+          <br />
+          <span style={{ fontSize: '0.78rem', color: 'var(--ink-light)', fontStyle: 'italic' }}>
             These values will be available for assignment after Race and Class selection.
-          </p>
-        </div>
+          </span>
+        </InfoBox>
       )}
 
       {/* Point Buy Info */}
       {abilityMethod === 'pointbuy' && (
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <p className="font-medium text-blue-800">Point Buy: 27 points</p>
-          <p className="text-blue-600 text-sm">
-            Costs: 8=0, 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9, 16=12, 17=15, 18=19
-          </p>
-          <p className="text-sm text-blue-600 mt-1">
-            You&apos;ll be able to adjust these after Race and Class selection.
-          </p>
-        </div>
+        <InfoBox>
+          <strong style={{ fontFamily: "'Cinzel', serif", fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--burgundy)', display: 'block', marginBottom: '4px' }}>
+            Point Buy — 27 Points
+          </strong>
+          Costs: 8=0, 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9, 16=12, 17=15, 18=19
+          <br />
+          <span style={{ fontSize: '0.78rem', color: 'var(--ink-light)', fontStyle: 'italic' }}>
+            You'll adjust these after Race and Class selection.
+          </span>
+        </InfoBox>
       )}
 
       {/* Manual Entry Info */}
       {abilityMethod === 'manual' && (
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <p className="text-gray-700">
-            You&apos;ll be able to enter ability scores manually after Race and Class selection.
-          </p>
-        </div>
+        <InfoBox>
+          You'll be able to enter ability scores manually after Race and Class selection.
+        </InfoBox>
       )}
-
     </div>
   )
 }

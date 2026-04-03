@@ -66,16 +66,19 @@ export default function RaceWizardCard({ entity, selected = false, onSelect }: P
     >
       <div style={{
         padding: '7px 10px 5px',
+        minHeight: '2.6rem',
         borderBottom: '1px solid var(--border-rule)',
         background: selected ? 'rgba(107,20,20,0.08)' : 'transparent',
+        display: 'flex',
+        alignItems: 'flex-start',
       }}>
         <span style={{
           fontFamily: "'Cinzel', serif",
-          fontSize: '0.88rem',
+          fontSize: '0.82rem',
           fontWeight: 600,
           color: selected ? 'var(--burgundy)' : 'var(--burgundy-dark)',
           display: 'block',
-          lineHeight: 1.25,
+          lineHeight: 1.3,
         }}>
           {name}
         </span>
