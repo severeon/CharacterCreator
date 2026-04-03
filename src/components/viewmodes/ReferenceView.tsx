@@ -11,50 +11,50 @@ interface ReferenceViewProps {
   theme?: Record<string, string>
 }
 
-export function ReferenceView({ entity, slots }: ReferenceViewProps) {
-  return (
-    <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-      {slots.image?.value && (
+export function ReferenceView({ slots }: ReferenceViewProps) {
+  const hasImage = slots.image?.value != null
+
+  const metaSlots = Object.entries(slots).filter(
+    ([k]) => !['title', 'image', 'body'].includes(k)
+  ).filter(([, v]) => v.value != null)
+
+  if (hasImage) {
+    return (
+      <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
         <div className="w-full h-64 bg-gray-900 overflow-hidden">
           <img
-            src={String(slots.image.value)}
-            alt={slots.title?.value ? String(slots.title.value) : ''}
+            src={String(slots.image!.value)}
+            alt=""
             className="w-full h-full object-cover"
           />
         </div>
-      )}
-      <div className="p-6">
-        {slots.title?.value != null && (
-          <h2 className="text-2xl font-bold text-white mb-1">{String(slots.title.value)}</h2>
-        )}
-        {slots.subtitle?.value != null && (
-          <p className="text-gray-400 text-sm mb-4">
-            {slots.subtitle.label ? `${slots.subtitle.label}: ` : ''}
-            {String(slots.subtitle.value)}
-          </p>
-        )}
-        {Object.entries(slots)
-          .filter(([k]) => !['title', 'subtitle', 'image', 'body'].includes(k))
-          .filter(([, v]) => v.value != null)
-          .map(([key, slot]) => (
-            <div key={key} className="flex gap-2 text-sm mb-1">
-              {slot.label && (
-                <span className="text-gray-500 min-w-24">{slot.label}:</span>
-              )}
+        <div className="p-4 space-y-1">
+          {metaSlots.map(([key, slot]) => (
+            <div key={key} className="flex gap-2 text-sm">
+              {slot.label && <span className="text-gray-500 min-w-24">{slot.label}:</span>}
               <span className="text-gray-200">{String(slot.value)}</span>
             </div>
           ))}
-        {slots.body?.value != null && (
-          <div className="mt-4 text-gray-300 text-sm leading-relaxed">
-            {String(slots.body.value)}
-          </div>
-        )}
-        {!slots.body?.value && entity.mdx_body && (
-          <div className="mt-4 text-gray-300 text-sm leading-relaxed">
-            {entity.mdx_body}
-          </div>
-        )}
+          {slots.body?.value != null && (
+            <p className="mt-3 text-gray-300 text-sm leading-relaxed">{String(slots.body.value)}</p>
+          )}
+        </div>
       </div>
+    )
+  }
+
+  // No image — render as a flat metadata list, no card wrapper
+  return (
+    <div className="space-y-1">
+      {metaSlots.map(([key, slot]) => (
+        <div key={key} className="flex gap-2 text-sm">
+          {slot.label && <span className="text-gray-500 min-w-24">{slot.label}:</span>}
+          <span className="text-gray-200">{String(slot.value)}</span>
+        </div>
+      ))}
+      {slots.body?.value != null && (
+        <p className="mt-3 text-gray-300 text-sm leading-relaxed">{String(slots.body.value)}</p>
+      )}
     </div>
   )
 }
