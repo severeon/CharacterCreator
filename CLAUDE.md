@@ -41,7 +41,7 @@ python -m http.server 8080
 
 ### Tauri App (Milestone 1: Content Browser + Milestone 2: Character Creation)
 
-- **Rust backend** (`src-tauri/src/`): Event-sourced engine. `pack_loader` parses manifest.yaml + MDX entities into memory. `engine/` holds the Engine struct with modules for abilities, character, feats, skills, selection, export. `dispatch/` is the command dispatcher (Dispatcher, predicate, stack). `computed_view.rs`, `workflow.rs`, `queue.rs`, `subscription.rs` support character creation workflow. `ipc.rs` exposes 18 Tauri IPC commands (entity browser + full character creation: `create_character`, `select_race`, `select_class`, `assign_ability_scores`, `allocate_skill_points`, `select_feat`, `get_workflow_status`, `get_available_choices`, `get_speculative_state`, DM settings, JSON/markdown export).
+- **Rust backend** (`src-tauri/src/`): Event-sourced engine with 18 top-level modules. `pack_loader` parses manifest.yaml + MDX entities into memory. `engine/` holds the Engine struct with 12 submodules (abilities, character, feats, skills, selection, export, settings, query, types, error, tests). `dispatch/` is the command dispatcher with 7 submodules (Dispatcher, predicate, stack). `computed_view.rs`, `workflow.rs`, `queue.rs`, `subscription.rs`, `predicate.rs`, `expression_eval.rs` support character creation workflow. `ipc.rs` exposes 18 Tauri IPC commands (entity browser + full character creation: `create_character`, `select_race`, `select_class`, `assign_ability_scores`, `allocate_skill_points`, `select_feat`, `get_workflow_status`, `get_available_choices`, `get_speculative_state`, DM settings, JSON/markdown export).
 - **React frontend** (`src/`): Vite + React + TypeScript + TailwindCSS. Routes: `/` → `/races`, `/:entityType` (entity list), `/:entityType/:id` (entity detail), `/creation` (character creation wizard), `/character/:id` (character sheet). Sidebar with type filters and search. MDX body rendered from entity content.
 - **Character Creation Wizard** (`src/routes/CreationWizard.tsx`): Multi-step wizard driven by `WorkflowStepper` (`src/components/wizard/WorkflowStepper.tsx`) and the `useWorkflow` hook (`src/hooks/useWorkflow.ts`). The workflow is defined as a TypeScript constant (`src/workflows/character-creation.ts`) — future: loaded from content pack entities via IPC. Step components in `src/components/wizard/`: `AbilityAllocator`, `EntitySelector`, `SkillAllocator`, `TextForm`, `EquipmentAllocator`, `NarrativeBlock` (generic step UIs), plus existing domain steps (`RollAbilitiesStep`, `AssignAbilitiesStep`, `SkillsStep`, etc.). Steps: roll abilities → race → class → assign abilities → starting package → racial/class features → skills → feats → description → equipment → combat numbers → details.
 - **Content packs** (`content/packs/`): Each pack has a `manifest.yaml` and an `entities/` directory of `.mdx` files organized by type (classes/, races/, feats/, spells/).
@@ -59,10 +59,10 @@ Everything lives in `app.html`. Key structural regions (searchable by comment):
 ## Running Tests
 
 ```sh
-# Rust tests (59 tests)
+# Rust tests (101 tests)
 cd src-tauri && cargo test
 
-# Frontend tests (70 tests across 17 files, via Vitest)
+# Frontend tests (107 tests across 28 files, via Vitest)
 npx vitest run
 
 # Run a single test file
@@ -81,6 +81,12 @@ node scripts/codegen/run.mjs
 ```
 
 This reads `classes.js`, `feats.js`, and `spells.js`, then writes MDX files to `content/packs/srd-3.5e/entities/`.
+
+## Plans & Documentation
+
+- `docs/superpowers/plans/` -- active implementation plans
+- `docs/superpowers/archives/` -- completed/superseded plans
+- `docs/superpowers/specs/` -- design specifications
 
 ## CI
 

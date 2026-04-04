@@ -1,92 +1,83 @@
-# D&D 3.5 Gestalt Character Creator
+# D&D 3.5e Character Creator
 
-A browser-based tool for building D&D 3.5 gestalt characters, supporting base classes, prestige classes, feats, and prerequisite checking.
+A Tauri v2 desktop application for browsing D&D 3.5e content and creating characters. Built with a Rust event-sourced backend and React/TypeScript frontend.
 
-## Files
+The app loads SRD 3.5e content packs (~960 MDX entity files covering classes, races, feats, and spells), presents them in a searchable/filterable browser, and provides a multi-step character creation wizard with DM authority controls.
 
-| File | Description |
-|------|-------------|
-| `dnd35_gestalt_v4.html` | The app |
-| `classes.js` | Editable data: races, classes, skills, etc. |
-| `classes.json` | JSON version of class data |
-| `feats.js` | Feat definitions |
-| `spells.js` | Spell and psionic power reference data |
-
-## Two Ways to Use
-
-### Mode 1 — Double-click (no setup needed)
-
-Open `dnd35_gestalt_v4.html` directly in your browser. All data is embedded inside the HTML file so it works immediately. `classes.js` is ignored in this mode (browser security blocks local files).
-
-### Mode 2 — Local server (`classes.js` is live)
-
-When served over HTTP, the app loads `classes.js` and uses it instead of the embedded data. Edit `classes.js`, refresh the browser — changes appear instantly.
-
-**To start the server:**
+## Running Locally
 
 ```sh
-cd path/to/this/folder
+# Tauri dev mode (Rust backend + Vite frontend)
+cargo tauri dev
+
+# Frontend only (no Tauri IPC)
+npx vite dev
+
+# Legacy character creator
 python -m http.server 8080
+# then open http://localhost:8080/app.html
 ```
 
-Then open: `http://localhost:8080/dnd35_gestalt_v4.html`
+## Project Structure
 
-Stop with `Ctrl+C`.
+| Path | Role |
+|------|------|
+| `src-tauri/` | Rust backend -- entity store, pack loader, event-sourced engine, Tauri IPC |
+| `src/` | React + TypeScript frontend -- Vite, TailwindCSS, routes, components |
+| `src/components/wizard/` | Character creation wizard step components (30+) |
+| `src/components/primitives/` | Reusable UI primitive components (19) |
+| `src/workflows/` | Workflow definitions -- `character-creation.ts` |
+| `content/packs/srd-3.5e/` | SRD 3.5e content pack -- manifest.yaml + MDX entities |
+| `scripts/codegen/` | Node scripts that generate MDX entities from legacy JS data |
+| `docs/superpowers/` | Implementation plans (active + archived) |
+| `app.html` | Legacy single-page character creator (codegen data source) |
 
-## Editing `classes.js` (server mode only)
+## Content Packs
 
-Open `classes.js` in any text editor. The data is plain JavaScript arrays. After saving, refresh the browser tab — no restart needed.
+Content packs live in `content/packs/`. Each pack contains:
+- `manifest.yaml` -- pack metadata and entity type declarations
+- `entities/` -- MDX files organized by type (classes/, races/, feats/, spells/, mechanics/)
 
-**Add a base class** to the `CLASSES` array:
+The SRD 3.5e pack includes ~960 entity files generated from the legacy data files (`classes.js`, `feats.js`, `spells.js`).
 
-```js
-{n:"My Class", s:"Homebrew", hd:10, bab:"full",
- fort:"good", ref:"poor", will:"poor", sp:4,
- cs:["Climb","Intimidate","Jump"],
- f:["Cool Ability","Another Ability"]},
+To regenerate content from legacy data:
+
+```sh
+node scripts/codegen/run.mjs
 ```
 
-**Add a prestige class** (include `prestige:true` and optionally `maxLvl`):
+## Character Creation
 
-```js
-{n:"My PrC", s:"Homebrew", prestige:true, hd:8, bab:"medium",
- fort:"good", ref:"poor", will:"poor", sp:2, maxLvl:5,
- cs:["Craft","Knowledge(Arcana)"],
- f:["Special Power","Greater Power"],
- special:"BAB +5, some feat"},
+The wizard walks through 12 steps: generate abilities, choose race, choose class, assign abilities, starting package, racial/class features, allocate skills, choose feats, description, equipment, combat numbers, and details.
+
+DM settings control ability generation method, gestalt mode, ECL limits, template restrictions, and prerequisite enforcement.
+
+## Testing
+
+```sh
+# Rust tests (101 tests)
+cd src-tauri && cargo test
+
+# Frontend tests (107 tests across 28 files, via Vitest)
+npx vitest run
+
+# Single test file
+npx vitest run src/components/wizard/WorkflowStepper.test.tsx
+
+# Codegen tests (Node native test runner)
+node --test scripts/codegen/tests/arcanum.test.mjs
+
+# E2E tests (Playwright)
+npx playwright test
 ```
 
-**Add entry requirements** to `PRESTIGE_PREREQS`:
+## CI
 
-```js
-"My PrC": {bab:5, feats:["Power Attack"], skills:{"Intimidate":8},
-           casterLevel:3, casterType:"arcane", alignment:"evil",
-           minSize:"Large"},
-```
+GitHub Actions:
+- `ci.yml` -- frontend Vitest, Rust `cargo test`, Linux Tauri build, Playwright E2E on push/PR to main
+- `claude.yml` -- Claude Code on issues/PRs tagged with `@claude`
+- `opencode.yml` -- OpenCode on `/oc` or `/opencode` comments
 
-## Keeping HTML in Sync
+## Legacy Character Creator
 
-If you edit `classes.js` and want those changes to also work in double-click mode, paste the edited array into the matching section inside `dnd35_gestalt_v4.html` (search for `INLINE DATA FALLBACK`). Or just always use server mode.
-
-## Field Reference
-
-### Class fields (`CLASSES`)
-
-| Field | Values |
-|-------|--------|
-| `n` | Class name (must be unique) |
-| `s` | Sourcebook |
-| `hd` | `4` / `6` / `8` / `10` / `12` |
-| `bab` | `"full"` / `"medium"` / `"poor"` |
-| `fort` / `ref` / `will` | `"good"` / `"poor"` |
-| `sp` | Skill points per level |
-| `cs` | Array of class skill names |
-| `f` | Array of class feature names |
-| `prestige` | `true` for prestige classes |
-| `maxLvl` | Max class level (default `10`) |
-| `special` | Entry requirement text |
-
-### Prereq fields (`PRESTIGE_PREREQS`)
-
-`bab`, `str` / `dex` / `con` / `int` / `wis` / `cha`, `feats[]`, `skills{}`, `casterLevel`, `casterType`, `minCasterSpellLevel`, `requiresPsionic`, `minPsionicPowerLevel`, `alignment`, `minSize`, `special`
-Credits added
+`app.html` is the original single-page D&D 3.5e gestalt character creator. It runs standalone in any browser and serves as the data source for codegen. See the legacy data files (`classes.js`, `feats.js`, `spells.js`) for the raw data format.
